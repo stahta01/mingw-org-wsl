@@ -1,3 +1,11 @@
+2018-07-29  Keith Marshall  <keith@users.osdn.me>
+
+	Don't restrict <winerror.h> exposure when including <winsock.h>
+
+	* include/winerror.h [__WINSOCK_H_SOURCED__]: Remove filters.
+	(__WINSOCK_V1_ERRORS__, __WINSOCK_V2_ERRORS__): Do not define; delete
+	all dependent filter references.
+
 2018-07-11  Keith Marshall  <keith@users.osdn.me>
 
 	Make <wincrypt.h> header effectively self-contained.

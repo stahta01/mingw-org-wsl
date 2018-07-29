@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Anders Norlander <anorland@hem2.passagen.se>
- * Copyright (C) 1998, 2000-2006, 2008, 2009, 2012, 2016, 2017,
+ * Copyright (C) 1998, 2000-2006, 2008, 2009, 2012, 2016-2018,
  *   MinGW.org Project
  *
  *
@@ -32,12 +32,6 @@
  */
 #ifndef _WINERROR_H
 #pragma GCC system_header
-
-#ifndef __WINSOCK_H_SOURCED__
-/* Part of this header is available for selective inclusion by <winsock.h>;
- * mark it as fully processed, only when NOT so included; otherwise, occlude
- * those parts which are not relevant for <winsock.h>
- */
 #define _WINERROR_H
 
 #define _HRESULT_TYPEDEF_(_sc)  ((HRESULT)(_sc))
@@ -1598,31 +1592,12 @@
 #define DNS_ERROR_DP_ALREADY_ENLISTED					 9904L
 #define DNS_ERROR_DP_NOT_AVAILABLE					 9905L
 
-/* This ends the first group of error codes which are to be occluded
- * when selectively included by <winsock.h>
- */
-#endif	/* !__WINSOCK_H_SOURCED__ */
-
-/* The following are to be defined both when including <winerror.h> directly,
- * and when including it selectively, via <winsock.h>; (those codes which are
- * specific to WinSock v2 are excluded, during selective inclusion, unless
- * <winsock.h> itself is included on behalf of <winsock2.h>).
- */
-#undef __WINSOCK_V1_ERRORS__
-#if ! (defined _WINERROR_H && defined _WINSOCK_H)
-/* Error codes for WinSock v1 must be defined if either _WINERROR_H is
- * defined, (indicating direct inclusion of <winerror.h>), or _WINSOCK_H
- * is defined, (indicating possible indirect inclusion via <winsock.h>),
- * but if both are defined, this must be the second pass through these
- * definitions; there is no need to process them a second time.
- */
-# define __WINSOCK_V1_ERRORS__ (defined _WINERROR_H || defined _WINSOCK_H)
-#endif
-
-#if __WINSOCK_V1_ERRORS__
-/* The following group of error codes are applicable to both WinSock v1,
- * and WinSock v2 protocols, and we have yet to define them; do so now,
- * noting that all are biased by addition of WSABASEERR.
+/* The following group of error codes are specific to WinSock programming,
+ * and are applicable to both WinSock v1, and WinSock v2 protocols.  At one
+ * time these definitions were duplicated (inconsistently) in <winerror.h>,
+ * and in the WinSock specific headers, but since those headers ultimately
+ * include <winerror.h> anyway, that duplication makes no sense; thus,
+ * <winerror.h> is now the sole provider of these definitions.
  */
 #define __WSA_ERRNO(N)  		 	 (WSABASEERR + (N))
 #define WSABASEERR			  				10000L
@@ -1674,24 +1649,10 @@
 #define WSAVERNOTSUPPORTED			__WSA_ERRNO(   92 )  /*	10092L */
 #define WSANOTINITIALISED			__WSA_ERRNO(   93 )  /*	10093L */
 #define WSAEDISCON				__WSA_ERRNO(  101 )  /*	10101L */
-#endif	/* __WINSOCK_V1_ERRORS__ */
 
-#undef  __WINSOCK_V2_ERRORS__
-#if ! (defined _WINERROR_H && defined _WINSOCK2_H)
-/* Error codes for WinSock v2 must be defined if either _WINERROR_H is
- * defined, (indicating direct inclusion of <winerror.h>), or _WINSOCK2_H
- * is defined, (indicating possible indirect inclusion via <winsock.h> on
- * behalf of <winsock2.h>), but if both are defined, it is implicit that
- * this must be the second pass through these definitions; there is no
- * need to process them a second time.
- */
-# define __WINSOCK_V2_ERRORS__ (defined _WINERROR_H || defined _WINSOCK2_H)
-#endif
-
-#if __WINSOCK_V2_ERRORS__
-/* The following group of error codes are specific to the WinSock v2 protocol;
- * their definitions are suppressed during selective inclusion by <winsock.h>,
- * when such inclusion has not been requested by <winsock2.h>
+/* The following group of error codes are specific to the WinSock v2 protocol.
+ * Once again, these were originally duplicated in <winsock2.h>; <winerror.h>
+ * is now the sole provider of these definitions.
  */
 #define WSAENOMORE				__WSA_ERRNO(  102 )  /*	10102L */
 #define WSAECANCELLED				__WSA_ERRNO(  103 )  /*	10103L */
@@ -1704,9 +1665,7 @@
 #define WSA_E_NO_MORE				__WSA_ERRNO(  110 )  /*	10110L */
 #define WSA_E_CANCELLED 			__WSA_ERRNO(  111 )  /*	10111L */
 #define WSAEREFUSED				__WSA_ERRNO(  112 )  /*	10112L */
-#endif	/* __WINSOCK_V2_ERRORS__ */
 
-#if __WINSOCK_V1_ERRORS__
 /* A further group of error codes which apply to both WinSock v1, and WinSock v2
  * protocols; collated here to preserve numerical sort order across both groups.
  */
@@ -1714,12 +1673,9 @@
 #define WSATRY_AGAIN				__WSA_ERRNO( 1002 )  /*	11002L */
 #define WSANO_RECOVERY				__WSA_ERRNO( 1003 )  /*	11003L */
 #define WSANO_DATA				__WSA_ERRNO( 1004 )  /*	11004L */
-#endif	/* __WINSOCK_V1_ERRORS__ */
 
-#if __WINSOCK_V2_ERRORS__
-/* WinSock v2 Quality of Service errors; once again, these definitions are
- * suppressed during selective inclusion by <winsock.h>, unless inclusion is
- * on behalf of <winsock2.h>
+/* WinSock v2 Quality of Service errors; once again, formerly duplicated in
+ * <winsock2.h>, but now provided exclusively by <winerror.h>
  */
 #define WSA_QOS_RECEIVERS			__WSA_ERRNO( 1005 )  /*	11005L */
 #define WSA_QOS_SENDERS 			__WSA_ERRNO( 1006 )  /*	11006L */
@@ -1748,18 +1704,8 @@
 #define WSA_QOS_ESDMODEOBJ			__WSA_ERRNO( 1029 )  /*	11029L */
 #define WSA_QOS_ESHAPERATEOBJ			__WSA_ERRNO( 1030 )  /*	11030L */
 #define WSA_QOS_RESERVED_PETYPE 		__WSA_ERRNO( 1031 )  /*	11031L */
-#endif	/* __WINSOCK_V2_ERRORS__ */
 
-/* Regardless of which groups, if any, of WinSock error codes may have been
- * defined on this occasion, we no longer require their selectors; clean up
- * the namespace.
- */
-#undef  __WINSOCK_V1_ERRORS__
-#undef  __WINSOCK_V2_ERRORS__
-
-#ifdef _WINERROR_H
-/* The remaining error codes defined below are to be exposed ONLY when
- * <winerror.h> is included directly, in its own right.
+/* The remaining error codes, defined below, are general purpose.
  */
 #define ERROR_IPSEC_QM_POLICY_EXISTS					13000L
 #define ERROR_IPSEC_QM_POLICY_NOT_FOUND 				13001L
@@ -2406,6 +2352,5 @@
 #define NTE_TOKEN_KEYSET_STORAGE_FULL			((HRESULT)(0x80090023L))
 #define NTE_TEMPORARY_PROFILE				((HRESULT)(0x80090024L))
 #define NTE_FIXEDPARAMETER				((HRESULT)(0x80090025L))
-#endif	/* _WINERROR_H */
 
 #endif	/* !_WINERROR_H: $RCSfile$: end of file */
