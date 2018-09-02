@@ -50,8 +50,8 @@ static struct __clockid__ clock_api[] =
 
 /* Publicly visible references to the preceding (opaque) clock definitions.
  */
-clockid_t CLOCK_REALTIME = &clock_api[CLOCK_TYPE_REALTIME];
-clockid_t CLOCK_MONOTONIC = &clock_api[CLOCK_TYPE_MONOTONIC];
+clockid_t const CLOCK_REALTIME = &clock_api[CLOCK_TYPE_REALTIME];
+clockid_t const CLOCK_MONOTONIC = &clock_api[CLOCK_TYPE_MONOTONIC];
 
 CLOCK_INLINE
 int64_t clock_api_getres_interval( clockid_t clock_api )

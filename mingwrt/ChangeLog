@@ -1,3 +1,11 @@
+2018-09-02  Keith Marshall  <keith@users.osdn.me>
+
+	Make clockapi symbolic constants #ifdef detectable.
+
+	* mingwex/clockapi.c (CLOCK_REALTIME, CLOCK_MONOTONIC): Add "const".
+	* include/time.h (CLOCK_REALTIME, CLOCK_MONOTONIC): Likewise; also
+	define both as self-referencing macros.
+
 2018-08-26  Keith Marshall  <keith@users.osdn.me>
 
 	Circumvent <process.h> testsuite failure with GCC-7+.

@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2007, 2011, 2015, 2016, MinGW.org Project.
+ * Copyright (C) 1997-2007, 2011, 2015-2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -440,8 +440,14 @@ typedef struct __clockid__ *clockid_t;
 
 /* The standard clockid_t entities which we choose to support.
  */
-extern clockid_t CLOCK_REALTIME;
-extern clockid_t CLOCK_MONOTONIC;
+extern clockid_t const CLOCK_REALTIME;
+extern clockid_t const CLOCK_MONOTONIC;
+
+/* Ensure that these clock implementations are detectable via
+ * preprocessor #ifdef names.
+ */
+#define CLOCK_REALTIME CLOCK_REALTIME
+#define CLOCK_MONOTONIC CLOCK_MONOTONIC
 
 /* Prototypes for the standard POSIX functions which provide the
  * API to these standard clockid_t entities.
