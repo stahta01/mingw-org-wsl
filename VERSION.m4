@@ -6,7 +6,7 @@
 # assign a common version number to each of the mingwrt and w32api
 # MinGW System Library sub-packages.
 #
-m4_define([__VERSION__],[5.1.1])
+m4_define([__VERSION__],[5.2])
 
 # This is also a convenient place to specify the import library
 # associations, and DLLVERSION information for each DLL which may
@@ -23,7 +23,7 @@ m4_define([__VERSION__],[5.1.1])
 #    as required, in accordance with libtool conventions.
 #
 m4_define([MINGW_AC_ENUMERATE_DLLVERSION_SPECS],dnl
-[MINGW_AC_SET_DLLVERSION([LIBMINGWEX], [libmingwex.dll.a], [1:0:1])dnl
+[MINGW_AC_SET_DLLVERSION([LIBMINGWEX], [libmingwex.dll.a], [2:0:0])dnl
 ])
 
 # $RCSfile$: end of file
