@@ -1,3 +1,9 @@
+2018-09-03  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.1.1 release.
+
+	* All files (wsl-5.1.1-release): Tag assigned.
+
 2018-07-29  Keith Marshall  <keith@users.osdn.me>
 
 	Don't restrict <winerror.h> exposure when including <winsock.h>
