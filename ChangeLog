@@ -1,3 +1,11 @@
+2018-09-04  Keith Marshall  <keith@users.osdn.me>
+
+	Pre-empt default EXEEXT use before its determination.
+
+	* aclocal.m4 (MINGW_AC_NO_EXECUTABLES): Assign an initial assumed
+	$ac_exeext value of ".xyz"; it will be updated appropriately, when
+	an actual EXEEXT determination has been completed.
+
 2018-09-03  Keith Marshall  <keith@users.osdn.me>
 
 	Adjust repository version following WSL-5.1.1 release.

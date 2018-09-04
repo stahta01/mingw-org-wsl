@@ -5,7 +5,7 @@
 ## $Id$
 ##
 ## Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-## Copyright (C) 2014, 2016, 2017, MinGW.org Project
+## Copyright (C) 2014, 2016-2018, MinGW.org Project
 ##
 ##
 m4_include([VERSION.m4])
@@ -62,7 +62,8 @@ AC_DEFUN_ONCE([MINGW_AC_CONFIG_EXTRA_SRCDIR],
 AC_DEFUN_ONCE([MINGW_AC_NO_EXECUTABLES],
 [AC_BEFORE([$0],[AC_PROG_CC])dnl cannot let this use...
  m4_rename([_AC_COMPILER_EXEEXT],[_MINGW_AC_COMPILER_EXEEXT])dnl so...
- m4_define([_AC_COMPILER_EXEEXT])dnl move it away quickly!
+ m4_define([_AC_COMPILER_EXEEXT])dnl move it away before it can be used!
+ ac_exeext=".xyz"dnl arbitrarily pre-empt link before EXEEXT is known
 ])
 
 # MINGW_AC_PROG_CC_COMPILE_ONLY
