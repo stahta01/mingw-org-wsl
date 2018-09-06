@@ -10,7 +10,7 @@
  * $Id$
  *
  * Written by Keith Marshall  <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2013, 2014, MinGW.org Project.
+ * Copyright (C) 2013, 2014, 2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -94,7 +94,7 @@ CRYPTO_INLINE void *crypto_randomize( void *buf, size_t buflen )
   return NULL;
 }
 
-CRYPTO_INLINE unsigned char *crypto_random_filename_char( unsigned char *caret )
+CRYPTO_INLINE char *crypto_random_filename_char( char *caret )
 {
   /* Helper to generate a random sequence of characters, suitable for
    * use in file names; although there are other valid possibilities, we

@@ -36,8 +36,13 @@
 static char rcsid[] = "$OpenBSD: mcount.c,v 1.6 1997/07/23 21:11:27 kstailey Exp $";
 #endif
 
-/*
- * This file is taken from Cygwin distribution. Please keep it in sync.
+/* This translation unit will attempt to invoke __builtin_return_address()
+ * with a non-zero argument, which GCC considers to be unsafe; nonetheless,
+ * we need to do this, so suppress any warning GCC may try to emit.
+ */
+#pragma GCC diagnostic ignored "-Wframe-address"
+
+/* This file is taken from the Cygwin distribution. Please keep it in sync.
  * The differences should be within __MINGW32__ guard.
  */
 

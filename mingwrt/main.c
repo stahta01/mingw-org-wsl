@@ -1,5 +1,6 @@
 /*
  * main.c
+ *
  * This file has no copyright assigned and is placed in the Public Domain.
  * This file is a part of the mingw-runtime package.
  * No warranty is given; refer to the file DISCLAIMER within the package.
@@ -9,22 +10,19 @@
  * applications, but they don't *have* to be.
  *
  */
-
 #include <stdlib.h>
 #include <process.h>
 #include <windows.h>
 
 #define ISSPACE(a)	(a == ' ' || a == '\t')
 
-extern int PASCAL WinMain (HINSTANCE hInst, HINSTANCE hPrevInst,
-                           LPSTR szCmdLine, int nShow);
+extern int PASCAL WinMain (HINSTANCE, HINSTANCE, LPSTR, int);
 
 int
-main (int argc, char *argv[], char *environ[])
+main (int argc, char *argv[], char **envp)
 {
   char *szCmd;
   STARTUPINFO startinfo;
-  int nRet;
 
   /* Get the command line passed to the process. */
   szCmd = GetCommandLineA ();
@@ -70,10 +68,10 @@ main (int argc, char *argv[], char *environ[])
 	}
     }
 
-  nRet = WinMain (GetModuleHandle (NULL), NULL, szCmd,
-		  (startinfo.dwFlags & STARTF_USESHOWWINDOW) ?
-		  startinfo.wShowWindow : SW_SHOWDEFAULT);
-
-  return nRet;
+  return WinMain( GetModuleHandle (NULL), NULL, szCmd,
+      (startinfo.dwFlags & STARTF_USESHOWWINDOW)
+	?  startinfo.wShowWindow
+	: SW_SHOWDEFAULT
+    );
 }
 

@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2017, MinGW.org Project
+ * Copyright (C) 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,11 +68,16 @@ int clock_gettime( clockid_t clock_id, struct timespec *current )
 	/* Conversely, the counter for CLOCK_MONOTIME and derivatives
 	 * is obtained from the Windows QPC API, if supported...
 	 */
-	if( QueryPerformanceCounter( &ct.qpc_value ) == 0 )
-	  /*
-	   * ...or forces an "invalid status" return, otherwise.
-	   */
-	  return clock_api_invalid_error();
+	if( QueryPerformanceCounter( &ct.qpc_value ) > 0 )
+	  break;
+
+      /* ...or otherwise, fall through, to force an "invalid status"
+       * return, as we do for any other clock type designation, (which
+       * implicitly includes CLOCK_TYPE_UNIMPLEMENTED; note that this
+       * is incorporated into a default case handler, to suppress any
+       * GCC -Wswitch warnings which might otherwise be diagnosed).
+       */
+      default: return clock_api_invalid_error();
     }
     /* In either case, once we have a valid count of clock ticks, we
      * must adjust it, relative to the timebase for the clock, (which

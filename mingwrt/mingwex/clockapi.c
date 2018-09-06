@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2017, MinGW.org Project
+ * Copyright (C) 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -107,6 +107,13 @@ int64_t clock_api_getres_interval( clockid_t clock_api )
 	if( QueryPerformanceFrequency( &freq.qpc_value ) && (freq.value > 0LL) )
 	  return clock_api->resolution = NANOSECONDS_PER_SECOND
 	    / (clock_api->frequency = freq.value);
+
+      /* In any other case, (implicitly including CLOCK_TYPE_UNIMPLEMENTED),
+       * we may simply fall through to the default error return, (but note
+       * that we specify a "do-nothing" default case handler, to suppress
+       * possible GCC -Wswitch warnings).
+       */
+      default: break;
     }
 
   /* If we get to here, initialization of the specified clock failed; set

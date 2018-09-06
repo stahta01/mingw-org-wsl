@@ -1,3 +1,46 @@
+2018-09-06  Keith Marshall  <keith@users.osdn.me>
+
+	Avoid unwanted GCC warning diagnostic messages.
+
+	* Makefile.in (libm_dummy.c): Remove "static" qualifier from...
+	(__mingw_libm_dummy): ...this variable; it caused "-Wunused-variable"
+	warning diagnostics, when compiled with "-Wall".
+
+	* main.c (WinMain): Remove unnecessary argument names from prototype.
+	(main): Make its argument list conform to convention, otherwise it
+	causes a "-Wmain" warning diagnostic when compiled with "-Wall".
+
+	* mingwex/clocktime.c (clock_gettime) [clock_id-type]
+	* mingwex/clockapi.c (clock_api_getres_interval) [clock_api->type]:
+	Ensure that switches include default cases; this avoids a "-Wswitch"
+	warning diagnostic message, in each case, when compiled with "-Wall".
+
+	* mingwex/cryptnam.c (crypto_random_filename_char): Remove "unsigned"
+	qualifier from both argument and return type; this avoids an argument
+	type mismatch, raising a "-Wpointer-sign" warning when called from...
+	(__mingw_crypto_tmpname): ...here, and compiled with "-Wall".
+
+	* mingwex/imaxdiv.c: Tidy layout; assert copyright.
+	(lldiv): Correct return type; explicitly disable "-Wattribute-alias"
+	diagnostic messages, under GCC pragma control.
+
+	* mingwex/ofmt.c [__crtofmt__] (__mingw_set_output_format_fallback)
+	[__crtnfmt__] (__mingw_get_printf_count_output_fallback): Likewise,
+	disable "-Wattribute-alias" diagnostics.
+
+	* mingwrt/mingwex/stdio/pformat.c (__pformat_ignore_flags): Adjust
+	layout, to avoid a "-Wmisleading-indentation" warning diagnostic.
+	(__pformat_argmap) [length]: Add a no-op default case, to avoid a
+	"-Wswitch" warning diagnostic message.
+
+	* mingwrt/profile/mcount.c: Explicitly disable "-Wframe-address"
+	diagnostics, under GCC pragma control, to avoid warnings relating...
+	(__builtin_return_address): ...this, when called from...
+	(mcount): ...here.
+
+	* mingwrt/setargv.c (__mingw_setargv): Insert parentheses, as advised,
+	to eliminate "-Wparentheses" diagnostic messages.
+
 2018-09-03  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.1.1 release.

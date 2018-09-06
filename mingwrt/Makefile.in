@@ -7,7 +7,7 @@ PACKAGE_TARNAME := @PACKAGE_TARNAME@
 PACKAGE_VERSION := @PACKAGE_VERSION@
 
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2014-2017, MinGW.org Project
+# Copyright (C) 2014-2018, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -508,7 +508,7 @@ x87%.$(OBJEXT): %_generic.sx
 all-mingwrt-libs install-mingwrt-libs: libm.a
 libm.a: libm_dummy.$(OBJEXT)
 libm_dummy.c: Makefile
-	echo "static int __mingw_libm_dummy;" > $@
+	echo "int __mingw_libm_dummy;" > $@
 
 # The mingwrt headers define a number of functions which are normally
 # expected to be compiled as inline code.  Each such function must also

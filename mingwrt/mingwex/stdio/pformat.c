@@ -8,7 +8,7 @@
  * to support Microsoft's non-standard format specifications.
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2008, 2009, 2011, 2014-2017, MinGW.org Project
+ * Copyright (C) 2008, 2009, 2011, 2014-2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -2030,7 +2030,8 @@ const char *__pformat_ignore_flags( const char *fmt )
   /* Advance the format string scan pointer, stepping over, and
    * otherwise ignoring any specified flag characters.
    */
-  while( strchr( "+-' 0#", *fmt ) ) ++fmt; return fmt;
+  while( strchr( "+-' 0#", *fmt ) ) ++fmt;
+  return fmt;
 }
 
 static
@@ -2549,6 +2550,12 @@ int __pformat_argmap( int argc, const char *fmt, __pformat_argmap_t *map )
 	     case PFORMAT_LENGTH_CHAR:
 	     case PFORMAT_LENGTH_SHORT:
 	       length = PFORMAT_LENGTH_DEFAULT;
+
+	     /* All other length modifier codes are left unchanged; we
+	      * provide a "do-nothing" default case handler here, to
+	      * avoid GCC -Wswitch compile-time warnings.
+	      */
+	     default: break;
 	   }
 
 	   /* All of the indicies associated with the current conversion

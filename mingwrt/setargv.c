@@ -93,7 +93,7 @@ void __mingw32_setargv( const char *cmdline )
 {
   /* Implementation of the MinGW replacement command line interpreter.
    */
-  char cmdbuf[1 + strlen( cmdline ) << 1];
+  char cmdbuf[(1 + strlen( cmdline )) << 1];
   int c, gotarg = 0, quoted = 0, bracket = 0, bslash = 0;
   char *argptr = cmdbuf; const char *cmdptr = cmdline;
   glob_t gl_argv;
@@ -111,7 +111,7 @@ void __mingw32_setargv( const char *cmdline )
 
   /* Scan the command line, and prepare it for globbing.
    */
-  while( c = *cmdptr++ )
+  while( (c = *cmdptr++) != '\0' )
   {
     /* Got a character to process...
      */

@@ -8,7 +8,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2014, 2015, 2017, MinGW.org Project
+ * Copyright (C) 2014, 2015, 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -113,15 +113,22 @@ unsigned int __mingw_get_output_format_fallback( void )
   return __mingw_output_format_flags & _EXPONENT_DIGIT_MASK;
 }
 /* ...and, in the case of _set_output_format(), we simply map the
- * requisite name to the common function implementation.
+ * requisite name to the common function implementation; (note that
+ * this effectively makes the "set" function a "no-op", ignoring the
+ * passed argument, but since this argument is inconsistent with the
+ * "get" function prototype, we suppress related GCC diagnostics).
  */
+#pragma GCC diagnostic ignored "-Wattribute-alias"
 extern unsigned int __mingw_set_output_format_fallback( unsigned int )
 __attribute__((__alias__("__mingw_get_output_format_fallback")));
 
 #elif defined __crtnfmt__
 /* Here, we implement a generic fallback hook, suitable for use as the
- * fallback for _get_printf_count_output()/_set_printf_count_output().
+ * fallback for _get_printf_count_output()/_set_printf_count_output();
+ * (again, we effectively make the "set" function a "no-op", and again
+ * we need to supress GCC related to inconsistent prototypes).
  */
+#pragma GCC diagnostic ignored "-Wattribute-alias"
 int __mingw_get_printf_count_output_fallback( void )
 __attribute__((__alias__("__mingw_set_printf_count_output_fallback")));
 
