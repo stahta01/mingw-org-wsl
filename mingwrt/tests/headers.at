@@ -37,6 +37,7 @@
 # dynamically, when running "make check"; there is no need to edit it.
 #
 m4_define([MINGWRT_AT_PACKAGE_HEADERS],[dnl
+alloca.h dnl
 assert.h dnl
 complex.h dnl
 conio.h dnl

@@ -1,103 +1,155 @@
 /*
  * malloc.h
- * This file has no copyright assigned and is placed in the Public Domain.
- * This file is a part of the mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within the package.
  *
- * Support for programs which want to use malloc.h to get memory management
- * functions. Unless you absolutely need some of these functions and they are
- * not in the ANSI headers you should use the ANSI standard header files
- * instead.
+ * Declarations for non-standard heap management, and memory allocation
+ * functions.  These augment the standard functions, which are declared
+ * in <stdlib.h>
+ *
+ * $Id$
+ *
+ * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
+ * Copyright (C) 1997-1999, 2001-2005, 2007, 2018, MinGW.org Project.
+ *
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice, this permission notice, and the following
+ * disclaimer, shall be included in all copies or substantial portions of
+ * the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  *
  */
+#ifndef _MALLOC_H
+#pragma GCC system_header
+#define _MALLOC_H
 
-#ifndef _MALLOC_H_
-#define _MALLOC_H_
-
-/* All the headers include this file. */
-#include <_mingw.h>
-
+/* All MinGW headers assume that <_mingw.h> is included; including
+ * <stdlib.h>, which we also need here, is sufficient to make it so.
+ */
 #include <stdlib.h>
 
 #ifndef RC_INVOKED
 
-/*
- * The structure used to walk through the heap with _heapwalk.
+/* Microsoft stipulate that the alloca() API should be defined in this
+ * header, whereas GNU specify it in its own dedicated header file; to
+ * comply with both, we adopt the GNU stratagem, and then include the
+ * GNU style dedicated header file here.
  */
-typedef	struct _heapinfo
-{
-	int*	_pentry;
-	size_t	_size;
-	int	_useflag;
+#include "alloca.h"
+
+typedef
+struct _heapinfo
+{ /* The structure used to control operation, and return information,
+   * when walking the heap using the _heapwalk() function.
+   */
+  int		*_pentry;
+  size_t	 _size;
+  int		 _useflag;
 } _HEAPINFO;
 
-/* Values for _heapinfo.useflag */
-#define _FREEENTRY 0
-#define _USEDENTRY 1
+/* Status codes returned by _heapwalk()
+ */
+#define _HEAPEMPTY		(-1)
+#define _HEAPOK 		(-2)
+#define _HEAPBADBEGIN		(-3)
+#define _HEAPBADNODE		(-4)
+#define _HEAPEND		(-5)
+#define _HEAPBADPTR		(-6)
 
-/* Return codes for _heapwalk()  */
-#define _HEAPEMPTY	(-1)
-#define _HEAPOK		(-2)
-#define _HEAPBADBEGIN	(-3)
-#define _HEAPBADNODE	(-4)
-#define _HEAPEND	(-5)
-#define _HEAPBADPTR	(-6)
+/* Values returned by _heapwalk(), in the _HEAPINFO.useflag
+ */
+#define _FREEENTRY		 (0)
+#define _USEDENTRY		 (1)
 
-/* maximum size of a user request for memory */
-#define _HEAP_MAXREQ  0xFFFFFFE0
+/* Maximum size permitted for a heap memory allocation request
+ */
+#define _HEAP_MAXREQ	(0xFFFFFFE0)
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-/*
-   The _heap* memory allocation functions are supported on NT
-   but not W9x. On latter, they always set errno to ENOSYS.
-*/
-_CRTIMP int __cdecl __MINGW_NOTHROW _heapwalk (_HEAPINFO*);
-#ifdef __GNUC__
-#define _alloca(x) __builtin_alloca((x))
-#endif
+_BEGIN_C_DECLS
 
-#ifndef	_NO_OLDNAMES
-_CRTIMP int __cdecl __MINGW_NOTHROW heapwalk (_HEAPINFO*);
-#ifdef __GNUC__
-#define alloca(x) __builtin_alloca((x))
-#endif
-#endif	/* Not _NO_OLDNAMES */
+/* The _heap memory allocation functions are supported on WinNT, but not on
+ * Win9X, (on which they always simply set errno to ENOSYS).
+ */
+_CRTIMP __cdecl __MINGW_NOTHROW  int    _heapwalk (_HEAPINFO *);
 
-_CRTIMP int __cdecl __MINGW_NOTHROW _heapchk (void);	/* Verify heap integrety. */
-_CRTIMP int __cdecl __MINGW_NOTHROW _heapmin (void);	/* Return unused heap to the OS. */
-_CRTIMP int __cdecl __MINGW_NOTHROW _heapset (unsigned int);
+_CRTIMP __cdecl __MINGW_NOTHROW  int    _heapchk (void);
+_CRTIMP __cdecl __MINGW_NOTHROW  int    _heapmin (void);
 
-_CRTIMP size_t __cdecl __MINGW_NOTHROW _msize (void*);
-_CRTIMP size_t __cdecl __MINGW_NOTHROW _get_sbh_threshold (void);
-_CRTIMP int __cdecl __MINGW_NOTHROW _set_sbh_threshold (size_t);
-_CRTIMP void* __cdecl __MINGW_NOTHROW _expand (void*, size_t);
+_CRTIMP __cdecl __MINGW_NOTHROW  int    _heapset (unsigned int);
 
-/* These require msvcr70.dll or higher. */
-#if __MSVCRT_VERSION__ >= 0x0700
-_CRTIMP void * __cdecl __MINGW_NOTHROW _aligned_offset_malloc(size_t, size_t, size_t);
-_CRTIMP void * __cdecl __MINGW_NOTHROW _aligned_offset_realloc(void*, size_t, size_t, size_t);
-_CRTIMP void * __cdecl __MINGW_NOTHROW _aligned_offset_recalloc(void*, size_t, size_t, size_t, size_t);
+_CRTIMP __cdecl __MINGW_NOTHROW  size_t _msize (void *);
+_CRTIMP __cdecl __MINGW_NOTHROW  size_t _get_sbh_threshold (void);
+_CRTIMP __cdecl __MINGW_NOTHROW  int    _set_sbh_threshold (size_t);
+_CRTIMP __cdecl __MINGW_NOTHROW  void  *_expand (void *, size_t);
 
-_CRTIMP void * __cdecl __MINGW_NOTHROW _aligned_malloc (size_t, size_t);
-_CRTIMP void * __cdecl __MINGW_NOTHROW _aligned_realloc (void*, size_t, size_t);
-_CRTIMP void* __cdecl __MINGW_NOTHROW _aligned_recalloc(void*, size_t, size_t, size_t);
-_CRTIMP void __cdecl __MINGW_NOTHROW _aligned_free (void*);
-#endif /* __MSVCRT_VERSION__ >= 0x0700 */
+#ifndef _NO_OLDNAMES
+/* Legacy versions of Microsoft runtimes may have supported this alternative
+ * name for the _heapwalk() API.
+ */
+_CRTIMP __cdecl __MINGW_NOTHROW  int     heapwalk (_HEAPINFO *);
+#endif	/* !_NO_OLDNAMES */
 
-/* These require libmingwex.a. */
-void * __cdecl __MINGW_NOTHROW __mingw_aligned_offset_malloc (size_t, size_t, size_t);
-void * __cdecl __MINGW_NOTHROW __mingw_aligned_offset_realloc (void*, size_t, size_t, size_t);
+#if __MSVCRT_VERSION__ >= __MSVCR70_DLL
+/* First introduced in non-free MSVCR70.DLL, the following were subsequently
+ * made available from MSVCRT.DLL, from the release of WinXP onwards; however,
+ * we choose to declare them only for the non-free case, preferring to emulate
+ * them, in terms of libmingwex.a replacement implementations, for consistent
+ * behaviour across ALL MSVCRT.DLL versions.
+ */
+_CRTIMP __cdecl __MINGW_NOTHROW
+void *_aligned_offset_malloc (size_t, size_t, size_t);
 
-void * __cdecl __MINGW_NOTHROW __mingw_aligned_malloc (size_t, size_t);
-void * __cdecl __MINGW_NOTHROW __mingw_aligned_realloc (void*, size_t, size_t);
-void __cdecl __MINGW_NOTHROW __mingw_aligned_free (void*);
+_CRTIMP __cdecl __MINGW_NOTHROW
+void *_aligned_offset_realloc (void *, size_t, size_t, size_t);
 
-#ifdef __cplusplus
-}
-#endif
+_CRTIMP __cdecl __MINGW_NOTHROW  void *_aligned_malloc (size_t, size_t);
+_CRTIMP __cdecl __MINGW_NOTHROW  void *_aligned_realloc (void *, size_t, size_t);
+_CRTIMP __cdecl __MINGW_NOTHROW  void  _aligned_free (void *);
 
-#endif	/* RC_INVOKED */
+/* Curiously, there are no "calloc()" alike variants of the following pair of
+ * "recalloc()" alike functions; furthermore, neither of these is provided by
+ * any version of pseudo-free MSVCRT.DLL
+ */
+_CRTIMP __cdecl __MINGW_NOTHROW
+void *_aligned_recalloc (void *, size_t, size_t, size_t);
 
-#endif /* Not _MALLOC_H_ */
+_CRTIMP __cdecl __MINGW_NOTHROW
+void *_aligned_offset_recalloc (void *, size_t, size_t, size_t, size_t);
+
+#endif	/* Non-free MSVCR70.DLL, or later */
+
+/* The following emulations are provided in libmingwex.a; they are suitable
+ * for use on any Windows version, irrespective of the limited availability
+ * of the preceding Microsoft implementations.
+ */
+__cdecl __MINGW_NOTHROW
+void *__mingw_aligned_malloc (size_t, size_t);
+
+__cdecl __MINGW_NOTHROW
+void *__mingw_aligned_offset_malloc (size_t, size_t, size_t);
+
+__cdecl __MINGW_NOTHROW
+void *__mingw_aligned_offset_realloc (void *, size_t, size_t, size_t);
+
+__cdecl __MINGW_NOTHROW
+void *__mingw_aligned_realloc (void *, size_t, size_t);
+
+__cdecl __MINGW_NOTHROW
+void  __mingw_aligned_free (void *);
+
+_END_C_DECLS
+
+#endif	/* ! RC_INVOKED */
+#endif	/* !_MALLOC_H: $RCSfile$: end of file */

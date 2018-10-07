@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2009, 2011, 2014-2016, MinGW.org Project.
+ * Copyright (C) 1997-2009, 2011, 2014-2016, 2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -480,6 +480,14 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int mbtowc (wchar_t *, const char *, size_t);
 
 _CRTIMP __cdecl __MINGW_NOTHROW  int rand (void);
 _CRTIMP __cdecl __MINGW_NOTHROW  void srand (unsigned int);
+
+#ifndef __STRICT_ANSI__
+/* For GNU compatibility, in addition to the standard memory allocation
+ * functions (declared below), we also include the non-standard alloca()
+ * API declarations here, in accordance with GNU convention.
+ */
+# include "alloca.h"
+#endif	/* !__STRICT_ANSI__ */
 
 _CRTIMP __cdecl __MINGW_NOTHROW  void *calloc (size_t, size_t) __MINGW_ATTRIB_MALLOC;
 _CRTIMP __cdecl __MINGW_NOTHROW  void *malloc (size_t) __MINGW_ATTRIB_MALLOC;
