@@ -5,7 +5,7 @@
  * definition files, supporting multiple OS platform versions.
  *
  * Compiled by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2014, 2016, MinGW.org Project.
+ * Copyright (C) 2014, 2016, 2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -555,27 +555,27 @@ _adjust_fdiv DATA
 _aexit_rtn DATA
 #endif
 #if __MSVCRT_VERSION__ >= 0x0501UL
-_aligned_free
+__MINGW_DLSYM(_aligned_free)
 # if __MSVCRT_VERSION__ >= 0x0600UL && __MSVCRT_VERSION__ < 0x07000000UL
 _aligned_free_dbg
 # endif
-_aligned_malloc
+__MINGW_DLSYM(_aligned_malloc)
 # if __MSVCRT_VERSION__ >= 0x0600UL && __MSVCRT_VERSION__ < 0x07000000UL
 _aligned_malloc_dbg
 # elif __MSVCRT_VERSION__ >= 0x08000000UL
 _aligned_msize
 # endif
-_aligned_offset_malloc
+__MINGW_DLSYM(_aligned_offset_malloc)
 # if __MSVCRT_VERSION__ >= 0x0600UL && __MSVCRT_VERSION__ < 0x07000000UL
 _aligned_offset_malloc_dbg
 # endif
-_aligned_offset_realloc
+__MINGW_DLSYM(_aligned_offset_realloc)
 # if __MSVCRT_VERSION__ >= 0x0600UL && __MSVCRT_VERSION__ < 0x07000000UL
 _aligned_offset_realloc_dbg
 # elif __MSVCRT_VERSION__ >= 0x08000000UL
 _aligned_offset_recalloc
 # endif
-_aligned_realloc
+__MINGW_DLSYM(_aligned_realloc)
 # if __MSVCRT_VERSION__ >= 0x0600UL && __MSVCRT_VERSION__ < 0x07000000UL
 _aligned_realloc_dbg
 # elif __MSVCRT_VERSION__ >= 0x08000000UL

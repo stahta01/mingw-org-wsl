@@ -1,3 +1,11 @@
+2018-10-08  Keith Marshall  <keith@users.osdn.me>
+
+	Suppress autoconf detection of _aligned_malloc functions.
+
+	* msvcrt-xref/msvcrt.def.in (_aligned_malloc, _aligned_free)
+	(_aligned_offset_malloc, _aligned_realloc, _aligned_offset_realloc):
+	Mark as requiring dlsym() lookup, when linking with MSVCRT.DLL
+
 2018-10-07  Keith Marshall  <keith@users.osdn.me>
 
 	Make alloca() API both GNU and Microsoft compatible.
