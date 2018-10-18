@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2017, MinGW.org Project
+ * Copyright (C) 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,7 +39,7 @@ int clock_getres( clockid_t clock_id, struct timespec *counter )
    * recorded within the associated implementation data structure,
    * together with a "validity check" status code.
    */
-  if( __clock_api_is_valid( clock_id ) )
+  if( (clock_id = __clock_api_is_valid( clock_id )) != NULL )
   {
     /* The clock is valid; its resolution must be broken down into
      * separate seconds and nanoseconds components, but only if the

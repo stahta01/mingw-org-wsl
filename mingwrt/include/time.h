@@ -438,16 +438,24 @@ int nanosleep( const struct timespec *period, struct timespec *residual )
  */
 typedef struct __clockid__ *clockid_t;
 
+/* POSIX prefers to have the standard clockid_t entities defined
+ * as macros, each of which represents an entity of type clockid_t.
+ * Since this is not an integer data type, POSIX does not strictly
+ * require such macros to expand to constant expressions; however,
+ * some ill-behaved applications, (GCC's Ada implementation is one
+ * such), depend on such expansions.  Thus, although it will incur
+ * a small additional run-time overhead to interpret them, we map
+ * such entities in terms of pseudo-pointer references, (which we
+ * discriminate from real pointer references, which we assume to
+ * be always to even valued addresses, by forcing odd values for
+ * the pseudo-pointer references).
+ */
+#define __MINGW_POSIX_CLOCKAPI(ID)  ((clockid_t)(1 + ((ID) << 1)))
+
 /* The standard clockid_t entities which we choose to support.
  */
-extern clockid_t const CLOCK_REALTIME;
-extern clockid_t const CLOCK_MONOTONIC;
-
-/* Ensure that these clock implementations are detectable via
- * preprocessor #ifdef names.
- */
-#define CLOCK_REALTIME CLOCK_REALTIME
-#define CLOCK_MONOTONIC CLOCK_MONOTONIC
+#define CLOCK_REALTIME  __MINGW_POSIX_CLOCKAPI (0)
+#define CLOCK_MONOTONIC __MINGW_POSIX_CLOCKAPI (1)
 
 /* Prototypes for the standard POSIX functions which provide the
  * API to these standard clockid_t entities.

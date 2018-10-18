@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2017, MinGW.org Project
+ * Copyright (C) 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,7 +40,7 @@ int clock_settime( clockid_t clock_id, const struct timespec *timeval )
    * FIXME: Decide which clockid_t entities should support any such
    * adjustment; for the time being, deny all such requests.
    */
-  errno = ((timeval != NULL) && __clock_api_is_valid( clock_id ))
+  errno = ((timeval != NULL) && (__clock_api_is_valid( clock_id ) != NULL))
     ? EPERM : EINVAL;
   return -1;
 }

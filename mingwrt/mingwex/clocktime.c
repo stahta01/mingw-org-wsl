@@ -47,7 +47,7 @@ int clock_gettime( clockid_t clock_id, struct timespec *current )
   if( current == NULL )
     return clock_api_invalid_error();
 
-  if( __clock_api_is_valid( clock_id ) )
+  if( (clock_id = __clock_api_is_valid( clock_id )) != NULL )
   {
     /* We must be prepared to retrieve clock frequencies from Windows
      * APIs, which report either LARGE_INTEGER or FILETIME values, but

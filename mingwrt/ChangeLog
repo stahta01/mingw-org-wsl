@@ -1,3 +1,28 @@
+2018-10-18  Keith Marshall  <keith@users.osdn.me>
+
+	Map compile-time constant references for POSIX clocks.
+
+	* include/time.h (CLOCK_REALTIME, CLOCK_MONOTONIC): Redefine, using...
+	(__MINGW_POSIX_CLOCKAPI): ...this new macro; it converts clock indices
+	to odd-valued compile-time constant pseudo-pointers, (distinguishable
+	from real pointers which are always even-valued), which may be passed
+	as clockid_t references in POSIX clock API function calls.
+
+	* mingwex/clockapi.h (struct __clockid__): Specify 4-byte alignment.
+	(__clock_api_is_valid): Change return type to "clockid_t".
+
+	* mingwex/clockapi.c (__clock_api_is_valid): Return an even-valued,
+	non-NULL, "clockid_t" reference pointer, or "NULL" if invalid; use...
+	(clock_reference): ...this new static inline function, to convert...
+	(CLOCK_REALTIME, CLOCK_MONOTONIC): ...these odd-valued pseudo-pointers
+	to their actual run-time pointer equivalents; delete their physical
+	initializations, which have now become invalid.
+
+	* mingwex/clockres.c (clock_getres)
+	* mingwex/clocktime.c (clock_gettime)
+	* mingwex/clockset.c (clock_settime): Update the "clockid_t" argument
+	to match the real pointer returned by __clock_api_is_valid()
+
 2018-10-08  Keith Marshall  <keith@users.osdn.me>
 
 	Suppress autoconf detection of _aligned_malloc functions.

@@ -48,11 +48,6 @@ static struct __clockid__ clock_api[] =
   }
 };
 
-/* Publicly visible references to the preceding (opaque) clock definitions.
- */
-clockid_t const CLOCK_REALTIME = &clock_api[CLOCK_TYPE_REALTIME];
-clockid_t const CLOCK_MONOTONIC = &clock_api[CLOCK_TYPE_MONOTONIC];
-
 CLOCK_INLINE
 int64_t clock_api_getres_interval( clockid_t clock_api )
 {
@@ -122,24 +117,34 @@ int64_t clock_api_getres_interval( clockid_t clock_api )
   return clock_api->resolution = ((uint64_t)(clock_api_invalid_error()));
 }
 
-int __clock_api_is_valid( clockid_t clock_id )
+CLOCK_INLINE
+clockid_t clock_reference( clockid_t clock_id )
+{ /* Inline helper function to map pseudo-pointer clockid_t entity
+   * references to their actual implementation data references.
+   */
+  return ((uintptr_t)(clock_id) & 1)
+    ? & clock_api[(uintptr_t)(clock_id) >> 1]
+    : clock_id;
+}
+
+clockid_t __clock_api_is_valid( clockid_t clock_id )
 {
   /* Helper function, called by any of clock_getres(), clock_gettime(),
    * or clock_settime(), to check availability of the specified clock,
    * initializing it if necessary, returning...
    */
-  if(  (clock_id != NULL)
+  if( ((clock_id = clock_reference( clock_id )) != NULL)
   &&  ((unsigned)(clock_id->type) < CLOCK_TYPE_UNIMPLEMENTED)
   &&   (clock_api_getres_interval( clock_id ) > 0LL)  )
     /*
-     * ...a nominally TRUE value of 1, in the case of a valid clock...
+     * ...a nominally TRUE value, equivalent to the valid clock_id...
      */
-    return 1;
+    return clock_id;
 
-  /* ...or FALSE (zero), and setting "errno", otherwise.
+  /* ...or NULL, (nominally FALSE), and setting "errno", otherwise.
    */
   errno = EINVAL;
-  return 0;
+  return NULL;
 }
 
 /* $RCSfile$: end of file */

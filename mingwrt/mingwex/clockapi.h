@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2017, MinGW.org Project
+ * Copyright (C) 2017, 2018, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,7 +60,7 @@ typedef enum
 #define CLOCK_REALTIME_FREQUENCY  (NANOSECONDS_PER_SECOND / 100LL)
 #define UNIX_EPOCH_AS_FILETIME    (11644473600LL * CLOCK_REALTIME_FREQUENCY)
 
-typedef struct __clockid__
+typedef struct __attribute__((__aligned__(4))) __clockid__
 { /* Formal definition of the clockid_t structure; (opaque to
    * user application code).
    */
@@ -74,7 +74,7 @@ typedef struct __clockid__
  * within the scope of the implementation, (so not declared publicly),
  * this also provides initialization support.
  */
-extern int __clock_api_is_valid( clockid_t );
+extern clockid_t __clock_api_is_valid( clockid_t );
 
 #define CLOCK_INLINE  static __inline__ __attribute__((__always_inline__))
 
