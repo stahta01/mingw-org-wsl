@@ -8,7 +8,7 @@
  *
  * Unattributed original source.
  * Adapted by Rob Savoye <rob@cygnus.com>
- * Copyright (C) 1997, 1999-2009, 2011, 2015, 2016, MinGW.org Project.
+ * Copyright (C) 1997, 1999-2009, 2011, 2015, 2016, 2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -230,6 +230,23 @@
  *  int _wstat32 (const wchar_t *, struct __stat32 *);
  *  int _wstat32i64 (const wchar_t *, struct _stat32i64 *);
  *  int _wstat64i32 (const wchar_t *, struct _stat64i32 *);
+ *
+ *
+ * from...
+ */
+#include "conio.h"
+/* ...we obtain, depending on active MSVCRT.DLL version conformity,
+ * or non-free run-time version selection, an appropriate subset of:
+ *
+ *   wint_t _getwch (void);
+ *   wint_t _getwche (void);
+ *   wint_t _ungetwch (wint_t);
+ *
+ * ...and for non-free run-times from MSVCR80.DLL onwards only:
+ *
+ *   wint_t _getwch_nolock (void);
+ *   wint_t _getwche_nolock (void);
+ *   wint_t _ungetwch_nolock (wint_t);
  *
  *
  * and from...

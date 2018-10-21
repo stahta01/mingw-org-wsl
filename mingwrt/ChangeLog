@@ -1,3 +1,25 @@
+2018-10-21  Keith Marshall  <keith@users.osdn.me>
+
+	Update <conio.h> and <wchar.h> header files.
+
+	* include/conio.h: Tidy layout; assert copyright.
+	[_CONIO_H_]: Rename multiple inclusion guard macro, to conform to...
+	[_CONIO_H]: ...this preferred convention; do not define when...
+	[__WCHAR_H_SOURCED__]: ...this selective inclusion condition applies.
+	[__need_wint_t, __need_wchar_t]: Define them; include <stddef.h>...
+	(wint_t, wchar_t): ...for these corresponding data type definitions.
+	[_WIN32_WINNT >= WINXP || __MSVCRT_VERSION__ >= __MSVCR70_DLL]
+	(_getwch, _getwche, _ungetwch, _putwch): Declare function prototypes.
+	[__MSVCRT_VERSION__>=__MSVCR80_DLL] (_getch_nolock, _getche_nolock)
+	(_ungetch_nolock, _putch_nolock, _getwch_nolock, _getwche_nolock)
+	(_ungetwch_nolock, _putwch_nolock): Likewise.
+	[_BEGIN_C_DECLS, _END_C_DECLS]: Use them.
+
+	* include/wchar.h: Selectively include <conio.h>, for...
+	(_getwch, _getwche, _ungetwch): ...these function prototypes, and...
+	[__MSVCRT_VERSION__>=__MSCVCR80_DLL] (_getwch_nolock)
+	(_getwche_nolock, _ungetwch_nolock): ...these.
+
 2018-10-18  Keith Marshall  <keith@users.osdn.me>
 
 	Map compile-time constant references for POSIX clocks.
