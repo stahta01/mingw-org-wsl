@@ -1,12 +1,20 @@
 #ifndef _WINCON_H
 #define _WINCON_H
-#if __GNUC__ >= 3
 #pragma GCC system_header
+
+#if _WIN32_WINNT < 0x0600
+/* For effective self-containment, <wincon.h> is dependent on the core set
+ * of Windows' custom type definitions; prior to Vista, it suffices to...
+ */
+# include <windef.h>
+#else
+/* ...but Vista and later introduce additional dependencies on <wingdi.h>;
+ * this will indirectly include <windef.h> anyway, so it suffices to...
+ */
+# include <wingdi.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+_BEGIN_C_DECLS
 
 #define FOREGROUND_BLUE	1
 #define FOREGROUND_GREEN	2
@@ -355,7 +363,6 @@ BOOL WINAPI WriteConsoleOutputCharacterW(HANDLE,LPCWSTR,DWORD,COORD,PDWORD);
 #define WriteConsoleOutputCharacter WriteConsoleOutputCharacterA
 #endif
 
-#ifdef __cplusplus
-}
-#endif
+_END_C_DECLS
+
 #endif

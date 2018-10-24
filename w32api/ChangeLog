@@ -1,3 +1,13 @@
+2018-10-24  Keith Marshall  <keith@users.osdn.me>
+
+	Make <wincon.h> header effectively self-contained.
+
+	* include/wincon.h [_WIN32_WINNT < 0x0600]: Include <windef.h>...
+	[_WIN32_WINNT >= 0x0600]: ...but, Vista and later need <wingdi.h>
+	[__GNUC__ >= 3]: Remove condition; used only in association with...
+	(#pragma GCC system_header): ...this, it is redundant in this context.
+	[_BEGIN_C_DECLS, _END_C_DECLS]: Use them as appropriate.
+
 2018-10-24  David Gressett  <texasgaidheal@users.osdn.me>
 
 	Improve WinXP/Vista console I/O support.
