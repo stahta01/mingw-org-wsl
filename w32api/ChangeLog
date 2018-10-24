@@ -1,3 +1,59 @@
+2018-10-24  David Gressett  <texasgaidheal@users.osdn.me>
+
+	Improve WinXP/Vista console I/O support.
+
+	* include/wincon.h (AddConsoleAlias, GetConsoleAlias)
+	(GetConsoleAliases, GetConsoleAliasExes, GetConsoleAliasesLength)
+	(GetConsoleAliasExesLength, GetConsoleOriginalTitle): New function
+	name aliases; define them, mapping them conditionally to represent...
+	[UNICODE]: ...their corresponding UTF-16LE function names, else...
+	[!UNICODE]: ...their corresponding ASCII/DBCS function names.
+	(COMMON_LVB_LEADING_BYTE, COMMON_LVB_TRAILING_BYTE
+	(COMMON_LVB_GRID_HORIZONTAL, COMMON_LVB_GRID_LVERTICAL)
+	(COMMON_LVB_GRID_RVERTICAL, COMMON_LVB_REVERSE_VIDEO)
+	(COMMON_LVB_UNDERSCORE, ENABLE_VIRTUAL_TERMINAL_INPUT)
+	(ENABLE_VIRTUAL_TERMINAL_PROCESSING, DISABLE_NEWLINE_AUTO_RETURN)
+	(ENABLE_LVB_GRID_WORLDWIDE,(MOUSE_HWHEELED): Define them.
+	(GetConsoleAliasA, GetConsoleAliasW, HandlerRoutine): Declare.
+	(CONSOLE_FULLSCREEN, CONSOLE_FULLSCREEN_HARDWARE): Define when...
+	[_WIN32_WINNT >= 0x0500]: ...this prevails; additionally...
+	(GetConsoleFontSize): ...declare function.
+	(CONSOLE_NO_SELECTION, CONSOLE_SELECTION_NOT_EMPTY)
+	(CONSOLE_SELECTION_IN_PROGRESS, CONSOLE_MOUSE_SELECTION)
+	(CONSOLE_MOUSE_DOWN): Define them; make them visible only when...
+	[_WIN32_WINNT >= 0x0501]: ...this prevails.
+	(struct _CONSOLE_FONT_INFO): Make it visible, only when...
+	[_WIN32_WINNT >= 0x0501]: ...this prevails; when visible, map it to...
+	(CONSOLE_FONT_INFO, PCONSOLE_FONT_INFO): ...these typedefs.
+	(struct _CONSOLE_SELECTION_INFO): Declare it; visible only when...
+	[_WIN32_WINNT >= 0x0501]: ...this prevails; when visible, map it to...
+	(CONSOLE_SELECTION_INFO, PCONSOLE_SELECTION_INFO): ...these typedefs.
+	[_WIN32_WINNT >= 0x0501] (AddConsoleAliasA, AddConsoleAliasW)
+	(GetConsoleAliasesA, GetConsoleAliasesW, GetConsoleAliasExesA)
+	(GetConsoleAliasExesW, GetConsoleAliasesLengthA)
+	(GetConsoleAliasesLengthW, GetConsoleAliasExesLengthA)
+	(GetConsoleAliasExesLengthW, GetConsoleSelectionInfo)
+	(GetCurrentConsoleFont): Declare functions.
+	[_WIN32_WINNT >= 0x0600] (HISTORY_NO_DUP_FLAG): Define it.
+	(struct _CONSOLE_FONT_INFOEX): New structure; declare it only when...
+	[_WIN32_WINNT >= 0x0600]: ...this prevails; when declared, map to...
+	(CONSOLE_FONT_INFOEX, PCONSOLE_FONT_INFOEX): ...these typedefs.
+	(CONSOLE_HISTORY_INFO, PCONSOLE_HISTORY_INFO): New typedefs; they
+	map to an anonymous structure, and are visible only when...
+	[_WIN32_WINNT >= 0x0600]: ...this prevails.
+	(struct _CONSOLE_READCONSOLE_CONTROL): New structure; declare when...
+	[_WIN32_WINNT >= 0x0600]: ...this prevails; when declared, map to...
+	(CONSOLE_READCONSOLE_CONTROL, PCONSOLE_READCONSOLE_CONTROL): ...these.
+	(struct _CONSOLE_SCREEN_BUFFER_INFOEX): New structure; declare when...
+	[_WIN32_WINNT >= 0x0600]: ...this prevails; when declared, map to...
+	(CONSOLE_SCREEN_BUFFER_INFOEX, PCONSOLE_SCREEN_BUFFER_INFOEX):
+	...these typedefs.
+	[_WIN32_WINNT >= 0x0600] (GetConsoleHistoryInfo)
+	(GetConsoleOriginalTitleA, GetConsoleOriginalTitleW)
+	(GetConsoleScreenBufferInfoEx, GetCurrentConsoleFontEx)
+	(SetConsoleHistoryInfo, SetConsoleScreenBufferInfoEx)
+	(SetCurrentConsoleFontEx): Declare functions.
+
 2018-09-03  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.1.1 release.
