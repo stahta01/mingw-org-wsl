@@ -1,3 +1,18 @@
+2018-11-16  Keith Marshall  <keith@users.osdn.me>
+
+	Make <prsht.h> header effectively self-contained.
+
+	* include/prsht.h: Tidy layout; assert copyright.
+	Include <winuser.h> to resolve inter-header dependencies.
+	Correctly parenthesize argument references in macro definitions.
+	(pragma GCC system_header): Remove redundant GCC version guard.
+	(_WIN32_WINNT, _WIN32_IE): Always use symbolic version comparisons.
+	(SNDMSG, POSTMSG) [ifndef]: Remove guard condition; it prevents GCC
+	from checking consistency of alternative definition sources.
+	(__AW_SUFFIXED__): Use it; it improves robustness of...
+	[UNICODE vs. ! UNICODE]: ...generic definitions.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+
 2018-10-29  Keith Marshall  <keith@users.osdn.me>
 
 	Clean up <wincon.h>; consolidate its version dependencies.
