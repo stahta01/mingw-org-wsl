@@ -1977,7 +1977,7 @@ _BEGIN_C_DECLS
 #define DTM_GETRANGE				    0x1003
 #define DTM_SETRANGE				    0x1004
 #define DTM_SETFORMATA				    0x1005
-#define DTM_SETFORMATW				    0x1050
+#define DTM_SETFORMATW				    0x1032
 #define DTM_SETMCCOLOR				    0x1006
 #define DTM_GETMCCOLOR				    0x1007
 #define DTM_GETMONTHCAL 			    0x1008

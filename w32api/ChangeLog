@@ -1,3 +1,10 @@
+2018-11-18  Jelle Geerts  <heisenbug@users.osdn.me>
+
+	Fix MinGW-Bug #38736 (OSDN ticket).
+
+	* include/commctrl.h (DTM_SETFORMATW): Correct definition; was 0x1050,
+	but should be equivalent to 0x1000 + 50, which is actually 0x1032.
+
 2018-11-18  Keith Marshall  <keith@users.osdn.me>
 
 	Make <commctrl.h> header effectively self-contained.
