@@ -1,3 +1,19 @@
+2018-11-18  Keith Marshall  <keith@users.osdn.me>
+
+	Make <commctrl.h> header effectively self-contained.
+
+	* include/commctrl.h: Tidy layout; assert copyright.
+	Include <winbase.h> and <prsht.h>; both are required to resolve
+	inter-header dependencies, so achieving effective self-containment.
+	Correctly parenthesize argument references in macro definitions.
+	(pragma GCC system_header): Remove redundant GCC version guard.
+	(_WIN32_WINNT, _WIN32_IE): Always use symbolic version comparisons.
+	(SNDMSG): Remove definition; it is inherited from <prsht.h> anyway.
+	(__AW_ALIAS__, __AW_SUFFIXED__, __AW_STRING_A__, __AW_STRING_W__):
+	Use them; they facilitate maintenance of robust definitions for...
+	[UNICODE vs. ! UNICODE]: ...generic symbols and strings.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+
 2018-11-16  Keith Marshall  <keith@users.osdn.me>
 
 	Make <prsht.h> header effectively self-contained.
