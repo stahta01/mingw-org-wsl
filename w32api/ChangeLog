@@ -1,5 +1,12 @@
 2018-11-23  Keith Marshall  <keith@users.osdn.me>
 
+	Fix MinGW-Bug #2248 (SF ticket).
+
+	* include/commctrl.h (NMPGSCROLL): Set packing to 1-byte alignment.
+	(NMPGSCROLL.fwKeys): Change type from BOOL to WORD.
+
+2018-11-23  Keith Marshall  <keith@users.osdn.me>
+
 	Apply some more cosmetic layout adjustments.
 
 	* include/commctrl.h: Keep 'typedef' and 'struct' on a single line,

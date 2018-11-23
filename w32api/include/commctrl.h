@@ -2419,18 +2419,28 @@ typedef struct
   int			 iHeight;
 } NMPGCALCSIZE, *LPNMPGCALCSIZE;
 
+#pragma pack (push, 1)
+
 typedef struct
-{ /* FIXME: What are correct alignment constraints?  What is correct type
-   * for fwKeys field?  See: https://sourceforge.net/p/mingw/bugs/2248/
+{ /* Formerly, MinGW.org had this declared with 4-byte BOOL type for
+   * the "fwKeys" field, and no specific packing requirement.  Today,
+   * I can find no Microsoft documentation to support that declaration.
+   * Furthermore, https://sourceforge.net/p/mingw/bugs/2248/ shows, by
+   * way of a test case, that the correct declaration should probably
+   * have 2-byte WORD type for "fwKeys", (as hinted by its Hungarian
+   * notation name anyway), and the structure should be packed as
+   * tightly as possible.
    */
   NMHDR 		 hdr;
-  BOOL			 fwKeys;
+  WORD			 fwKeys;
   RECT			 rcParent;
   int			 iDir;
   int			 iXpos;
   int			 iYpos;
   int			 iScroll;
 } NMPGSCROLL, *LPNMPGSCROLL;
+
+#pragma pack (pop)
 
 typedef
 struct tagNMSELCHANGE
