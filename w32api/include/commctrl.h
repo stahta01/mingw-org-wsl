@@ -2376,27 +2376,23 @@ typedef COMBOBOXEXITEMW CONST *PCCOMBOEXITEMW;
 
 #if _WIN32_IE >= _WIN32_IE_IE40
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   COMBOBOXEXITEMA	 ceItem;
 } NMCOMBOBOXEXA, *PNMCOMBOBOXEXA;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   COMBOBOXEXITEMW	 ceItem;
 } NMCOMBOBOXEXW, *PNMCOMBOBOXEXW;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   int			 iItemid;
   WCHAR 		 szText[CBEMAXSTRLEN];
 } NMCBEDRAGBEGINW, *LPNMCBEDRAGBEGINW, *PNMCBEDRAGBEGINW;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   int			 iItemid;
   char			 szText[CBEMAXSTRLEN];
@@ -2416,16 +2412,14 @@ struct tagLVKEYDOWN
   UINT			 flags;
 } NMLVKEYDOWN, *LPNMLVKEYDOWN;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   DWORD 		 dwFlag;
   int			 iWidth;
   int			 iHeight;
 } NMPGCALCSIZE, *LPNMPGCALCSIZE;
 
-typedef
-struct
+typedef struct
 { /* FIXME: What are correct alignment constraints?  What is correct type
    * for fwKeys field?  See: https://sourceforge.net/p/mingw/bugs/2248/
    */
@@ -2453,8 +2447,7 @@ struct tagNMTBHOTITEM
   DWORD 		 dwFlags;
 } NMTBHOTITEM, *LPNMTBHOTITEM;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   DWORD 		 dwMask;
   int			 idCommand;
@@ -2464,8 +2457,7 @@ struct
   int			 cchText;
 } NMTBDISPINFOA, *LPNMTBDISPINFOA;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   DWORD 		 dwMask;
   int			 idCommand;
@@ -2521,8 +2513,7 @@ struct tagNMDATETIMECHANGE
   SYSTEMTIME		 st;
 } NMDATETIMECHANGE, *LPNMDATETIMECHANGE;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   BOOL			 fChanged;
   int			 iNewSelection;
@@ -2530,8 +2521,7 @@ struct
   int			 iWhy;
 } NMCBEENDEDITW, *LPNMCBEENDEDITW, *PNMCBEENDEDITW;
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   BOOL			 fChanged;
   int			 iNewSelection;
@@ -2545,8 +2535,7 @@ struct _COLORMAP
   COLORREF		 to;
 } COLORMAP, *LPCOLORMAP;
 
-typedef
-struct
+typedef struct
 { UINT			 uNotification;
   HWND			 hWnd;
   POINT 		 ptCursor;
@@ -2566,8 +2555,7 @@ typedef const TBBUTTON *LPCTBBUTTON;
 
 #if _WIN32_IE >= _WIN32_IE_IE40
 
-typedef
-struct
+typedef struct
 { UINT			 cbSize;
   DWORD 		 dwMask;
   int			 idCommand;
@@ -2580,8 +2568,7 @@ struct
   int			 cchText;
 } TBBUTTONINFOA, *LPTBBUTTONINFOA;
 
-typedef
-struct
+typedef struct
 { UINT			 cbSize;
   DWORD 		 dwMask;
   int			 idCommand;
@@ -2594,8 +2581,7 @@ struct
   int			 cchText;
 } TBBUTTONINFOW, *LPTBBUTTONINFOW;
 
-typedef
-struct
+typedef struct
 { int			 iButton;
   DWORD 		 dwFlags;
 } TBINSERTMARK, *LPTBINSERTMARK;
@@ -2622,8 +2608,7 @@ struct tagLVBKIMAGEW
 
 #endif	/* _WIN32_IE >= _WIN32_IE_IE40 */
 
-typedef
-struct
+typedef struct
 { NMHDR 		 hdr;
   int			 iItem;
   TBBUTTON		 tbButton;
@@ -2631,8 +2616,7 @@ struct
   LPTSTR		 pszText;
 } TBNOTIFY, *LPTBNOTIFY;
 
-typedef
-struct
+typedef struct
 { HKEY			 hkr;
   LPCTSTR		 pszSubKey;
   LPCTSTR		 pszValueName;
@@ -2907,8 +2891,7 @@ struct tagTBSAVEPARAMSW
   LPCWSTR		 pszValueName;
 } TBSAVEPARAMSW;
 
-typedef
-struct
+typedef struct
 { HINSTANCE		 hInstOld;
   UINT			 nIDOld;
   HINSTANCE		 hInstNew;

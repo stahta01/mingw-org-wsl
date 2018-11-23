@@ -1,3 +1,10 @@
+2018-11-23  Keith Marshall  <keith@users.osdn.me>
+
+	Apply some more cosmetic layout adjustments.
+
+	* include/commctrl.h: Keep 'typedef' and 'struct' on a single line,
+	for each untagged aggregate type definition.
+
 2018-11-18  Jelle Geerts  <heisenbug@users.osdn.me>
 
 	Fix MinGW-Bug #38736 (OSDN ticket).
