@@ -1,3 +1,28 @@
+2018-11-25  Keith Marshall  <keith@users.osdn.me>
+
+	Emulate _fseeki64()/_ftelli64() API on legacy platforms.
+
+	* mingwex/stdio/fseeki64.c: New file; it implements...
+	(__mingw_fseeki64, fseeko64): ...both of these functions, avoiding any
+	dependency on undocumented internal implementation details of...
+	(fpos_t): ...this opaque data type, and replacing...
+	* mingwex/stdio/fseeko64.c: ...this; delete it.
+
+	* mingwex/stdio/ftelli64.c: New file; it implements...
+	(_ftelli64, ftello64): ...both of these, again avoiding any dependency
+	on undocumented internal implementation details of...
+	(fpos_t): ...this opaque data type.
+
+	* include/stdio.h (fpos_t): Make it more effectively opaque.
+	(__mingw_fseeki64, __mingw_ftelli64): Declare them for legacy use.
+	[_WIN32_WINNT < VISTA && __MSVCRT_VERSION__ < MSVCR80_DLL] (_fseeki64)
+	(_ftelli64): Map inline emulations, to "__mingw" prefixed names.
+	(ftello64): Remove inline implementation.
+
+	* Makefile.in (libmingwex.a): Add references to...
+	(fseeki64.$OBJEXT, ftelli64.$OBJEXT): these; remove reference to...
+	(fseeko64.$OBJEXT): ...this.
+
 2018-10-21  Keith Marshall  <keith@users.osdn.me>
 
 	Update <conio.h> and <wchar.h> header files.

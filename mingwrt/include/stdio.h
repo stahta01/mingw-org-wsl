@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2005, 2007-2010, 2014-2017, MinGW.org Project.
+ * Copyright (C) 1997-2005, 2007-2010, 2014-2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -740,6 +740,36 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int    fseek (FILE *, long, int);
 _CRTIMP __cdecl __MINGW_NOTHROW  long   ftell (FILE *);
 _CRTIMP __cdecl __MINGW_NOTHROW  void   rewind (FILE *);
 
+#ifdef __USE_MINGW_FSEEK
+/* Workaround for a limitation on Win9x where a file is not zero padded
+ * on write, following a seek beyond the original end of file; these are
+ * implemented in libmingwex.a
+ */
+__cdecl __MINGW_NOTHROW  int    __mingw_fseek (FILE *, long, int);
+__cdecl __MINGW_NOTHROW  size_t __mingw_fwrite (const void *, size_t, size_t, FILE *);
+
+#define fwrite(buffer, size, count, fp)  __mingw_fwrite(buffer, size, count, fp)
+#define fseek(fp, offset, whence)        __mingw_fseek(fp, offset, whence)
+#endif /* __USE_MINGW_FSEEK */
+
+/* An opaque data type used for storing file positions...  The contents
+ * of this type are unknown, but we (the compiler) need to know the size
+ * because the programmer using fgetpos and fsetpos will be setting aside
+ * storage for fpos_t aggregates.  Actually I tested using a byte array and
+ * it is fairly evident that fpos_t is a 32-bit type in CRTDLL.DLL, but in
+ * MSVCRT.DLL, it is a 64-bit type.  Define it in terms of an int type of
+ * the appropriate size, encapsulated within an aggregate type, to make
+ * it opaque to casting, and so discourage abuse.
+ */
+#ifdef __MSVCRT__
+typedef union { __int64 __value; __off64_t __offset; } fpos_t;
+#else
+typedef union { __int32 __value; __off32_t __offset; } fpos_t;
+#endif
+
+_CRTIMP __cdecl __MINGW_NOTHROW  int fgetpos (FILE *, fpos_t *);
+_CRTIMP __cdecl __MINGW_NOTHROW  int fsetpos (FILE *, const fpos_t *);
+
 #if _WIN32_WINNT >= _WIN32_WINNT_VISTA || __MSVCRT_VERSION__ >= __MSVCR80_DLL
  /*
   * Microsoft introduced a number of variations on fseek() and ftell(),
@@ -761,36 +791,31 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int    _fseeki64_nolock (FILE *, __int64, int);
 _CRTIMP __cdecl __MINGW_NOTHROW __int64 _ftelli64_nolock (FILE *);
 
 #endif  /* MSVCR80.DLL and later derivatives ONLY */
-#endif  /* MSVCR80.DLL and descendants, or MSVCRT.DLL since Vista */
 
-#ifdef __USE_MINGW_FSEEK
-/* Workaround for a limitation on Win9x where a file is not zero padded
- * on write, following a seek beyond the original end of file; these are
- * implemented in libmingwex.a
+#else	/* pre-MSVCR80.DLL or MSVCRT.DLL pre-Vista */
+/*
+ * The Microsoft DLLs don't provide either _fseeki64() or _ftelli64(), but
+ * they DO provide fgetpos(), fsetpos(), and _lseeki64(), which may be used
+ * to emulate the two missing functions.  (Note that we choose to provide
+ * these emulations in the form of MinGW external helper functions, rather
+ * than pollute the <stdio.h> namespace with declarations, such as that
+ * for _lseeki64(), which properly belongs in <io.h>).
  */
-__cdecl __MINGW_NOTHROW  int    __mingw_fseek (FILE *, long, int);
-__cdecl __MINGW_NOTHROW  size_t __mingw_fwrite (const void *, size_t, size_t, FILE *);
-
-#define fwrite(buffer, size, count, fp)  __mingw_fwrite(buffer, size, count, fp)
-#define fseek(fp, offset, whence)        __mingw_fseek(fp, offset, whence)
-#endif /* __USE_MINGW_FSEEK */
-
-/* An opaque data type used for storing file positions... The contents of
- * this type are unknown, but we (the compiler) need to know the size
- * because the programmer using fgetpos and fsetpos will be setting aside
- * storage for fpos_t structres. Actually I tested using a byte array and
- * it is fairly evident that the fpos_t type is a long (in CRTDLL.DLL).
- * Perhaps an unsigned long? TODO? It's definitely a 64-bit number in
- * MSVCRT however, and for now `long long' will do.
+#ifndef __USE_MINGW_FSEEK
+/* If this option has been selected, an alternative emulation for _fseeki64()
+ * is provided later, to ensure that the call is wrapped in a MinGW specific
+ * fseek() handling API.
  */
-#ifdef __MSVCRT__
-typedef long long  fpos_t;
-#else
-typedef long       fpos_t;
+int __cdecl __MINGW_NOTHROW __mingw_fseeki64 (FILE *, __int64, int);
+__CRT_ALIAS int __cdecl __MINGW_NOTHROW _fseeki64 (FILE *__f, __int64 __o, int __w)
+{ return __mingw_fseeki64 (__f, __o, __w); }
 #endif
 
-_CRTIMP __cdecl __MINGW_NOTHROW  int fgetpos (FILE *, fpos_t *);
-_CRTIMP __cdecl __MINGW_NOTHROW  int fsetpos (FILE *, const fpos_t *);
+__int64 __cdecl __MINGW_NOTHROW __mingw_ftelli64 (FILE *);
+__CRT_ALIAS __int64 __cdecl __MINGW_NOTHROW _ftelli64 (FILE *__file )
+{ return __mingw_ftelli64 (__file); }
+
+#endif	/* pre-MSVCR80.DLL or MSVCRT.DLL pre-Vista */
 
 /* Error Functions
  */
@@ -807,7 +832,6 @@ inline __cdecl __MINGW_NOTHROW  int ferror (FILE * __F){ return __F->_flag & _IO
 
 _CRTIMP __cdecl __MINGW_NOTHROW  void clearerr (FILE *);
 _CRTIMP __cdecl __MINGW_NOTHROW  void perror (const char *);
-
 
 #ifndef __STRICT_ANSI__
 /*
@@ -935,14 +959,21 @@ FILE * __cdecl __MINGW_NOTHROW  fopen64 (const char * filename, const char * mod
 int __cdecl __MINGW_NOTHROW  fseeko64 (FILE *, __off64_t, int);
 
 #ifdef __USE_MINGW_FSEEK
+/* When this option is selected, we need to redirect calls to _fseeki64()
+ * and fseeko64() through a MinGW specific wrapper.  Since the two functions
+ * are fundamentally identical, differing only in the type of the "offset"
+ * argument, (and both types are effectively 64-bit signed ints anyway),
+ * the same wrapper will suffice for both.
+ */
 int __cdecl __MINGW_NOTHROW __mingw_fseeko64 (FILE *, __off64_t, int);
-#define fseeko64(fp, offset, whence)  __mingw_fseeko64(fp, offset, whence)
+__CRT_ALIAS int __cdecl __MINGW_NOTHROW fseeko64 (FILE *__f, __off64_t __o, int __w)
+{ return __mingw_fseeko64 (__f, __o, __w); }
+
+__CRT_ALIAS int __cdecl __MINGW_NOTHROW _fseeki64 (FILE *__f, __off64_t __o, int __w)
+{ return __mingw_fseeko64 (__f, (__off64_t)(__o), __w); }
 #endif
 
-__CRT_ALIAS __off64_t __cdecl __MINGW_NOTHROW ftello64 (FILE *);
-__CRT_ALIAS __LIBIMPL__(( FUNCTION = ftello64 ))
-__off64_t __cdecl __MINGW_NOTHROW ftello64 (FILE * stream)
-{ fpos_t __pos; return (fgetpos(stream, &__pos)) ? -1LL : (__off64_t)(__pos); }
+__off64_t __cdecl __MINGW_NOTHROW ftello64 (FILE *);
 
 #endif	/* __MSVCRT__ && !__NO_MINGW_LFS */
 #endif	/* !__STRICT_ANSI__ */
