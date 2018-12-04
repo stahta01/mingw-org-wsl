@@ -742,14 +742,37 @@ _CRTIMP __cdecl __MINGW_NOTHROW  void   rewind (FILE *);
 
 #ifdef __USE_MINGW_FSEEK
 /* Workaround for a limitation on Win9x where a file is not zero padded
- * on write, following a seek beyond the original end of file; these are
- * implemented in libmingwex.a
+ * on write, following a seek beyond the original end of file; supporting
+ * redirector functions are implemented in libmingwex.a
+ *
+ * Note: this is improper usage.  __USE_MINGW_FSEEK exhibits the form of a
+ * private (system reserved) feature test macro; as such, users should not
+ * define it directly, and thus, it really should not have been defined at
+ * this point; discourage this practice.
  */
-__cdecl __MINGW_NOTHROW  int    __mingw_fseek (FILE *, long, int);
-__cdecl __MINGW_NOTHROW  size_t __mingw_fwrite (const void *, size_t, size_t, FILE *);
+#warning "The __USE_MINGW_FSEEK feature test is deprecated"
+#pragma info "Define _WIN32_WINDOWS, instead of __USE_MINGW_FSEEK"
 
-#define fwrite(buffer, size, count, fp)  __mingw_fwrite(buffer, size, count, fp)
-#define fseek(fp, offset, whence)        __mingw_fseek(fp, offset, whence)
+#elif _WIN32_WINDOWS >= _WIN32_WINDOWS_95 && _WIN32_WINDOWS < _WIN32_WINNT_WIN2K
+/* This is correct usage; the private __USE_MINGW_FSEEK feature affects only
+ * Win9x, so enable it implicitly when the _WIN32_WINDOWS feature is specified,
+ * thus indicating the user's intent to target a Win9x platform.
+ */
+#define __USE_MINGW_FSEEK
+#endif
+
+#ifdef __USE_MINGW_FSEEK
+/* Regardless of how it may have become defined, when __USE_MINGW_FSEEK has
+ * been defined, we must redirect calls to fseek() and fwrite(), so that the
+ * Win9x zero padding limitation can be mitigated.
+ */
+__cdecl __MINGW_NOTHROW  int __mingw_fseek (FILE *, __off64_t, int);
+__CRT_ALIAS int fseek( FILE *__fp, long __offset, int __whence )
+{ return __mingw_fseek( __fp, (__off64_t)(__offset), __whence ); }
+
+__cdecl __MINGW_NOTHROW  size_t __mingw_fwrite (const void *, size_t, size_t, FILE *);
+__CRT_ALIAS size_t fwrite( const void *__buf, size_t __len, size_t __cnt, FILE *__fp )
+{ return __mingw_fwrite( __buf, __len, __cnt, __fp ); }
 #endif /* __USE_MINGW_FSEEK */
 
 /* An opaque data type used for storing file positions...  The contents
@@ -965,12 +988,11 @@ int __cdecl __MINGW_NOTHROW  fseeko64 (FILE *, __off64_t, int);
  * argument, (and both types are effectively 64-bit signed ints anyway),
  * the same wrapper will suffice for both.
  */
-int __cdecl __MINGW_NOTHROW __mingw_fseeko64 (FILE *, __off64_t, int);
-__CRT_ALIAS int __cdecl __MINGW_NOTHROW fseeko64 (FILE *__f, __off64_t __o, int __w)
-{ return __mingw_fseeko64 (__f, __o, __w); }
+__CRT_ALIAS int _fseeki64( FILE *__fp, __int64 __offset, int __whence )
+{ return __mingw_fseek( __fp, (__off64_t)(__offset), __whence ); }
 
-__CRT_ALIAS int __cdecl __MINGW_NOTHROW _fseeki64 (FILE *__f, __off64_t __o, int __w)
-{ return __mingw_fseeko64 (__f, (__off64_t)(__o), __w); }
+__CRT_ALIAS int fseeko64( FILE *__fp, __off64_t __offset, int __whence )
+{ return __mingw_fseek( __fp, __offset, __whence ); }
 #endif
 
 __off64_t __cdecl __MINGW_NOTHROW ftello64 (FILE *);

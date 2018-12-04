@@ -1,5 +1,28 @@
 2018-12-04  Keith Marshall  <keith@users.osdn.me>
 
+	Reimplement Win9x specific fseek()/fwrite() redirector.
+
+	* include/stdio.h [__USE_MINGW_FSEEK]: Deprecate support for direct
+	user definition; deduce it, as an internal private definition, from...
+	[_WIN32_WINDOWS]: ...this, when appropriately defined for Win9x.
+	[__USE_MINGW_FSEEK] (__mingw_fseek): Declare new prototype; map it as
+	multiple __CRT_ALIAS inline function overrides for each of...
+	(fseek, _fseeki64, fseeko64): ...these.
+	[__USE_MINGW_FSEEK] (__mingw_fwrite): Likewise, overriding...
+	(fwrite): ...this.
+	(__mingw_fseeko64): Delete all references; it is no longer provided,
+	nor required.
+
+	* mingwex/stdio/fwrite.c: New file; it reimplements the Win9x
+	fseek()/fwrite() function redirector interface, and thus replaces...
+	* mingex/ming-fseek.c: ...this; delete it.
+
+	* Makefile.in (libmingwex.a): Remove dependency on...
+	(mingw-fseek.$OBJEXT): ...this object module; replace it with...
+	(fwrite.$OBJEXT): ...this alternative dependency.
+
+2018-12-04  Keith Marshall  <keith@users.osdn.me>
+
 	Implement POSIX.1-1996 linked-list queue management API.
 
 	* mingwex/insque.c mingwex/remque.c: New files; they implement the

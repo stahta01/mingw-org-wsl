@@ -446,7 +446,7 @@ $(addsuffix fmt.$(OBJEXT),varo crto geto seto crtn getn setn): %.$(OBJEXT): ofmt
 
 # Some additional miscellaneous functions, in libmingwex.a
 #
-libmingwex.a: $(addsuffix .$(OBJEXT), mingw-aligned-malloc mingw-fseek)
+libmingwex.a: $(addsuffix .$(OBJEXT), mingw-aligned-malloc fwrite)
 libmingwex.a: $(addsuffix .$(OBJEXT), glob getopt basename dirname nsleep)
 libmingwex.a: $(addsuffix .$(OBJEXT), clockapi clockres clockset clocktime)
 libmingwex.a: $(addsuffix .$(OBJEXT), insque remque tdelete tfind tsearch twalk)
