@@ -1,3 +1,15 @@
+2018-12-04  Keith Marshall  <keith@users.osdn.me>
+
+	Implement POSIX.1-1996 linked-list queue management API.
+
+	* mingwex/insque.c mingwex/remque.c: New files; they implement the
+	POSIX.1-1996 insque(), and remque() functions, respectively.
+
+	* include/search.h (insque, remque): Declare function prototypes.
+
+	* Makefile.in (libmingwex.a): Add dependencies on...
+	(insque.$OBJEXT, remque.$OBJEXT): ...these.
+
 2018-11-25  Keith Marshall  <keith@users.osdn.me>
 
 	Emulate _fseeki64()/_ftelli64() API on legacy platforms.

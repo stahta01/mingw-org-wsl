@@ -449,10 +449,9 @@ $(addsuffix fmt.$(OBJEXT),varo crto geto seto crtn getn setn): %.$(OBJEXT): ofmt
 libmingwex.a: $(addsuffix .$(OBJEXT), mingw-aligned-malloc mingw-fseek)
 libmingwex.a: $(addsuffix .$(OBJEXT), glob getopt basename dirname nsleep)
 libmingwex.a: $(addsuffix .$(OBJEXT), clockapi clockres clockset clocktime)
-libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
-
-libmingwex.a: $(addsuffix .$(OBJEXT), tdelete tfind tsearch twalk)
+libmingwex.a: $(addsuffix .$(OBJEXT), insque remque tdelete tfind tsearch twalk)
 libmingwex.a: $(addsuffix .$(OBJEXT), dirent wdirent dlfcn strerror_r strtok_r)
+libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
 libmingwex.a: $(addsuffix .$(OBJEXT), getdelim gettimeofday)
 
 vpath %.s ${mingwrt_srcdir}/mingwex

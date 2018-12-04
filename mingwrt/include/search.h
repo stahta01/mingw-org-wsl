@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Danny Smith <dannysmith@users.sourceforge.net>
- * Copyright (C) 2003, 2004, 2007, 2016, MinGW.org Project.
+ * Copyright (C) 2003, 2004, 2007, 2016, 2018, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -125,6 +125,9 @@ __MINGW_ATTRIB_NONNULL(2) __MINGW_ATTRIB_NONNULL(3);
 
 __cdecl  void  twalk (const void *, void (*)(const void *, VISIT, int))
 __MINGW_ATTRIB_NONNULL(1) __MINGW_ATTRIB_NONNULL(2);
+
+__cdecl  void  insque (void *, void *);
+__cdecl  void  remque (void *);
 
 #endif	/* _POSIX_C_SOURCE */
 
