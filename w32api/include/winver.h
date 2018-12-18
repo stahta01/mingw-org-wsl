@@ -7,7 +7,8 @@
  * $Id$
  *
  * Written by Anders Norlander <anorland@hem2.passagen.se>
- * Copyright (C) 1998, 1999, 2002, 2006, 2009, 2015, MinGW.org Project
+ * Copyright (C) 1998, 1999, 2002, 2006, 2009, 2012, 2015, 2016, 2018,
+ *   MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -110,6 +111,11 @@
 #define VIF_BUFFTOOSMALL	   0x40000
 
 #ifndef RC_INVOKED
+/* Additional type definitions and function declarations, which extend
+ * beyond the requirements of the resource compiler, may depend on the
+ * custom windows types defined in <windef.h>
+ */
+#include <windef.h>
 
 _BEGIN_C_DECLS
 
