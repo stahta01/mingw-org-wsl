@@ -268,8 +268,9 @@ $(addsuffix .def,$(all_msvcrt)): %.def: msvcrt.def.in
 # which implements a vectored jump to the regular entry point for
 # the DLL implementation of its corresponding replaced function.
 #
-msvcrt_repl_prefix = __msvcrt
-msvcrt_repl_funcs = printf fprintf sprintf vprintf vfprintf vsprintf
+msvcrt_repl_prefix := __msvcrt
+msvcrt_repl_funcs := printf fprintf sprintf vprintf vfprintf vsprintf
+msvcrt_repl_funcs += free realloc
 
 # This is kludgey, but dlltool lacks the selectivity to do the job
 # well; (its --ext-prefix-alias option, which is what we would like
@@ -353,12 +354,12 @@ $(addsuffix .def,$(all_moldname)): %.def: ${mingwrt_srcdir}/moldname.def.in
 	$(CC) -C -E -P -D__FILENAME__=$@ -xc-header $< > $@
 
 vpath %.sx ${mingwrt_srcdir}
-all-mingwrt-libs install-mingwrt-libs: libmingw32.a libmingwex.a
+all-mingwrt-libs install-mingwrt-libs: libmingw32.a libmingwex.a libmemalign.a
 libmingw32.a: $(addsuffix .$(OBJEXT), CRTinit CRTglob setargv \
   CRTfmode cpu_features CRT_fp10 txtmode main dllmain gccmain crtst \
   tlsmcrt tlsmthread tlssup tlsthrd pseudo-reloc pseudo-reloc-list)
 
-libmingw32.a libmingwex.a libm.a libmingwthrd.a libgmon.a:
+libmingw32.a libmingwex.a libmemalign.a libm.a libmingwthrd.a libgmon.a:
 	$(AR) $(ARFLAGS) $@ $?
 
 # Complex math objects, to be included in libmingwex.a
@@ -426,8 +427,8 @@ libmingwex.a: $(addsuffix .$(OBJEXT), cosf cosl acosf acosl sinf sinl asinf \
 #
 vpath %.c ${mingwrt_srcdir}/mingwex/stdio
 libmingwex.a: $(addsuffix .$(OBJEXT), btowc fprintf fseeki64 ftelli64 \
-  ofmtctl pformat printf snprintf sprintf vfprintf vfscanf vfwscanf vprintf \
-  vscanf vsnprintf vsprintf vsscanf vswscanf vwscanf)
+  fwrite ofmtctl pformat printf snprintf sprintf vfprintf vfscanf vfwscanf \
+  vprintf vscanf vsnprintf vsprintf vsscanf vswscanf vwscanf)
 
 # pformat.$(OBJEXT) needs an explicit build rule, since we need to
 # specify an additional header file path.
@@ -444,9 +445,20 @@ libmingwex.a: $(addsuffix fmt.$(OBJEXT),varo crto geto seto crtn getn setn)
 $(addsuffix fmt.$(OBJEXT),varo crto geto seto crtn getn setn): %.$(OBJEXT): ofmt.c
 	$(CC) -c $(ALL_CFLAGS) -D__$*__ -fno-align-functions -o $@ $<
 
+# Functions comprising the MinGW aligned heap management API:
+#
+LIBMINGWEX_MEMALIGN := memalign-lwm memalign-base aligned-malloc
+LIBMINGWEX_MEMALIGN += aligned-realloc memalign-realloc realloc free
+
+LIBMINGWEX_MEMALIGN_OBJECTS = $(addsuffix .$(OBJEXT),$(LIBMINGWEX_MEMALIGN))
+
+$(LIBMINGWEX_MEMALIGN_OBJECTS): %.$(OBJEXT): memalign.c
+	$(CC) -c $(CFLAGS) -D__mingw_$(subst -,_,$*)_case $< -o $@
+
+libmingwex.a: $(LIBMINGWEX_MEMALIGN_OBJECTS)
+
 # Some additional miscellaneous functions, in libmingwex.a
 #
-libmingwex.a: $(addsuffix .$(OBJEXT), mingw-aligned-malloc fwrite)
 libmingwex.a: $(addsuffix .$(OBJEXT), glob getopt basename dirname nsleep)
 libmingwex.a: $(addsuffix .$(OBJEXT), clockapi clockres clockset clocktime)
 libmingwex.a: $(addsuffix .$(OBJEXT), insque remque tdelete tfind tsearch twalk)

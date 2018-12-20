@@ -1,3 +1,35 @@
+2018-12-20  Keith Marshall  <keith@users.osdn.me>
+
+	Reimplement aligned heap management API.
+
+	* mingwex/mingw-aligned-malloc.c: Delete it; it is replaced by...
+	* mingwex/memalign.c: ...this new file; it reimplements...
+	(__mingw_aligned_offset_malloc, __mingw_aligned_offset_realloc)
+	(__mingw_aligned_free): ...each of these public API functions; also...
+	(__mingw_realloc, __mingw_free): ...adds these new public functions,...
+	(__mingw_memalign_base, __mingw_memalign_realloc): ...these private,
+	but globally exposed, supporting functions, and additionally...
+	(__mingw_memalign_lwm): ...this global, private use, variable.
+
+	* include/stdlib.h (__mingw_realloc, __mingw_free): Declare prototypes.
+
+	* include/malloc.h (__mingw_aligned_malloc, __mingw_aligned_realloc):
+	Implement them in-line; export them, via __LIBIMPL__, to libmingwex.a
+	(_aligned_malloc, __mingw_aligned_malloc, _aligned_offset_malloc)
+	(__mingw_aligned_offset_malloc): Add __MINGW_ATTRIB_MALLOC attribute.
+	[__MSVCRT_VERSION__ < __MSVCR70_DLL] (_aligned_malloc, _aligned_free)
+	(_aligned_realloc, _aligned_offset_malloc, _aligned_offset_realloc):
+	Implement them in-line, as wrappers around their MinGW alternatives;
+	export them, via __LIBIMPL__, to new library, libmemalign.a
+
+	* Makefile.in (LIBMINGWEX_MEMALIGN): New macro; define it; derive...
+	(LIBMINGWEX_MEMALIGN_OBJECTS): ...this macro; add compilation rule.
+	(libmingwex.a): Add $LIBMINGWEX_MEMALIGN_OBJECTS; they replace...
+	(mingw-aligned-malloc.$OBJEXT): ...this; remove dependency.
+	(all-mingwrt-libs, install-mingwrt-libs): Add libmemalign.a
+	(msvcrt_repl_funcs): Add alias references for...
+	(free, realloc): ...these.
+
 2018-12-04  Keith Marshall  <keith@users.osdn.me>
 
 	Reimplement Win9x specific fseek()/fwrite() redirector.

@@ -108,15 +108,20 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int     heapwalk (_HEAPINFO *);
  * them, in terms of libmingwex.a replacement implementations, for consistent
  * behaviour across ALL MSVCRT.DLL versions.
  */
-_CRTIMP __cdecl __MINGW_NOTHROW
+_CRTIMP __cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+void *_aligned_malloc (size_t, size_t);
+
+_CRTIMP __cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
 void *_aligned_offset_malloc (size_t, size_t, size_t);
+
+_CRTIMP __cdecl __MINGW_NOTHROW
+void *_aligned_realloc (void *, size_t, size_t);
 
 _CRTIMP __cdecl __MINGW_NOTHROW
 void *_aligned_offset_realloc (void *, size_t, size_t, size_t);
 
-_CRTIMP __cdecl __MINGW_NOTHROW  void *_aligned_malloc (size_t, size_t);
-_CRTIMP __cdecl __MINGW_NOTHROW  void *_aligned_realloc (void *, size_t, size_t);
-_CRTIMP __cdecl __MINGW_NOTHROW  void  _aligned_free (void *);
+_CRTIMP __cdecl __MINGW_NOTHROW
+void  _aligned_free (void *);
 
 /* Curiously, there are no "calloc()" alike variants of the following pair of
  * "recalloc()" alike functions; furthermore, neither of these is provided by
@@ -134,10 +139,10 @@ void *_aligned_offset_recalloc (void *, size_t, size_t, size_t, size_t);
  * for use on any Windows version, irrespective of the limited availability
  * of the preceding Microsoft implementations.
  */
-__cdecl __MINGW_NOTHROW
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
 void *__mingw_aligned_malloc (size_t, size_t);
 
-__cdecl __MINGW_NOTHROW
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
 void *__mingw_aligned_offset_malloc (size_t, size_t, size_t);
 
 __cdecl __MINGW_NOTHROW
@@ -147,7 +152,61 @@ __cdecl __MINGW_NOTHROW
 void *__mingw_aligned_realloc (void *, size_t, size_t);
 
 __cdecl __MINGW_NOTHROW
-void  __mingw_aligned_free (void *);
+void __mingw_aligned_free (void *);
+
+#if __MSVCRT_VERSION__ < __MSVCR70_DLL
+/* Although the Microsoft aligned heap allocation functions are present in
+ * MSVCRT.DLL, from WinXP onwards, we choose to retain our legacy supporting
+ * emulations across all MSVCRT.DLL versions; thus, we enable the following
+ * in-line emulations in all cases where the user has not specified use of
+ * non-free MSVCR70.DLL or later.
+ *
+ * Note that because these emulations are deployed as in-line replacements
+ * of their emulated function calls, GCC will not normally provide any means
+ * of obtaining externally accessible entry-point addresses for them; if it
+ * becomes necessary to dereference such an address, the requirement may be
+ * satisfied by linking with the auxiliary "-lmemalign" library.
+ */
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+__CRT_ALIAS __LIBIMPL__((LIB = memalign, FUNCTION = aligned_malloc))
+void *_aligned_malloc (size_t __wanted, size_t __aligned )
+{ return __mingw_aligned_offset_malloc (__wanted, __aligned, (size_t)(0)); }
+
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+__CRT_ALIAS __LIBIMPL__((LIB = memalign, FUNCTION = aligned_offset_malloc))
+void *_aligned_offset_malloc (size_t __wanted, size_t __aligned, size_t __offset )
+{ return __mingw_aligned_offset_malloc (__wanted, __aligned, __offset); }
+
+__cdecl __MINGW_NOTHROW
+__CRT_ALIAS __LIBIMPL__((LIB = memalign, FUNCTION = aligned_realloc))
+void *_aligned_realloc (void *__ptr, size_t __wanted, size_t __aligned )
+{ return __mingw_aligned_offset_realloc (__ptr, __wanted, __aligned, (size_t)(0)); }
+
+__cdecl __MINGW_NOTHROW
+__CRT_ALIAS __LIBIMPL__((LIB = memalign, FUNCTION = aligned_offset_realloc))
+void *_aligned_offset_realloc (void *__ptr, size_t __wanted, size_t __aligned, size_t __offset )
+{ return __mingw_aligned_offset_realloc (__ptr, __wanted, __aligned, __offset); }
+
+__cdecl __MINGW_NOTHROW
+__CRT_ALIAS __LIBIMPL__((LIB = memalign, FUNCTION = aligned_free))
+void _aligned_free (void *__ptr) { __mingw_free (__ptr); }
+
+#endif	/* __MSVCRT_VERSION__ < __MSVCR70_DLL */
+
+/* Regardless of availability of their Microsoft alternatives, the
+ * __mingw_aligned_malloc(), and __mingw_aligned_realloc() functions
+ * may always be implemented in terms of their "offset" siblings, by
+ * simply specifying an offset of zero.
+ */
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+__CRT_ALIAS __LIBIMPL__(( FUNCTION = mingw_aligned_malloc ))
+void *__mingw_aligned_malloc( size_t __want, size_t __aligned )
+{ return __mingw_aligned_offset_malloc( __want, __aligned, (size_t)(0) ); }
+
+__cdecl __MINGW_NOTHROW
+__CRT_ALIAS __LIBIMPL__(( FUNCTION = mingw_aligned_realloc ))
+void *__mingw_aligned_realloc( void *__ptr, size_t __want, size_t __aligned )
+{ return __mingw_aligned_offset_realloc( __ptr, __want, __aligned, (size_t)(0) ); }
 
 _END_C_DECLS
 
