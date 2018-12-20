@@ -1,5 +1,13 @@
 2018-12-20  Keith Marshall  <keith@users.osdn.me>
 
+	Implement test suite for aligned heap management API.
+
+	* tests/testsuite.at.in: Include...
+	* tests/memalign.at: ...this new file; it replaces...
+	* mingwex/tst-aligned-malloc.c: ...this; delete it.
+
+2018-12-20  Keith Marshall  <keith@users.osdn.me>
+
 	Reimplement aligned heap management API.
 
 	* mingwex/mingw-aligned-malloc.c: Delete it; it is replaced by...

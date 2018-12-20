@@ -1,0 +1,487 @@
+# memalign.at
+#
+# Autotest module to verify correct operation of the MinGW aligned
+# heap memory management API.
+#
+# $Id$
+#
+# Written by Keith Marshall <keith@users.osdn.me>
+# Copyright (C) 2018, MinGW.org Project
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice (including the next
+# paragraph) shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR THE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+#
+# All tests specified herein are written in the C language.
+#
+MINGW_AT_LANG([C])
+
+AT_BANNER([Aligned heap memory allocation function checks.])
+#-----------------------------------------------------------
+# Implement a collection of tests to exercise the MinGW aligned memory
+# allocation functions, and confirm that they yield correcly aligned heap
+# memory blocks, or that they fail appropriately.
+
+AT_SETUP([Allocation on valid alignment boundaries])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_malloc(), and __mingw_aligned_offset_malloc()
+ * return non-NULL pointers, which are numerically exact integer multiples of
+ * any specified alignment.  Also gratuitously uses __mingw_free(), but does
+ * not verify its behaviour; this is checked independently.
+ */
+#include <malloc.h>
+int main()
+{ size_t alignment, status = 0;
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { void *ptr = __mingw_aligned_malloc(128, alignment);
+    status |= (ptr != NULL) ? (size_t)(ptr) % alignment : 1;
+    __mingw_free(ptr);
+    ptr = __mingw_aligned_offset_malloc(128, alignment, 5);
+    status |= (ptr != NULL) ? ((size_t)(ptr) + 5) % alignment : 1;
+    __mingw_free(ptr);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Rejection of invalid alignment specifications])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_malloc(), and __mingw_aligned_offset_malloc()
+ * fail, returning a NULL pointer, and setting errno to EINVAL, when called
+ * with an alignment argument which is not an integer power of two.  Again,
+ * this gratuitously uses __mingw_free(), without attempting to verify its
+ * behaviour, which is checked independently.
+ */
+#include <malloc.h>
+#include <errno.h>
+int main()
+{ size_t alignment, status = 0;
+  for( alignment = sizeof (void *); 128 >= alignment; alignment <<= 1 )
+  { void *ptr = __mingw_aligned_malloc(128, alignment - 1);
+    if( (ptr != NULL) || (errno != EINVAL) ) status = 1;
+    __mingw_free(ptr);
+    ptr = __mingw_aligned_offset_malloc(128, alignment - 1, 5);
+    if( (ptr != NULL) || (errno != EINVAL) ) status = 1;
+    __mingw_free(ptr);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Rejection of excessive offset specifications])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_offset_malloc() fails, returning a NULL
+ * pointer, and setting errno to EINVAL, when called with any value for
+ * its offset argument which is non-zero, and greater than or equal to
+ * the requested size argument.
+ */
+#include <malloc.h>
+#include <errno.h>
+int main()
+{ size_t alignment, status = 0;
+  for( alignment = sizeof (void *); 128 >= alignment; alignment <<= 1 )
+  { void *ptr = __mingw_aligned_offset_malloc(128, alignment, 128);
+    if( (ptr != NULL) || (errno != EINVAL) ) status = 1;
+    __mingw_free(ptr);
+    ptr = __mingw_aligned_offset_malloc(128, alignment, 132);
+    if( (ptr != NULL) || (errno != EINVAL) ) status = 1;
+    __mingw_free(ptr);
+    errno = 0; ptr = __mingw_aligned_offset_malloc(0, alignment, 0);
+    if( (ptr == NULL) && (errno == EINVAL) ) status |= 2;
+    __mingw_free(ptr);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_BANNER([Aligned heap memory reallocation function checks.])
+#-------------------------------------------------------------
+# Implement a collection of tests to exercise the MinGW aligned memory
+# specific reallocation functions, and confirm that they yield correcly
+# aligned heap memory blocks, or that they fail appropriately.
+
+AT_SETUP([Reallocation of specifically aligned memory])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_realloc(), and __mingw_aligned_offset_realloc()
+ * correctly reallocate previously allocated aligned memory blocks, preserving
+ * original block content, when called with acceptable arguments.
+ */
+#include <malloc.h>
+#include <string.h>
+int main()
+{ size_t alignment, status = 0;
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size;
+    for( size = 32; 256 >= size; size <<= 1 )
+    { if( (p3 = __mingw_aligned_realloc( p1, size, alignment)) != NULL )
+      { p1 = p3;
+	if( p2 == NULL ) { strcpy( p1, "Sample text." ); p2 = strdup( p1 ); }
+	status |= p2 ? strcmp( p1, p2 ) | ((size_t)(p1) % alignment) : 1;
+      }
+      else status |= 1;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size;
+    for( size = 32; 256 >= size; size <<= 1 )
+    { if( (p3 = __mingw_aligned_offset_realloc( p1, size, alignment, 5)) != NULL )
+      { p1 = p3;
+	if( p2 == NULL ) { strcpy( p1, "Sample text." ); p2 = strdup( p1 ); }
+	status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + 5) % alignment) : 1;
+      }
+      else status |= 1;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Offset constrained rejection of size reduction])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_offset_realloc() correctly rejects an attempt
+ * to reduce the size of a previously offset-aligned memory block, when the
+ * resultant size will be insufficient to accommodate the specified offset;
+ * such rejection must be indicated by returning a NULL pointer, with errno
+ * set to EINVAL.
+ */
+#include <malloc.h>
+#include <string.h>
+#include <errno.h>
+int main()
+{ size_t align, status = 0;
+  for( align = 1; 128 >= align; align <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size;
+    for( size = 128; size > 0; size >>= 1 )
+    { if( (p3 = __mingw_aligned_offset_realloc( p1, size, align, 16)) != NULL )
+      { if( p3 != p1 ) p1 = p3;
+	if( p2 == NULL ) { strcpy( p1, "Sample text." ); p2 = strdup( p1 ); }
+	status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + 16) % align) : 2;
+	if( 16 >= size ) status |= 1;
+      }
+      else if( (p2 == NULL) || (errno != EINVAL) ) status |= 4;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Rejection of alignment specification changes])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_realloc(), and __mingw_aligned_offset_realloc()
+ * fail, returning a NULL pointer, and setting errno to EINVAL, when called
+ * with an alignment parameter which differs from that originally specified,
+ * when the aligned memory block was first allocated.
+ */
+#include <malloc.h>
+#include <string.h>
+#include <errno.h>
+int main()
+{ size_t alignment, status = 0;
+  for( alignment = 8; 128 >= alignment; alignment <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size, align;
+    for( size = 128, align = alignment; 256 >= size; size <<= 1, align <<= 1 )
+    { if( (p3 = __mingw_aligned_realloc( p1, size, align)) != NULL )
+      { p1 = p3;
+	if( p2 == NULL )
+	{ strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+	  status |= p2 ? strcmp( p1, p2 ) | ((size_t)(p1) % align) : 2;
+	}
+	else status |= 1;
+      }
+      else if( (p2 == NULL) || (errno != EINVAL) ) status |= 4;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  for( alignment = 8; 128 >= alignment; alignment <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size, align;
+    for( size = 128, align = alignment; 256 >= size; size <<= 1, align <<= 1 )
+    { if( (p3 = __mingw_aligned_offset_realloc( p1, size, align, 5)) != NULL )
+      { p1 = p3;
+	if( p2 == NULL )
+	{ strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+	  status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + 5) % align) : 2;
+	}
+	else status |= 1;
+      }
+      else if( (p2 == NULL) || (errno != EINVAL) ) status |= 4;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Rejection of offset specification changes])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_aligned_offset_realloc() fails, returning a NULL
+ * pointer, and setting errno to EINVAL, when called an offset parameter
+ * which differs from that specified when the offset-aligned memory block
+ * was originally allocated.
+ */
+#include <malloc.h>
+#include <string.h>
+#include <errno.h>
+int main()
+{ size_t align, status = 0;
+  for( align = 1; 128 >= align; align <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size, offset;
+    for( size = 128, offset = 4; 256 >= size; size <<= 1, offset <<= 1 )
+    { if( (p3 = __mingw_aligned_offset_realloc( p1, size, align, offset)) != NULL )
+      { if( p3 != p1 ) p1 = p3;
+	if( p2 == NULL )
+	{ strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+	  status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + offset) % align) : 2;
+	}
+	else status |= 1;
+      }
+      else if( (p2 == NULL) || (errno != EINVAL) ) status |= 4;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_BANNER([Universal heap memory reallocation function checks.])
+#---------------------------------------------------------------
+# Implement a collection of tests to exercise the MinGW generic memory
+# reallocation function, __mingw_realloc(), to confirm that it correctly
+# discriminates between aligned and regular memory blocks, yields correcly
+# aligned memory blocks, when appropriate, or that it fails correctly,
+# when expected.
+#
+AT_SETUP([Reallocation of specifically aligned memory])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_realloc() can successfully resize an initially
+ * offset-aligned memory block, preserving its alignment, its offset,
+ * and its content.
+ */
+#include <malloc.h>
+#include <string.h>
+int main()
+{ size_t align, status = 0;
+  for( align = 1; 128 >= align; align <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size = 64;
+    if( (p1 = __mingw_aligned_offset_malloc( size, align, 16)) != NULL )
+    { strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+      for( size = 128; 512 >= size; size <<= 1 )
+	if( (p3 = __mingw_realloc( p1, size )) != NULL )
+	{ p1 = p3;
+	  status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + 16) % align) : 2;
+	}
+	else status |= 1;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Reallocation of conventionally aligned memory])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_realloc() can successfully resize a memory block
+ * which was originally allocated by malloc(), preserving * its content,
+ * but with neither alignment nor offset constraint.
+ */
+#include <malloc.h>
+#include <string.h>
+int main()
+{ size_t align, status = 0;
+  for( align = 1; 128 >= align; align <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size = 64;
+    if( (p1 = malloc( size )) != NULL )
+    { strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+      for( size = 128; 512 >= size; size <<= 1 )
+	if( (p3 = __mingw_realloc( p1, size )) != NULL )
+	{ p1 = p3; status |= p2 ? strcmp( p1, p2 ) : 2; }
+	else status |= 1;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Offset constrained rejection of size reduction])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_realloc() will decline to resize an originally
+ * offset-aligned memory block, when the requested size is insufficient
+ * to accommodate any data beyond the original offset; the returned
+ * pointer must be NULL, and errno must be set to EINVAL.
+ */
+#include <malloc.h>
+#include <string.h>
+#include <errno.h>
+int main()
+{ size_t align, status = 0;
+  for( align = 1; 128 >= align; align <<= 1 )
+  { void *p1 = NULL, *p2 = NULL, *p3; size_t size = 128;
+    if( (p1 = __mingw_aligned_offset_malloc( size, align, 16)) != NULL )
+    { strcpy( p1, "Sample text." ); p2 = strdup( p1 );
+      for( size = 64; size > 0; size >>= 1 )
+	if( (p3 = __mingw_realloc( p1, size )) != NULL )
+	{ p1 = p3;
+	  status |= p2 ? strcmp( p1, p2 ) | (((size_t)(p1) + 16) % align) : 2;
+	  if( 16 >= size ) status |= 1;
+	}
+	else if( (p2 == NULL) || (errno != EINVAL) ) status |= 4;
+    }
+    __mingw_free(p1); __mingw_free(p2);
+  }
+  return status;
+}]]])dnl
+AT_CLEANUP
+
+AT_BANNER([Universal heap memory deallocation function checks.])
+#---------------------------------------------------------------
+# Implement a collection of tests to exercise the MinGW generic memory
+# deallocation function, to confirm that it can successfully return both
+# conventionally allocated and specifically aligned memory to the unused
+# heap memory pool; additionally, confirm that any of the reallocation
+# functions will perform a similar function, when allocation size is
+# reduced to zero.
+
+# MINGW_AT_SKIP_IF_NO_HEAPWALK
+# ----------------------------
+# Check that the host operating system supports Microsoft's _heapwalk()
+# API; (WinNT should do, but Win9x apparently doesn't).  For those which
+# don't, indicate that dependent tests should be skipped.
+#
+m4_define([MINGW_AT_SKIP_IF_NO_HEAPWALK],dnl)
+[ _HEAPINFO hmon = {NULL, 0, 0};
+  errno = 0; int status = _heapwalk( &hmon );
+  if( errno == ENOSYS ) return 77;dnl
+])# MINGW_AT_SKIP_IF_NO_HEAPWALK
+
+# MINGW_AT_VERIFY_ALIGNED_FREE( NAME, METHOD )
+# --------------------------------------------
+# Provide a function, try_NAME(), to walk the heap, identifying the base
+# address of the heap block, if any, which contains a specified (possibly
+# aligned) heap pointer; invoke METHOD on the specified pointer, then walk
+# the heap again, to confirm that the original base address either refers
+# to an unused heap region, or it no longer refers to any heap region,
+# in either used or unused state, which remains addressable.
+#
+m4_define([MINGW_AT_VERIFY_ALIGNED_FREE],[dnl
+int try_$1( void *ptr )
+{ _HEAPINFO hmon = {NULL, 0, 0};
+  if( ptr == NULL ) return 1;
+  while( _heapwalk( &hmon ) == _HEAPOK )
+  { uintptr_t base = (uintptr_t)(hmon._pentry);
+    if( ((uintptr_t)(ptr) >= base) && ((base + hmon._size) >= (uintptr_t)(ptr)) )
+    { if( hmon._useflag != _USEDENTRY ) return 1;
+      $2; ptr = hmon._pentry; hmon._pentry = NULL;
+      while( _heapwalk( &hmon ) == _HEAPOK )
+        if( hmon._pentry == ptr ) return (hmon._useflag == _FREEENTRY) ? 0 : 1;
+      return 0;
+    }
+  }
+  return 1;
+}
+])# MINGW_AT_VERIFY_ALIGNED_FREE
+
+AT_SETUP([Free conventionally aligned heap memory])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_free() can correctly identify a pointer which
+ * was NOT allocated by any MinGW aligned memory allocation function;
+ * when any such pointer can be mapped to a heap block which may have
+ * been allocated by malloc(), or realloc(), free it regardless, and
+ * confirm that it is successfully deallocated.
+ */
+#include <stdint.h>
+#include <malloc.h>
+#include <errno.h>
+]MINGW_AT_VERIFY_ALIGNED_FREE([free],[__mingw_free(ptr)])[
+int main()
+{ size_t alignment;
+ ]MINGW_AT_SKIP_IF_NO_HEAPWALK[
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { if( try_free(malloc(128)) ) return 99; }
+  return 0;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Free specifically aligned heap memory])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_free() can correctly identify a pointer which
+ * WAS allocated by a MinGW aligned memory allocation function; when
+ * any such pointer has been identified, free its underlying heap
+ * memory, and confirm that deallocation is successful.
+ */
+#include <stdint.h>
+#include <malloc.h>
+#include <errno.h>
+]MINGW_AT_VERIFY_ALIGNED_FREE([free],[__mingw_free(ptr)])[
+int main()
+{ size_t alignment;
+ ]MINGW_AT_SKIP_IF_NO_HEAPWALK[
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { if( try_free(__mingw_aligned_malloc(128, alignment)) ) return 99;
+    if( try_free(__mingw_aligned_offset_malloc(128, alignment, 5)) ) return 99;
+  }
+  return 0;
+}]]])dnl
+AT_CLEANUP
+
+AT_SETUP([Free by reallocation to zero size])dnl
+AT_KEYWORDS([C memalign])MINGW_AT_CHECK_RUN([[[
+/* Check that __mingw_realloc() can reproduce the effect of __mingw_free(),
+ * in respect of any heap memory allocation, when called with a requested size
+ * of zero; similarly, check that each of the __mingw_aligned_realloc(), and
+ * __mingw_aligned_offset_realloc() functions reproduce the same effect, when
+ * invoked to request resizing to zero, on blocks with correspondingly matched
+ * alignment, and offset arguments.
+ *
+ * Note that this is a Microsoft compatibility check; hopefully, no user
+ * will ever write code which depends on this anomalous behaviour.
+ */
+#include <stdint.h>
+#include <malloc.h>
+#include <errno.h>
+size_t alignment;
+]MINGW_AT_VERIFY_ALIGNED_FREE([realloc],dnl
+[__mingw_realloc(ptr,0)])[
+]MINGW_AT_VERIFY_ALIGNED_FREE([aligned_realloc],dnl
+[__mingw_aligned_realloc(ptr,0,alignment)])[
+]MINGW_AT_VERIFY_ALIGNED_FREE([offset_realloc],dnl
+[__mingw_aligned_offset_realloc(ptr,0,alignment,5)])[
+int main()
+{]MINGW_AT_SKIP_IF_NO_HEAPWALK[
+  for( alignment = 1; 128 >= alignment; alignment <<= 1 )
+  { if( try_realloc(__mingw_aligned_malloc(128, alignment)) )
+      return 99;
+    if( try_realloc(__mingw_aligned_offset_malloc(128, alignment, 5)) )
+      return 99;
+    if( try_offset_realloc(__mingw_aligned_offset_malloc(128, alignment, 5)) )
+      return 99;
+    if( try_aligned_realloc(__mingw_aligned_malloc(128, alignment)) )
+      return 99;
+    if( try_realloc(malloc(128)) )
+      return 99;
+  }
+  return 0;
+}]]])dnl
+AT_CLEANUP
+
+# vim: filetype=config formatoptions=croql
+# $RCSfile$: end of file
