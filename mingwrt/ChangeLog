@@ -1,3 +1,12 @@
+2018-12-22  Keith Marshall  <keith@users.osdn.me>
+
+	Update ANSI stdio feature test to accommodate ISO-C11.
+
+	* include/_mingw.h.in (__USE_MINGW_ANSI_STDIO): Add a deprecation
+	warning, for ill-advised direct definition in user code; include...
+	(_ISOC11_SOURCE): ...this new user defined feature test macro as a
+	further indirect enabling condition.
+
 2018-12-20  Keith Marshall  <keith@users.osdn.me>
 
 	Implement test suite for aligned heap management API.
