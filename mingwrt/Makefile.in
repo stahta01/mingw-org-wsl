@@ -656,11 +656,17 @@ libgmon.a: $(addsuffix .$(OBJEXT), gmon mcount profil)
 #
 DLLVERSION = "0:0:0"
 
+# DLLVERSION must be specified for each DLL file itself, and also for
+# the associated installation and distribution rules; the appropriate
+# dependencies may be specified by use of this function macro:
+#
+optional_dll = mingwrt-$1-optdist install-$1-optional-dll $2
+
 # Generally, we should prefer to have explicit version specifications,
 # relating individually to each DLL; these are specified in VERSION.m4,
 # and propagated here via configure time substitution.
 #
-@MAP_LIBMINGWEX_A_DLLVERSION@
+$(call optional_dll,libmingwex,@MAP_LIBMINGWEX_A_DLLVERSION@)
 
 # For convenience, we implement the DLL build rule in the form of a
 # generic pattern rule, invoked in the form of a request to build any
@@ -813,9 +819,6 @@ install-%-dll-files:
 	$(call INSTALL_DATA,$^,${bindir})
 	$(if $(STRIP_DLL),$(call STRIP_DLL,$^))
 
-$(call optional_dll_version,libmingwex,@MAP_LIBMINGWEX_A_DLLVERSION@)
-optional_dll_version = $(shell echo '$2' | sed s,^[^:]*,install-$1-optional-dll,)
-
 install-optional-dlls: install-mingwrt-optional-dlls
 install-mingwrt-optional-dlls: install-libmingwex-optional-dll
 install-%-optional-dll: %.dll.a bindir libdir
@@ -930,9 +933,6 @@ mingwrt-mandist: %-mandist:
 
 optdist: mingwrt-optdist
 mingwrt-optdist: mingwrt-libmingwex-optdist
-
-$(call optional_dll_package,libmingwex,@MAP_LIBMINGWEX_A_DLLVERSION@)
-optional_dll_package = $(shell echo '$2' | sed s,^[^:]*,mingwrt-$1-optdist)
 
 mingwrt-%-optdist:
 	$(RM) -r tmp

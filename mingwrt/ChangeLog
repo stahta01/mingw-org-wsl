@@ -1,5 +1,14 @@
 2018-12-22  Keith Marshall  <keith@users.osdn.me>
 
+	Correct an optional DLL installation and packaging defect.
+
+	* Makefile.in (optional_dll): New function macro; define it, and...
+	(MAP_LIBMINGWEX_A_DLLVERSION): ...wrap this, replacing all usage of...
+	(optional_dll_version, optional_dll_package): ...these; delete them,
+	together with all dependent references.
+
+2018-12-22  Keith Marshall  <keith@users.osdn.me>
+
 	Update ANSI stdio feature test to accommodate ISO-C11.
 
 	* include/_mingw.h.in (__USE_MINGW_ANSI_STDIO): Add a deprecation
