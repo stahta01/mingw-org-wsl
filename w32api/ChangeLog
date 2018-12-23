@@ -1,3 +1,9 @@
+2018-12-23  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.2 release.
+
+	* All files (wsl-5.2-release): Tag assigned.
+
 2018-12-18  Keith Marshall  <keith@users.osdn.me>
 
 	Make <winver.h> header effectively self-contained.
