@@ -1,3 +1,13 @@
+2019-01-11  Keith Marshall  <keith@users.osdn.me>
+
+	Fix a <stdio.h> typedef omission.
+
+	* include/stdio.h: Adjust comment formatting.
+	(__need___off64_t) [__MSVCRT__]: Require it, but remove...
+	[!(__STRICT_ANSI__||__NO_MINGW_LFS)]: ...this exclusion filter.
+	[!__MSVCRT__] (__need___off32_t): Require this alternative.
+	(sys/types.h): Include unconditionally.
+
 2018-12-23  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2 release.

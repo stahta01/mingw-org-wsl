@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2005, 2007-2010, 2014-2018, MinGW.org Project.
+ * Copyright (C) 1997-2005, 2007-2010, 2014-2019, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,8 +44,7 @@
  * this partial fashion...
  */
 #ifndef __WCHAR_H_SOURCED__
- /*
-  * ...which is exclusive to <wchar.h>, do we assert the multiple
+ /* ...which is exclusive to <wchar.h>, do we assert the multiple
   * inclusion guard for <stdio.h> itself.
   */
 #define _STDIO_H
@@ -75,24 +74,25 @@
 # define __need_off_t
 # define __need_ssize_t
 #endif
-#if !(defined __STRICT_ANSI__ || defined (__NO_MINGW_LFS)) \
- && defined (__MSVCRT__)
- /* ...while this is required to support our fseeko64() and ftello64()
-  * implementations, (neither of which is in any way standardized)...
+
+/* Although non-standard themselves, we also need either one or other
+ * of the following pair of data types, from <sys/types.h>, because our
+ * standard fpos_t is opaquely defined in terms of...
+ */
+#ifdef __MSVCRT__
+ /* ...an explicitly 64-bit file offset type, for MSVCRT.DLL users...
   */
 # define __need___off64_t
-#endif
-/* It is sufficient to test for just one define from each of the two
- * preceding groups...
- */
-#if defined __need_off_t || defined __need___off64_t
- /* ...to identify a requirement for selective inclusion of one or more
-  * of these type definitions from "sys/types.h"; (note that we use the
-  * #include "..." form here, to ensure that we get the correct header
-  * file, relative to the location of this <stdio.h>).
+#else
+ /* ...or a 32-bit equivalent, for pre-MSVCRT.DLL users.
   */
-# include "sys/types.h"
+# define __need___off32_t
 #endif
+
+/* Note the use of the #include "..." form here, to ensure that we get
+ * the correct header file, relative to the location of this <stdio.h>
+ */
+#include "sys/types.h"
 
 #ifndef __VALIST
  /* Also similarly, for the va_list type, defined in "stdarg.h"
@@ -316,8 +316,8 @@ _CRTIMP __cdecl __MINGW_NOTHROW  void   setbuf (FILE *, char *);
  * replace the MSVCRT.DLL versions...
  */
 #define __Wformat(F)		__mingw_##F
-/*
- * ...while degrading to gnu_printf checking for snprintf()
+
+/* ...while degrading to gnu_printf checking for snprintf()
  * and vsnprintf(), (which are ALWAYS MinGW.org variants).
  */
 #define __mingw_printf__	__gnu_printf__
@@ -332,8 +332,8 @@ _CRTIMP __cdecl __MINGW_NOTHROW  void   setbuf (FILE *, char *);
 #define __Wformat_vprintf	__Wformat_mingw_printf(1,0)
 #define __Wformat_vfprintf	__Wformat_mingw_printf(2,0)
 #define __Wformat_vsprintf	__Wformat_mingw_printf(2,0)
-/*
- * ...while this pair are specific to the two MinGW.org
+
+/* ...while this pair are specific to the two MinGW.org
  * only functions.
  */
 #define __Wformat_snprintf	__Wformat_mingw_printf(3,4)
@@ -517,8 +517,7 @@ int vsscanf (const char * __restrict__, const char * __restrict__, __VALIST);
 #endif	/* <stdio.h> included in its own right */
 
 #if __MSVCRT_VERSION__ >= __MSVCR80_DLL || _WIN32_WINNT >= _WIN32_WINNT_VISTA
-/*
- * In MSVCR80.DLL, (and its descendants), Microsoft introduced variants
+/* In MSVCR80.DLL, (and its descendants), Microsoft introduced variants
  * of the printf() functions, with names qualified by an underscore prefix
  * and "_p" or "_p_l" suffixes; implemented in Microsoft's typically crass,
  * non-standard, and non-portable fashion, these provide support for access
@@ -593,8 +592,7 @@ int _vsprintf_p_l (char *, size_t, const char *, locale_t, __VALIST);
 
 #if ! (defined _STDIO_H && defined _WCHAR_H)
 #if __MSVCRT_VERSION__ >= __MSVCR80_DLL || _WIN32_WINNT >= _WIN32_WINNT_VISTA
-/*
- * Wide character variants of the foregoing "positional parameter" printf()
+/* Wide character variants of the foregoing "positional parameter" printf()
  * functions; MSDN says that these should be declared when either <stdio.h>, or
  * <wchar.h> is included, so we make them selectively available to <wchar.h>,
  * but, just as in the foregoing, we advise against their use.
@@ -794,8 +792,7 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int fgetpos (FILE *, fpos_t *);
 _CRTIMP __cdecl __MINGW_NOTHROW  int fsetpos (FILE *, const fpos_t *);
 
 #if _WIN32_WINNT >= _WIN32_WINNT_VISTA || __MSVCRT_VERSION__ >= __MSVCR80_DLL
- /*
-  * Microsoft introduced a number of variations on fseek() and ftell(),
+ /* Microsoft introduced a number of variations on fseek() and ftell(),
   * beginning with MSVCR80.DLL; the bare _fseeki64() and _ftelli64() were
   * subsequently integrated into MSVCRT.DLL, from Vista onward...
   */
@@ -803,8 +800,7 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int    _fseeki64 (FILE *, __int64, int);
 _CRTIMP __cdecl __MINGW_NOTHROW __int64 _ftelli64 (FILE *);
 
 #if __MSVCRT_VERSION__ >= __MSVCR80_DLL
- /*
-  * ...while the "nolock" variants remain exclusive to MSVCR80.DLL, and
+ /* ...while the "nolock" variants remain exclusive to MSVCR80.DLL, and
   * its later MSVC specific derivatives.
   */
 _CRTIMP __cdecl __MINGW_NOTHROW  int    _fseek_nolock (FILE *, long, int);
@@ -816,8 +812,7 @@ _CRTIMP __cdecl __MINGW_NOTHROW __int64 _ftelli64_nolock (FILE *);
 #endif  /* MSVCR80.DLL and later derivatives ONLY */
 
 #else	/* pre-MSVCR80.DLL or MSVCRT.DLL pre-Vista */
-/*
- * The Microsoft DLLs don't provide either _fseeki64() or _ftelli64(), but
+/* The Microsoft DLLs don't provide either _fseeki64() or _ftelli64(), but
  * they DO provide fgetpos(), fsetpos(), and _lseeki64(), which may be used
  * to emulate the two missing functions.  (Note that we choose to provide
  * these emulations in the form of MinGW external helper functions, rather
@@ -830,12 +825,12 @@ _CRTIMP __cdecl __MINGW_NOTHROW __int64 _ftelli64_nolock (FILE *);
  * fseek() handling API.
  */
 int __cdecl __MINGW_NOTHROW __mingw_fseeki64 (FILE *, __int64, int);
-__CRT_ALIAS int __cdecl __MINGW_NOTHROW _fseeki64 (FILE *__f, __int64 __o, int __w)
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  int _fseeki64 (FILE *__f, __int64 __o, int __w)
 { return __mingw_fseeki64 (__f, __o, __w); }
 #endif
 
 __int64 __cdecl __MINGW_NOTHROW __mingw_ftelli64 (FILE *);
-__CRT_ALIAS __int64 __cdecl __MINGW_NOTHROW _ftelli64 (FILE *__file )
+__CRT_ALIAS __cdecl  __int64 __MINGW_NOTHROW _ftelli64 (FILE *__file )
 { return __mingw_ftelli64 (__file); }
 
 #endif	/* pre-MSVCR80.DLL or MSVCRT.DLL pre-Vista */
