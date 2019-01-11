@@ -10,7 +10,7 @@
  * $Id$
  *
  * Written by Keith Marshall  <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2013, 2014, 2018, MinGW.org Project.
+ * Copyright (C) 2013, 2014, 2018, 2019, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -94,7 +94,8 @@ CRYPTO_INLINE void *crypto_randomize( void *buf, size_t buflen )
   return NULL;
 }
 
-CRYPTO_INLINE char *crypto_random_filename_char( char *caret )
+CRYPTO_INLINE
+unsigned char *crypto_random_filename_char( unsigned char *caret )
 {
   /* Helper to generate a random sequence of characters, suitable for
    * use in file names; although there are other valid possibilities, we
@@ -155,12 +156,12 @@ char *__mingw_crypto_tmpname( char *template )
    * We begin by locating the position, within the given template,
    * where the string of six replaceable 'XXXXXX's should begin.
    */
-  char *tail = template + strlen( template ) - 6;
+  unsigned char *tail = (unsigned char *)(template) + strlen( template ) - 6;
 
   /* Provided this appears sane -- i.e. it at least doesn't place the
    * six character "tail" before the start of the template itself...
    */
-  if( tail >= template )
+  if( (char *)(tail) >= template )
   {
     /* ...then, walk over each of the six bytes of the "tail", until
      * we reach the NUL terminator...

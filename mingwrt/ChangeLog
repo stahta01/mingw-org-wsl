@@ -1,5 +1,13 @@
 2019-01-11  Keith Marshall  <keith@users.osdn.me>
 
+	Fix a mkstemp() file name generator defect.
+
+	* mingwex/cryptnam.c (crypto_random_filename_char): Revert 2018-09-06
+	change; argument type must be unsigned char *, to avoid math errors.
+	(__mingw_crypto_tmpname): Use explicit casts to resolve type conflicts.
+
+2019-01-11  Keith Marshall  <keith@users.osdn.me>
+
 	Fix a <stdio.h> typedef omission.
 
 	* include/stdio.h: Adjust comment formatting.
