@@ -1,3 +1,12 @@
+2019-01-21  Keith Marshall  <keith@users.osdn.me>
+
+	Handle another GCC compile-time warning.
+
+	* mingwex/memalign.c (is_power_of_two): Use in-line expansion...
+	(memalign_is_power_of_two): ...of this new function; this is required
+	to avoid -Wsequence-point warnings, which may arise when testing the
+	result of an assignment expression passed as the macro argument.
+
 2019-01-11  Keith Marshall  <keith@users.osdn.me>
 
 	Fix a mkstemp() file name generator defect.

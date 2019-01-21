@@ -9,7 +9,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keith@users.osdn.me>
- * Copyright (C) 2018, MinGW.org Project
+ * Copyright (C) 2018, 2019, MinGW.org Project
  *
  * Derived (with extensive modification) from, and replacing, the original
  * mingw-aligned-malloc.c implementation:
@@ -68,7 +68,7 @@
  * values, and bailing out, in the event of violation of this, or any other
  * parameter validation criterion.
  */
-#define is_power_of_two(x)  (((x) > 0) && (((x) & ((x) - 1)) == 0))
+#define is_power_of_two(x)  memalign_is_power_of_two((x))
 #define error_return(c,r)  {errno = (c); return (r);}
 
 /* We need "sizeof_ptr" to represent the smallest integer power of two
@@ -120,6 +120,15 @@ void *__mingw_memalign_realloc( void *, struct memalign *, size_t );
  * functions; (declare them as __CRT_ALIAS, to ensure that GCC will
  * always expand them in-line).
  */
+__CRT_ALIAS int memalign_is_power_of_two( int x )
+{
+  /* This furnishes the implementation of the is_power_of_two() macro,
+   * as an in-line function expansion, to avoid GCC warnings which may
+   * arise as side effects of passing an assignment as macro parameter.
+   */
+  return ((x > 0) && ((x & (x -1)) == 0));
+}
+
 __CRT_ALIAS size_t memalign_min_alignment( void )
 {
   /* This determines the size of a structure comprising a single byte
