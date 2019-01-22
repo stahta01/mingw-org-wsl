@@ -1,3 +1,10 @@
+2019-01-22  Keith Marshall  <keith@users.osdn.me>
+
+	Incorporate user-customized <features.h> configuration.
+
+	* tests/Makefile.in (install-mingwrt-headers): Create <features.h>
+	stub; this is an empty file, yielding the default configuration.
+
 2018-12-23  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2 release.

@@ -5,8 +5,8 @@
 #
 # $Id$
 #
-# Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2017, MinGW.org Project
+# Written by Keith Marshall <keith@users.osdn.me>
+# Copyright (C) 2017, 2019, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -81,6 +81,14 @@ vpath %.h.in ${mingwrt_srcdir}/include ${w32api_srcdir}/include
 
 _mingw.h w32api.h: %.h: %.h.in VERSION.m4
 	$(PACKAGE_VERSION_SCRIPT) $< > $@
+
+# _mingw.h wants to include <features.h>, which is nominally a user
+# supplied header; for our build-time requirements, an empty file is
+# sufficient, as _mingw.h provides suitable fall-back definitions.
+#
+_mingw.h: features.h
+features.h:
+	> $@
 
 PACKAGE_VERSION_SCRIPT = sed \
   -e s"`$(call PACKAGE_VERSION_FORMAT,LONG,%d,$$3+1000*($$2+1000*$$1))`" \

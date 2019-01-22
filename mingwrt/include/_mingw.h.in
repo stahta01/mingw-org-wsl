@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Mumit Khan  <khan@xraylith.wisc.edu>
- * Copyright (C) 1999, 2001-2011, 2014-2018, MinGW.org Project
+ * Copyright (C) 1999, 2001-2011, 2014-2019, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -160,6 +160,36 @@
  */
 #define __CRT_GLOB_ESCAPE_CHAR__	(char)(127)
 
+
+/* Load any user-customized features configuration...
+ */
+#ifdef _MINGW_FEATURES_HEADER
+/* ...from a user-specified, or project-specified alternative file...
+ */
+#include _MINGW_FEATURES_HEADER
+#else
+/* ...or fall back to the default configuration file, (which may,
+ * or may not have been customized).
+ */
+#include <features.h>
+#endif
+
+#ifndef __MINGW_FEATURES__
+/* Regardless of how the preceding features configuration header was
+ * identified, we normally expect that will have defined this, but we
+ * supply this fall-back, just in case it is needed.
+ */
+#define __MINGW_FEATURES__		0ULL
+#endif
+
+/* Define macros to facilitate the user-specified configuration.
+ */
+#define __MINGW_FEATURE_ENABLE__(__FEATURE__) | (__FEATURE__)
+#define __MINGW_FEATURE_IGNORE__(__FEATURE__)
+
+#define __MINGW_FEATURES_BEGIN__	0x0000000000000000ULL
+#define __MINGW_FEATURES_UNSET__	0x0000000000000000ULL
+#define __MINGW_FEATURES_END__
 
 /* Manifest definitions identifying the flag bits, controlling activation
  * of MinGW features, as specified by the user in __MINGW_FEATURES__.

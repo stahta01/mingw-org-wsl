@@ -5,7 +5,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2016, 2017, MinGW.org Project
+# Copyright (C) 2016, 2017, 2019, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -130,14 +130,16 @@ $(info )
 endef
 
 # Install a local copy of the package components to be tested; we need
-# the full mingwrt package, and also the w32api headers, to ensure that
-# we are testing what we've built, and not those which were installed
-# with whatever compiler we are using for the build.
+# the full mingwrt package, including a <features.h> stub, and also the
+# w32api headers, to ensure that we are testing what we've built, and
+# not those which were installed with whatever compiler we are using
+# for the build.
 #
 testsuite.install: install-mingwrt install-w32api-headers
 
 install-mingwrt:
 	$(MAKE) -C .. --no-print-directory prefix=${CURDIR} $@
+	>> include/features.h
 
 chkconfig = ($1/config.status --version | grep $2) 2>&1 > /dev/null
 install-w32api-headers:

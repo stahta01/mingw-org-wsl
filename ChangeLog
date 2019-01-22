@@ -1,3 +1,15 @@
+2019-01-22  Keith Marshall  <keith@users.osdn.me>
+
+	Incorporate user-customized <features.h> configuration.
+
+	* Makefile.comm (_mingw.h): Add prerequisite dependency on...
+	(features.h): ...this; add rule to create a build-time stub, an empty
+	file, yielding the default fall-back configuration.
+
+	* var/features.lua: New direcctory/file; this implements the mingw-get
+	post-install action, which is required to integrate management of user
+	maintained <features.h> configuration alongside project updates.
+
 2018-12-23  Keith Marshall  <keith@users.osdn.me>
 
 	Adjust repository version following WSL-5.2 release.

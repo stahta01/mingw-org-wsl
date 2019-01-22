@@ -1,3 +1,17 @@
+2019-01-22  Keith Marshall  <keith@users.osdn.me>
+
+	Incorporate user-customized <features.h> configuration.
+
+	* include/_mingw.h: Include <features.h>, or...
+	[_MINGW_FEATURES_HEADER]: ...nominated alternative header.
+	[!defined __MINGW_FEATURES__]: Provide fall-back definition.
+	(__MINGW_FEATURES_BEGIN__, __MINGW_FEATURES_ENABLE__)
+	(__MINGW_FEATURES_IGNORE__, __MINGW_FEATURES_UNSET__)
+	(__MINGW_FEATURES_END__): New macros; define them.
+
+	* tests/Makefile.in (install-mingwrt): Create <features.h> stub; this
+	is an empty file, yielding the default fall-back configuration.
+
 2019-01-21  Keith Marshall  <keith@users.osdn.me>
 
 	Handle another GCC compile-time warning.
