@@ -1,5 +1,11 @@
 2019-01-22  Keith Marshall  <keith@users.osdn.me>
 
+	Adjust repository version following WSL-5.2.1 release.
+
+	* VERSION.m4 (__VERSION__): Increment it to 5.2.2
+
+2019-01-22  Keith Marshall  <keith@users.osdn.me>
+
 	Prepare and publish MinGW.org WSL-5.2.1 release.
 
 	* All files (wsl-5.2.1-release): Tag assigned.
