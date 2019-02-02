@@ -6,7 +6,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2016, MinGW.org Project
+# Copyright (C) 2016, 2019, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,6 +34,7 @@
 
   AC_PROG_MKDIR_P
   AC_PATH_PROG([LN],[ln],[ln])
+  AC_PATH_PROG([LUA],[lua])
 
   AC_CONFIG_SUBDIRS([mingwrt w32api])
   AC_CONFIG_FILES([Makefile])

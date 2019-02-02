@@ -7,7 +7,7 @@ PACKAGE_TARNAME := @PACKAGE_TARNAME@
 PACKAGE_VERSION := @PACKAGE_VERSION@
 
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2016, MinGW.org Project
+# Copyright (C) 2016, 2019, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,6 +34,12 @@ PACKAGE_VERSION := @PACKAGE_VERSION@
 # inadvertent override from any included file.
 #
 all:
+
+# Offer users the opportunity to assign boolean build-time options, from
+# the command line, in the form 'option=NAME', or 'options="NAME ..."'
+#
+$(foreach opt,$(option) $(options),$(eval $(opt) = true))
+
 
 # Configuration
 # -------------
@@ -99,11 +105,47 @@ check-recursive: %: %-subdirs
 MKDIR_P = @MKDIR_P@
 LN = @LN@
 
-dist: dist-subdirs
+dist-prepare:
 	$(RM) -r $@; $(MKDIR_P) $@
+
+dist: dist-prepare dist-subdirs dist-extra
 	for file in $(addsuffix /$@/*,${subdirs}); do \
 	  test -f $$file && $(LN) $$file $@; done
 
+LUA = @LUA@
+LUACMD = $(if $(LUA),$(LUA) -e,false)
+
+WSL_TMPDIR = $(CURDIR)/dist/var/lib/wsl
+FEATURES_CFG = wsl-features-$(TODAY)-$(ISSUE)-mingw32-cfg.tar.xz
+
+TODAY = $(shell date +%Y%m%d)
+ISSUE = $(if $(wildcard $@),$(shell awk '\
+  { if( $$1 == $(TODAY) ) print $$2 + 1; else print 1; exit; \
+  }' $@),1)
+
+dist-extra: $(if $(FEATURES),features.stamp)
+features.unsupported:
+	$(warning Lua does not appear to be installed on your system;)
+	$(warning it is required to support the FEATURES distribution option.)
+
+vpath features.lua ${srcdir}/var
+features.stamp: features.$(if $(LUA),lua,unsupported)
+	$(RM) -r dist/var dist/include
+	$(MKDIR_P) dist/include $(WSL_TMPDIR)/include && $(LN) $^ $(WSL_TMPDIR)
+	MINGW32_SYSROOT=$(WSL_TMPDIR) $(LUACMD) '$(FEATURES_H_INITIALIZE)'
+	cd dist && tar cf - var include | xz -c > $(FEATURES_CFG)
+	echo $(TODAY) $(ISSUE) > $@
+	$(RM) -r dist/var dist/include
+
+FEATURES_H_INITIALIZE = \
+  sysroot = os.getenv( "MINGW32_SYSROOT" ) \
+  if sysroot then \
+     package.path = sysroot.."/?.lua;"..package.path \
+     have_features, config = pcall( require, "features" ) \
+     if have_features then \
+	config.initialize( io.open( config.pathname(), "w" )) \
+     end \
+  end
 
 # Clean-up Rules
 # --------------
