@@ -1,3 +1,22 @@
+2019-02-03  Keith Marshall  <keith@users.osdn.me>
+
+	Clean up winsock default version selection stratagem.
+
+	* include/winsock.h [_WINSOCK_H]: Defer definition until within new
+	internal recursion breaking retest block; following evaluation of...
+	[__USE_MINGW_WINSOCK_DEFAULT]: ...this, whence <winsock2.h> may be
+	included, reproducing the original version selection logic from...
+	* include/_winsock.h: ...here; file is now obsolete; delete it.
+
+	* include/winsock2.h (__USE_MINGW_WINSOCK_DEFAULT): Undefine it,
+	before including <winsock.h>
+
+	* include/windows.h include/nspapi.h include/wsnetbs.h: Define...
+	(__USE_MINGW_WINSOCK_DEFAULT): ...this, and then include <winsock.h>
+	instead of deleted file <_winsock.h>
+
+	* tests/headers.at: Regenerated.
+
 2019-01-22  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2.1 release.

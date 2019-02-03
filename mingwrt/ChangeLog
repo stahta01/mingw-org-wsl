@@ -1,21 +1,3 @@
-2019-02-02  Keith Marshall  <keith@users.osdn.me>
-
-	Add build option for <features.h> sample distribution.
-
-	* configure.ac (lua): Add AC_PATH_PROG check; assign result to...
-	(LUA): ...this new AC_SUBST propagated macro definition.
-
-	* Makefile.in (dist): Add dependencies on...
-	(dist-prepare, dist-extra): ...these new goals; implement...
-	(dist-prepare): ...to initialize an empty staging directory, and...
-	(dist-extra): ...incorporate optional distributable components.
-	(features.stamp): New optional goal; selected by definition of...
-	(FEATURES): ...this user specified macro, nominally defined by...
-	(option, options): ...evaluation of command line assignment.
-	(features.lua, features.unsupported): New prerequisite goals.
-	(WSL_TMPDIR, FEATURES_H_INITIALIZE, FEATURES_CFG, LUA, LUACMD)
-	(TODAY, ISSUE): New supporting macros; define them.
-
 2019-01-22  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2.1 release.

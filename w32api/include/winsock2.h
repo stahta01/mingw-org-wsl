@@ -10,7 +10,7 @@
  *
  * Contributed by the WINE Project.
  * Adaptation by Mumit Khan <khan@xraylith.wisc.edu>
- * Copyright (C) 1998-2005, 2011, 2016, 2017, MinGW.org Project
+ * Copyright (C) 1998-2005, 2011, 2016, 2017, 2019, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,6 +41,13 @@
 #ifndef _WINSOCK2_H
 #pragma GCC system_header
 #define _WINSOCK2_H
+
+/* This is MinGW's preferred WinSock default choice; having made it, we
+ * MUST now ensure that the __USE_MINGW_WINSOCK_DEFAULT selector doesn't
+ * persist beyond this point, since it would interfere with inclusion of
+ * common content from <winsock.h>
+ */
+#undef __USE_MINGW_WINSOCK_DEFAULT
 
 #ifdef _WINSOCK_H  /* included prematurely */
 /* Oops!  <winsock.h> appears to have been included already, which now

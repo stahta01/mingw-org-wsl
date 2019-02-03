@@ -9,7 +9,7 @@
  * $Id$
  *
  * Adaptation by Anders Norlander <anorland@hem2.passagen.se>
- * Copyright (C) 1998-2004, 2012, 2016, 2017, MinGW.org Project.
+ * Copyright (C) 1998-2004, 2012, 2016, 2017, 2019, MinGW.org Project.
  *
  * Portions Copyright (C) 1980, 1983, 1988, 1993
  * The Regents of the University of California.  All rights reserved.
@@ -44,8 +44,35 @@
  */
 #ifndef _WINSOCK_H
 #pragma GCC system_header
-#define _WINSOCK_H
 
+#ifdef __USE_MINGW_WINSOCK_DEFAULT
+/* This is default inclusion of <winsock.h> by <windows.h>, (or some other
+ * W32API header; there is no sane reason for __USE_MINGW_WINSOCK_DEFAULT to
+ * have been defined, otherwise).  Whereas Microsoft would simply default to
+ * using WinSock v1.1, MinGW may choose an alternative default.
+ */
+#include <sdkddkver.h>
+#if _WIN32_WINNT >= _WIN32_WINNT_NT4
+/* When the target operating system is WinNT4, or later, we prefer to support
+ * the WinSock v2 API, by default; (this is consistent with the default choice
+ * which was traditionally specified within MinGW.org's <windows.h>).
+ */
+#include "winsock2.h"
+
+#endif	/* __USE_MINGW_WINSOCK_DEFAULT for Win-NT4 and later */
+#endif	/* __USE_MINGW_WINSOCK_DEFAULT (any Windows version) */
+
+/* If "winsock2.h" was included, to satisfy the __USE_MINGW_WINSOCK_DEFAULT
+ * condition, then the remainder of this file has already been processed, due
+ * to reinclusion by "winsock2.h"; test _WINSOCK_H again to prevent redundant
+ * reprocessing, (which may be potentially harmful)...
+ */
+#ifndef _WINSOCK_H
+/* ...but, when _WINSOCK_H hasn't been defined yet, then this is our first
+ * opportunity to process this <winsock.h> content; activate the guard, and
+ * proceed to process it now.
+ */
+#define _WINSOCK_H
 #define _GNU_H_WINDOWS32_SOCKETS
 #define __WINSOCK_H_SOURCED__ 1
 
@@ -677,7 +704,9 @@ _END_C_DECLS
  * references to the mswsock extensions.
  */
 #include <mswsock.h>
-#endif
+
+#endif	/* !_WINSOCK2_H */
+#endif	/* !_WINSOCK_H redundancy check */
 
 #undef	__WINSOCK_H_SOURCED__
 #endif	/* _WINSOCK_H: $RCSfile$: end of file */

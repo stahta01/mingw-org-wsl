@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Kai Henningsen <kai-henningsen@users.sourceforge.net>
- * Copyright (C) 2002, 2017, MinGW.org Project
+ * Copyright (C) 2002, 2017, 2019, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,7 +41,8 @@
 
 #ifndef RC_INVOKED
 
-#include "_winsock.h"
+#define __USE_MINGW_WINSOCK_DEFAULT
+#include "winsock.h"
 
 typedef struct sockaddr_nb
 { short 	snb_family;
