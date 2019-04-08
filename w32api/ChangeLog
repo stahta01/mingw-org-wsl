@@ -1,3 +1,10 @@
+2019-04-08  Keith Marshall  <keith@users.osdn.me>
+
+	Correct typographic error; fix bug #39117
+
+	* include/commctrl.h (STATUSCUASSNAME): Correct misspelling...
+	(STATUSCLASSNAME): ...to this.
+
 2019-02-03  Keith Marshall  <keith@users.osdn.me>
 
 	Clean up winsock default version selection stratagem.
