@@ -1,6 +1,13 @@
+2019-05-03  Keith Marshall  <keith@users.osdn.me>
+
+	Correct a typographic error; fix MinGW-Bug #39193
+
+	* include/commctrl.h (ListView_SubItemHitTest): Balance parentheses;
+	add a missing closing parenthesis.
+
 2019-04-08  Keith Marshall  <keith@users.osdn.me>
 
-	Correct typographic error; fix bug #39117
+	Correct a typographic error; fix MinGW-Bug #39117
 
 	* include/commctrl.h (STATUSCUASSNAME): Correct misspelling...
 	(STATUSCLASSNAME): ...to this.

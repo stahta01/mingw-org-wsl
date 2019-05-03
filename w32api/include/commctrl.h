@@ -4737,7 +4737,7 @@ WINAPI BOOL _TrackMouseEvent (LPTRACKMOUSEEVENT);
 
 #define ListView_SubItemHitTest( w, p ) 				\
   (INT)(SNDMSG ((w), LVM_SUBITEMHITTEST, 0,				\
-      (LPARAM)((LPLVHITTESTINFO)(p))					\
+      (LPARAM)((LPLVHITTESTINFO)(p)))					\
     )
 #define ListView_SetItemCountEx( w, i, f )				\
   (void)(SNDMSG ((w), LVM_SETITEMCOUNT, (WPARAM)(i), (LPARAM)(f)))
