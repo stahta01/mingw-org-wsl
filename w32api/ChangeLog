@@ -1,3 +1,10 @@
+2019-06-07  Keith Marshall  <keith@users.osdn.me>
+
+	Add missing definitions; fix MinGW-Bug #39129
+
+	* include/winnt.h (PAGE_TARGETS_INVALID): Define it.
+	(PAGE_TARGETS_NO_UPDATE): Likewise.
+
 2019-05-03  Keith Marshall  <keith@users.osdn.me>
 
 	Correct a typographic error; fix MinGW-Bug #39193

@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Anders Norlander <anorland@hem2.passagen.se>
- * Copyright (C) 1998-2011, 2016, 2017, MinGW.org Project
+ * Copyright (C) 1998-2011, 2016, 2017, 2019, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -1048,6 +1048,8 @@ typedef DWORD FLONG;
 #define PAGE_EXECUTE_READ			    0x0020
 #define PAGE_EXECUTE_READWRITE			    0x0040
 #define PAGE_EXECUTE_WRITECOPY			    0x0080
+#define PAGE_TARGETS_INVALID			0x40000000
+#define PAGE_TARGETS_NO_UPDATE			0x40000000
 #define PAGE_GUARD				    0x0100
 #define PAGE_NOCACHE				    0x0200
 #define PAGE_WRITECOMBINE			    0x0400
