@@ -8,7 +8,7 @@
  * $Id$
  *
  * Written by Keith Marshall <keith@users.osdn.me>
- * Copyright (C) 2018, MinGW.org Project.
+ * Copyright (C) 2018, 2019, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -55,17 +55,38 @@
 
 _BEGIN_C_DECLS
 
+/* Regardless of whether a GNU compatible alloca() implementation, or
+ * a MSVC compatible _alloca() implementation is required, it is always
+ * appropriate to delegate the call to GCC's __builtin_alloca(); we use
+ * a preprocessor macro, rather than an in-line function implementation,
+ * to delegate the call, because:
+ *
+ *  - older GCC versions do not permit in-lining of __builtin_alloca();
+ *
+ *  - more recent GCC versions generate marginally better code, for the
+ *    macro expansion, than they do for an in-line function expansion,
+ *    when compiling at optimization level -O0; (both implementation
+ *    choices result in identical code, at -O1 and higher);
+ *
+ *  - the usual argument for C++ namespace qualification, in the case of
+ *    an in-line function implementation, is unwarranted for alloca().
+ *
+ */
 #if defined _GNU_SOURCE || ! defined _NO_OLDNAMES
 /* This is the GNU standard API; it is also compatible with Microsoft's
- * original, but now deprecated, naming convention.
+ * original, but now deprecated, OLDNAMES naming convention.
  */
-__CRT_ALIAS void *alloca( size_t __n ){ return __builtin_alloca( __n ); }
+#undef alloca
+void *alloca( size_t );
+#define alloca( __request )  __builtin_alloca( __request )
 #endif	/* _GNU_SOURCE || !_NO_OLDNAMES */
 
 /* This represents the same API, but conforms to Microsoft's currently
  * preferred naming convention.
  */
-__CRT_ALIAS void *_alloca( size_t __n ){ return __builtin_alloca( __n ); }
+#undef _alloca
+void *_alloca( size_t );
+#define _alloca( __request )  __builtin_alloca( __request )
 
 _END_C_DECLS
 

@@ -1,3 +1,11 @@
+2019-07-01  Keith Marshall  <keith@users.osdn.me>
+
+	Revert to macro implementation of "alloca()" functions.
+
+	* include/alloca.h (alloca, _alloca): Delete any prior definitions;
+	remove in-line implementations; replace with conventional prototypes,
+	followed by corresponding function style macro definitions.
+
 2019-01-22  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2.1 release.
