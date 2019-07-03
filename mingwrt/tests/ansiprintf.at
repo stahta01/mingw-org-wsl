@@ -249,26 +249,31 @@ MINGW_AT_CHECK_PRINTF([[%16.0La%4d]], [1.450L, 44], [::          0xcp-3  44::])
 MINGW_AT_CHECK_PRINTF([[%16.1La%4d]], [1.999L, 99], [::        0x8.0p-2  99::])
 
 
-# MINGW_AT_CHECK_SNPRINTF( FORMAT, MAXCOUNT, INITCOUNT )
-# ------------------------------------------------------
+# MINGW_AT_CHECK_SNPRINTF( FORMAT, COUNT, MAXCOUNT, INITCOUNT )
+# -------------------------------------------------------------
 # Test the behaviour of the snprintf() function, with respect to
 # output truncation at specified MAXCOUNT (no more than 32), when
 # writing string "Sample text; sufficient buffer" subject to the
-# specified.  Also supports testing the effect of "%n" counting
-# on an internal integer variable, initialized to INITCOUNT.
+# specified FORMAT and COUNT (concatenated to define the format
+# string).  Also supports testing the effect of "%n" counting on
+# an internal integer variable, initialized to INITCOUNT, when
+# COUNT is specified as "n", (with optional "hh" length modifier
+# prefix; if this option is not to be exercised, FORMAT should
+# be passed as "%", with COUNT as "s").
 #
 m4_define([MINGW_AT_CHECK_SNPRINTF],[dnl
-AT_SETUP([snprintf (output, $2, "$1", ...)])
-AT_KEYWORDS([C printf])MINGW_AT_DATA_CRLF([expout],[[$4
+AT_SETUP([snprintf (output, $3, "$1$2", ...)])
+AT_KEYWORDS([C printf])MINGW_AT_DATA_CRLF([expout],[[$5
 ]])MINGW_AT_CHECK_RUN([[[
 #define _XOPEN_SOURCE 700
 #include <stdio.h>
 int main()
-{ char output[32]; int capture = ]$3[;
+{ char output[32]; union { int n; char hhn; } capture = {]$4[};
   const char *sample = "Sample text; sufficient buffer";
-  int total = snprintf (output, ]$2[, "]$1[", sample, &capture);
-  snprintf (NULL, 0, "]$1[", output, &capture);
-  printf ("%s: %d required; %d captured\n", output, total, capture);
+  int total = snprintf (output, ]$3[, "]$1$2[", sample]m4_if([$2],[s],]dnl
+    [,[, &capture.$2])[);
+  snprintf (NULL, 0, "]$1$2[", output]m4_if([$2],[s],,[, &capture.$2])[);
+  printf ("%s: %d required; %d captured\n", output, total, capture.n);
   return 0;
 }]]],,[expout])dnl
 AT_CLEANUP
@@ -278,20 +283,20 @@ AT_CLEANUP
 # Tests for snprintf() with limited length internal buffer.
 #
 AT_BANNER([ISO-C99 snprintf() buffer length control.])
-MINGW_AT_CHECK_SNPRINTF([[%s]],[32],[1024],dnl
+MINGW_AT_CHECK_SNPRINTF([[%]],[s],[32],[1024],dnl
 [Sample text; sufficient buffer: 30 required; 1024 captured])
-MINGW_AT_CHECK_SNPRINTF([[%s]],[12],[1024],dnl
+MINGW_AT_CHECK_SNPRINTF([[%]],[s],[12],[1024],dnl
 [Sample text: 30 required; 1024 captured])
 
 
 # Tests for effect of "%n" output length counting.
 #
 AT_BANNER([ISO-C99 snprintf() intermediate output counting.])
-MINGW_AT_CHECK_SNPRINTF([[%s%n]],[32],[1024],dnl
+MINGW_AT_CHECK_SNPRINTF([[%s%]],[n],[32],[1024],dnl
 [Sample text; sufficient buffer: 30 required; 30 captured])
-MINGW_AT_CHECK_SNPRINTF([[%s%n]],[12],[1024],dnl
+MINGW_AT_CHECK_SNPRINTF([[%s%]],[n],[12],[1024],dnl
 [Sample text: 30 required; 11 captured])
-MINGW_AT_CHECK_SNPRINTF([[%s%hhn]],[12],[1024],dnl
+MINGW_AT_CHECK_SNPRINTF([[%s%]],[hhn],[12],[1024],dnl
 [Sample text: 30 required; 1035 captured])
 
 # vim: filetype=config formatoptions=croql

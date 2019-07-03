@@ -1,3 +1,20 @@
+2019-07-03  Keith Marshall  <keith@users.osdn.me>
+
+	Avoid built-in snprintf() prototypes; fix MinGW-Bug #39224
+
+	* include/stdio.h [__USE_MINGW_ANSI_STDIO]
+	(snprintf, vsnprintf): Implement them in-line, delegating to...
+	(__mingw_vsnprintf): ...this external function.
+
+	* mingwex/stdio/snprintf.c mingwex/stdio/vsnprintf.c: Assert
+	copyright; include <stddef.h>, instead of <stdio.h>, to obtain a
+	definition of "size_t"; this is required because the new in-line
+	prototypes, now provided in <stdio.h>, conflict with the intent
+	to provide external implementations.
+
+	* tests/ansiprintf.at (MINGW_AT_CHECK_SNPRINTF): Conditionally
+	circumvent conditions which may produce -Wformat warnings.
+
 2019-07-01  Keith Marshall  <keith@users.osdn.me>
 
 	Revert to macro implementation of "alloca()" functions.

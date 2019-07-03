@@ -375,7 +375,7 @@ extern int __mingw_stdio_redirect__(vsnprintf)(char*, size_t, const char*, __VAL
  */
 extern unsigned int _mingw_output_format_control( unsigned int, unsigned int );
 
-#if __USE_MINGW_ANSI_STDIO
+#if __USE_MINGW_ANSI_STDIO || defined _ISOC99_SOURCE
 /* User has expressed a preference for C99 conformance...
  */
 # undef __mingw_stdio_redirect__
@@ -393,12 +393,20 @@ extern unsigned int _mingw_output_format_control( unsigned int, unsigned int );
  */
 #  define __mingw_stdio_redirect__  static __inline__ __cdecl __MINGW_NOTHROW
 
-# else
+# else	/* Neither C++ nor __GNUC__ */
 /* Can't use inlines; fall back on module local static stubs.
  */
 #  define __mingw_stdio_redirect__  static __cdecl __MINGW_NOTHROW
-# endif
 
+# endif	/* Neither C++ nor __GNUC__ */
+#endif	/* __USE_MINGW_ANSI_STDIO || defined _ISOC99_SOURCE */
+
+#if __USE_MINGW_ANSI_STDIO
+/* The MinGW ISO-C conforming implementations of the printf() family
+ * of functions are to be used, in place of non-conforming Microsoft
+ * implementations; force call redirection, via the following set of
+ * in-line functions.
+ */
 __mingw_stdio_redirect__
 int fprintf (FILE *__stream, const char *__format, ...)
 {
@@ -457,7 +465,34 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int vfprintf (FILE *, const char *, __VALIST);
 _CRTIMP __cdecl __MINGW_NOTHROW  int vprintf (const char *, __VALIST);
 _CRTIMP __cdecl __MINGW_NOTHROW  int vsprintf (char *, const char *, __VALIST);
 
-#endif
+#endif	/* !__USE_MINGW_ANSI_STDIO */
+
+#if __GNUC__ && defined _ISOC99_SOURCE
+/* Although MinGW implementations of the ISO-C99 snprintf() and
+ * vsnprintf() functions do not conflict with any implementation
+ * in MSVCRT.DLL, (because MSVCRT.DLL does not implement either),
+ * there are -Wformat attribute conflicts with the GCC built-in
+ * prototypes associated with each; by providing the following
+ * in-line function implementations, which will override GCC's
+ * built-in prototypes, we may avoid these conflicts.
+ */
+__mingw_stdio_redirect__
+int snprintf (char *__buf, size_t __len, const char *__format, ...)
+{
+  register int __retval;
+  __builtin_va_list __local_argv; __builtin_va_start( __local_argv, __format );
+  __retval = __mingw_vsnprintf( __buf, __len, __format, __local_argv );
+  __builtin_va_end( __local_argv );
+  return __retval;
+}
+
+__mingw_stdio_redirect__
+int vsnprintf (char *__buf, size_t __len, const char *__format, __VALIST __local_argv)
+{
+  return __mingw_vsnprintf( __buf, __len, __format, __local_argv );
+}
+#endif	/* __GNUC__ && defined _ISOC99_SOURCE */
+
 /* Regardless of user preference, always offer these alternative
  * entry points, for direct access to the MSVCRT implementations,
  * with ms_printf -Wformat checking in each case.
