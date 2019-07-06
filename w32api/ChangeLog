@@ -1,3 +1,9 @@
+2019-07-06  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.2.2 release.
+
+	* All files (wsl-5.2.2-release): Tag assigned.
+
 2019-06-07  Keith Marshall  <keith@users.osdn.me>
 
 	Add missing definitions; fix MinGW-Bug #39129
