@@ -6,7 +6,8 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2004, 2007, 2009, 2010, 2014-2016, MinGW.org Project.
+ * Copyright (C) 1997-2004, 2007, 2009, 2010, 2014-2016, 2019,
+ *   MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -468,20 +469,20 @@ int _wfindnexti64 (intptr_t __handle, struct _wfinddatai64_t *__search)
 #endif	/* __MSVCRT_VERSION__ >= MSVCR80.DLL */
 #endif	/* >= _WIN2K || >= MSVCR61.DLL */
 
+/* MSDN documents that <io.h> must be included to get a prototype for
+ * _findclose(), which kind of negates the usefulness of declaring the
+ * wchar_t variants of the file name search API in <wchar.h>; mitigate
+ * this anomaly, by declaring _findclose() such that either <io.h> or
+ * <wchar.h> (but only the first to be included) will provide it.
+ */
+_CRTIMP __cdecl __MINGW_NOTHROW  int _findclose (intptr_t);
+
 #undef __fd_name_t
 #endif	/* ! (_IO_H && _WCHAR_H) */
 
 /* We have no further use for the __struct_finddata_t macro; delete it!
  */
 #undef __struct_finddata_t
-
-/* MSDN documents that <io.h> must be included to get a prototype for
- * _findclose(), which kind of negates the usefulness of declaring the
- * wchar_t variants of the file name search API in <wchar.h>; mitigate
- * this anomaly, by declaring _findclose() such that either <io.h> or
- * <wchar.h> will provide it.
- */
-_CRTIMP __cdecl __MINGW_NOTHROW  int _findclose (intptr_t);
 
 #ifdef _IO_H
 /* The following declarations are to be exposed only when <io.h> is

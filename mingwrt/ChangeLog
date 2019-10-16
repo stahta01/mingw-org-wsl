@@ -1,3 +1,11 @@
+2019-10-16  Keith Marshall  <keith@users.osdn.me>
+
+	Address MinGW-Issue #39677; declare _findclose() only once.
+
+	* include/io.h (_findclose): Relocate declaration within conditional
+	block, to prevent second exposure when <io.h> is included in full,
+	following partial inclusion by <wchar.h>
+
 2019-07-06  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2.2 release.
