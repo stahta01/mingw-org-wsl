@@ -1,3 +1,11 @@
+2019-10-26  Keith Marshall  <keith@users.osdn.me>
+
+	Fix MinGW-Issue #39757; avoid multiple vsnprintf() definitions.
+
+	* include/stdio.h [C++] (__mingw_stdio_redirect__): Defer redirection
+	to in-line definitions applicable for C, when the compiler suite is...
+	[__GNUC__]: ...this.
+
 2019-10-16  Keith Marshall  <keith@users.osdn.me>
 
 	Address MinGW-Issue #39677; declare _findclose() only once.

@@ -379,26 +379,26 @@ extern unsigned int _mingw_output_format_control( unsigned int, unsigned int );
 /* User has expressed a preference for C99 conformance...
  */
 # undef __mingw_stdio_redirect__
-# ifdef __cplusplus
-/* For C++ we use inline implementations, to avoid interference
+# if defined __GNUC__
+/* FIXME: Is there any GCC version prerequisite here?
+ *
+ * We prefer inline implementations for both C and C++, when we can be
+ * confident that the GNU specific __inline__ mechanism is supported.
+ */
+#  define __mingw_stdio_redirect__  static __inline__ __cdecl __MINGW_NOTHROW
+
+# elif defined __cplusplus
+/* For non-GNU C++ we use inline implementations, to avoid interference
  * with namespace qualification, which may result from using #defines.
  */
 #  define __mingw_stdio_redirect__  inline __cdecl __MINGW_NOTHROW
 
-# elif defined __GNUC__
-/* FIXME: Is there any GCC version prerequisite here?
- *
- * We also prefer inline implementations for C, when we can be confident
- * that the GNU specific __inline__ mechanism is supported.
- */
-#  define __mingw_stdio_redirect__  static __inline__ __cdecl __MINGW_NOTHROW
-
-# else	/* Neither C++ nor __GNUC__ */
+# else	/* Neither GCC, nor non-GNU C++ */
 /* Can't use inlines; fall back on module local static stubs.
  */
 #  define __mingw_stdio_redirect__  static __cdecl __MINGW_NOTHROW
 
-# endif	/* Neither C++ nor __GNUC__ */
+# endif	/* Neither GCC, nor non-GNU C++ */
 #endif	/* __USE_MINGW_ANSI_STDIO || defined _ISOC99_SOURCE */
 
 #if __USE_MINGW_ANSI_STDIO
