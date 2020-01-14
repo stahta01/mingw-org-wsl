@@ -1,3 +1,29 @@
+2020-01-14  Keith Marshall  <keith@users.osdn.me>
+
+	Make <winnls.h> header effectively self-contained.
+
+	* include/winnls.h: Tidy layout; assert copyright.
+	Include <winbase.h>, so supporting stand-alone inclusion.
+	(pragma GCC system_header): Remove redundant GCC version guard.
+	(WINVER, _WIN32_WINNT): Always use symbolic version comparisons.
+	(__AW_ALIAS__): Use it to selectively typedef...
+	[UNICODE vs. ! UNICODE] (CPINFOEX, LPCPINFOEX, CURRENCYFMT)
+	(LPCURRENCYFMT, NUMBERFMT, LPNUMBERFMT): ...each of these generic data
+	types; delete redundant UNICODE vs. non-UNICODE variants.
+	(__AW_SUFFIXED__): Likewise, use it to selectively define...
+	[UNICODE vs. ! UNICODE] (CALINFO_ENUMPROC, CALINFO_ENUMPROCEX)
+	(LANGUAGEGROUP_ENUMPROC, LANGGROUPLOCALE_ENUMPROC, LOCALE_ENUMPROC)
+	(CODEPAGE_ENUMPROC, DATEFMT_ENUMPROC, DATEFMT_ENUMPROCEX)
+	(TIMEFMT_ENUMPROC, UILANGUAGE_ENUMPROC, CompareString)
+	(EnumCalendarInfo, EnumDateFormats, EnumSystemCodePages)
+	(EnumSystemLocales, EnumTimeFormats, FoldString, GetCalendarInfo)
+	(GetCPInfoEx, GetCurrencyFormat, GetDateFormat, GetGeoInfo)
+	(GetLocaleInfo, GetNumberFormat, GetStringTypeEx, GetTimeFormat)
+	(LCMapString, SetCalendarInfo, SetLocaleInfo, EnumCalendarInfoEx)
+	(EnumDateFormatsEx, EnumSystemLanguageGroups, EnumLanguageGroupLocales)
+	(EnumUILanguages): ...these generic names; delete redundant variants.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+
 2019-07-06  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.2.2 release.
