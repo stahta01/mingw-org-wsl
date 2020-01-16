@@ -37,31 +37,71 @@
 
 _BEGIN_C_DECLS
 
-#define MAX_LEADBYTES						12
-#define MAX_DEFAULTCHAR 					 2
-#define LOCALE_NOUSEROVERRIDE				0x80000000
-#define LOCALE_USE_CP_ACP				0x40000000
+/* Locale Specifications
+ * ---------------------
+ * Locale identifiers; documentation reference links may be found at:
+ * https://docs.microsoft.com/en-gb/windows/desktop/Intl/locale-information-constants
+ */
+#define LOCALE_USER_DEFAULT				    0x0400
+#define LOCALE_SYSTEM_DEFAULT				    0x0800
 
-#if WINVER >= _WIN32_WINNT_NT4		/* also >= Win95 */
+#if _WIN32_WINNT >= _WIN32_WINNT_WINXP
+/* The invariant system locale was added in Windows-XP.
+ */
+#define LOCALE_INVARIANT				    0x007F
 
+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+/* Support for custom locales was added in Windows-Vista.
+ */
+#define LOCALE_CUSTOM_DEFAULT				    0x0C00
+#define LOCALE_CUSTOM_UI_DEFAULT			    0x1400
+#define LOCALE_CUSTOM_UNSPECIFIED			    0x1000
+
+#endif	/* Vista (and later) custom locale identifiers */
+#endif	/* WinXP (and later) custom locale identifiers */
+
+/* Locale identifier reference classification flags; for documentation see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-enumsystemlocalesa
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-isvalidlocale
+ */
+#define LCID_INSTALLED						 1
+#define LCID_SUPPORTED						 2
+#define LCID_ALTERNATE_SORTS					 4
+
+/* Locale information constants; (inadequately) documented at:
+ * https://docs.microsoft.com/en-gb/windows/desktop/Intl/locale-information-constants
+ *
+ * Qualifier flags, which may be used in combination with any one of the
+ * otherwise mutually exclusive locale property identification codes.
+ */
+#if WINVER >= _WIN32_WINNT_NT4
+/* The first of these wasn't available prior to WinNT4. WINVER equivalence
+ * suggests that this would also apply for Windows-95, but the documentation
+ * states otherwise; this may not be supported prior to Windows-98.
+ */
 #define LOCALE_RETURN_NUMBER				0x20000000
+#endif
+/* The remaining pair appear to have been universally available.
+ */
+#define LOCALE_USE_CP_ACP				0x40000000
+#define LOCALE_NOUSEROVERRIDE				0x80000000
 
-#endif	/* >= WinNT4 / Win95 */
-
+/* The locale property identification codes themselves.  These are each
+ * mutually exclusive of the others; while each one may be used with any
+ * combination of the preceding qualifier flags, no combination of these
+ * individually distinct property identification codes is permitted.
+ */
 #define LOCALE_ILANGUAGE					 1
 #define LOCALE_SLANGUAGE					 2
-#define LOCALE_SENGLANGUAGE				    0x1001
 #define LOCALE_SABBREVLANGNAME					 3
 #define LOCALE_SNATIVELANGNAME					 4
 #define LOCALE_ICOUNTRY 					 5
 #define LOCALE_SCOUNTRY 					 6
-#define LOCALE_SENGCOUNTRY				    0x1002
 #define LOCALE_SABBREVCTRYNAME					 7
 #define LOCALE_SNATIVECTRYNAME					 8
 #define LOCALE_IDEFAULTLANGUAGE 				 9
 #define LOCALE_IDEFAULTCOUNTRY					10
 #define LOCALE_IDEFAULTCODEPAGE 				11
-#define LOCALE_IDEFAULTANSICODEPAGE			    0x1004
 #define LOCALE_SLIST						12
 #define LOCALE_IMEASURE 					13
 #define LOCALE_SDECIMAL 					14
@@ -69,7 +109,6 @@ _BEGIN_C_DECLS
 #define LOCALE_SGROUPING					16
 #define LOCALE_IDIGITS						17
 #define LOCALE_ILZERO						18
-#define LOCALE_INEGNUMBER				    0x1010
 #define LOCALE_SNATIVEDIGITS					19
 #define LOCALE_SCURRENCY					20
 #define LOCALE_SINTLSYMBOL					21
@@ -84,21 +123,15 @@ _BEGIN_C_DECLS
 #define LOCALE_STIME						30
 #define LOCALE_SSHORTDATE					31
 #define LOCALE_SLONGDATE					32
-#define LOCALE_STIMEFORMAT				    0x1003
 #define LOCALE_IDATE						33
 #define LOCALE_ILDATE						34
 #define LOCALE_ITIME						35
-#define LOCALE_ITIMEMARKPOSN				    0x1005
 #define LOCALE_ICENTURY 					36
 #define LOCALE_ITLZERO						37
 #define LOCALE_IDAYLZERO					38
 #define LOCALE_IMONLZERO					39
 #define LOCALE_S1159						40
 #define LOCALE_S2359						41
-#define LOCALE_ICALENDARTYPE				    0x1009
-#define LOCALE_IOPTIONALCALENDAR			    0x100B
-#define LOCALE_IFIRSTDAYOFWEEK				    0x100C
-#define LOCALE_IFIRSTWEEKOFYEAR 			    0x100D
 #define LOCALE_SDAYNAME1					42
 #define LOCALE_SDAYNAME2					43
 #define LOCALE_SDAYNAME3					44
@@ -125,7 +158,6 @@ _BEGIN_C_DECLS
 #define LOCALE_SMONTHNAME10					65
 #define LOCALE_SMONTHNAME11					66
 #define LOCALE_SMONTHNAME12					67
-#define LOCALE_SMONTHNAME13				    0x100E
 #define LOCALE_SABBREVMONTHNAME1				68
 #define LOCALE_SABBREVMONTHNAME2				69
 #define LOCALE_SABBREVMONTHNAME3				70
@@ -138,7 +170,6 @@ _BEGIN_C_DECLS
 #define LOCALE_SABBREVMONTHNAME10				77
 #define LOCALE_SABBREVMONTHNAME11				78
 #define LOCALE_SABBREVMONTHNAME12				79
-#define LOCALE_SABBREVMONTHNAME13			    0x100F
 #define LOCALE_SPOSITIVESIGN					80
 #define LOCALE_SNEGATIVESIGN					81
 #define LOCALE_IPOSSIGNPOSN					82
@@ -150,94 +181,84 @@ _BEGIN_C_DECLS
 #define LOCALE_FONTSIGNATURE					88
 #define LOCALE_SISO639LANGNAME					89
 #define LOCALE_SISO3166CTRYNAME 				90
-#define LOCALE_SYSTEM_DEFAULT				     0x800
-#define LOCALE_USER_DEFAULT				     0x400
-#define NORM_IGNORECASE 					 1
-#define NORM_IGNOREKANATYPE				     65536
-#define NORM_IGNORENONSPACE					 2
-#define NORM_IGNORESYMBOLS					 4
-#define NORM_IGNOREWIDTH				    131072
-#define SORT_STRINGSORT 				      4096
-#define LCMAP_LOWERCASE 				0x00000100
-#define LCMAP_UPPERCASE 				0x00000200
-#define LCMAP_SORTKEY					0x00000400
-#define LCMAP_BYTEREV					0x00000800
-#define LCMAP_HIRAGANA					0x00100000
-#define LCMAP_KATAKANA					0x00200000
-#define LCMAP_HALFWIDTH 				0x00400000
-#define LCMAP_FULLWIDTH 				0x00800000
-#define LCMAP_LINGUISTIC_CASING 			0x01000000
-#define LCMAP_SIMPLIFIED_CHINESE			0x02000000
-#define LCMAP_TRADITIONAL_CHINESE			0x04000000
-#define ENUM_ALL_CALENDARS				       (-1)
-#define DATE_SHORTDATE						 1
-#define DATE_LONGDATE						 2
-#define DATE_USE_ALT_CALENDAR					 4
-#define CP_INSTALLED						 1
-#define CP_SUPPORTED						 2
-#define LCID_INSTALLED						 1
-#define LCID_SUPPORTED						 2
-#define LCID_ALTERNATE_SORTS					 4
-#define MAP_FOLDCZONE						16
-#define MAP_FOLDDIGITS					       128
-#define MAP_PRECOMPOSED 					32
-#define MAP_COMPOSITE						64
-#define CP_ACP							 0
-#define CP_OEMCP						 1
-#define CP_MACCP						 2
-#define CP_THREAD_ACP						 3
-#define CP_SYMBOL						42
-#define CP_UTF7 					     65000
-#define CP_UTF8 					     65001
-#define CT_CTYPE1						 1
-#define CT_CTYPE2						 2
-#define CT_CTYPE3						 4
-#define C1_UPPER						 1
-#define C1_LOWER						 2
-#define C1_DIGIT						 4
-#define C1_SPACE						 8
-#define C1_PUNCT						16
-#define C1_CNTRL						32
-#define C1_BLANK						64
-#define C1_XDIGIT					       128
-#define C1_ALPHA					       256
-#define C2_LEFTTORIGHT						 1
-#define C2_RIGHTTOLEFT						 2
-#define C2_EUROPENUMBER 					 3
-#define C2_EUROPESEPARATOR					 4
-#define C2_EUROPETERMINATOR					 5
-#define C2_ARABICNUMBER 					 6
-#define C2_COMMONSEPARATOR					 7
-#define C2_BLOCKSEPARATOR					 8
-#define C2_SEGMENTSEPARATOR					 9
-#define C2_WHITESPACE						10
-#define C2_OTHERNEUTRAL 					11
-#define C2_NOTAPPLICABLE					 0
-#define C3_NONSPACING						 1
-#define C3_DIACRITIC						 2
-#define C3_VOWELMARK						 4
-#define C3_SYMBOL						 8
-#define C3_KATAKANA						16
-#define C3_HIRAGANA						32
-#define C3_HALFWIDTH						64
-#define C3_FULLWIDTH					       128
-#define C3_IDEOGRAPH					       256
-#define C3_KASHIDA					       512
-#define C3_LEXICAL					      1024
-#define C3_ALPHA					     32768
-#define C3_NOTAPPLICABLE					 0
-#define TIME_NOMINUTESORSECONDS 				 1
-#define TIME_NOSECONDS						 2
-#define TIME_NOTIMEMARKER					 4
-#define TIME_FORCE24HOURFORMAT					 8
-#define MB_PRECOMPOSED						 1
-#define MB_COMPOSITE						 2
-#define MB_ERR_INVALID_CHARS					 8
-#define MB_USEGLYPHCHARS					 4
-#define WC_COMPOSITECHECK				       512
-#define WC_DISCARDNS						16
-#define WC_SEPCHARS						32
-#define WC_DEFAULTCHAR						64
+#define LOCALE_IGEOID						91
+
+#define LOCALE_SENGLANGUAGE				    0x1001
+#define LOCALE_SENGCOUNTRY				    0x1002
+#define LOCALE_STIMEFORMAT				    0x1003
+#define LOCALE_IDEFAULTANSICODEPAGE			    0x1004
+#define LOCALE_ITIMEMARKPOSN				    0x1005
+#define LOCALE_ICALENDARTYPE				    0x1009
+#define LOCALE_IOPTIONALCALENDAR			    0x100B
+#define LOCALE_IFIRSTDAYOFWEEK				    0x100C
+#define LOCALE_IFIRSTWEEKOFYEAR 			    0x100D
+#define LOCALE_SMONTHNAME13				    0x100E
+#define LOCALE_SABBREVMONTHNAME13			    0x100F
+#define LOCALE_INEGNUMBER				    0x1010
+
+#if WINVER >= _WIN32_WINDOWS_98
+/* The following locale property identifiers were introduced for Windows-98,
+ * and are thus implicitly supported on WinNT platforms from Win2K onwards.
+ */
+#define LOCALE_SYEARMONTH				    0x1006
+#define LOCALE_SENGCURRNAME				    0x1007
+#define LOCALE_SNATIVECURRNAME				    0x1008
+#define LOCALE_SSORTNAME				    0x1013
+
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN2K
+/* The following locale identification codes were not supported, prior to
+ * Win2K, and thus are unavailable on any Win9X platform.
+ */
+#define LOCALE_IPAPERSIZE				    0x100A
+#define LOCALE_IDEFAULTEBCDICCODEPAGE			    0x1012
+#define LOCALE_IDIGITSUBSTITUTION			    0x1014
+
+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+/* Introduced with Win-Vista, Microsoft don't document values for these;
+ * I have deduced them by inspection of GetLocaleInfoA() return values for
+ * every possible property identifier in the range 0..0x1FFFFFFF, ignoring
+ * those which return an error condition code.
+ */
+#define LOCALE_SNAME						92
+#define LOCALE_SDURATION					93
+#define LOCALE_SKEYBOARDSTOINSTALL				94
+
+#define LOCALE_SSHORTESTDAYNAME1				96
+#define LOCALE_SSHORTESTDAYNAME2				97
+#define LOCALE_SSHORTESTDAYNAME3				98
+#define LOCALE_SSHORTESTDAYNAME4				99
+#define LOCALE_SSHORTESTDAYNAME5			       100
+#define LOCALE_SSHORTESTDAYNAME6			       101
+#define LOCALE_SSHORTESTDAYNAME7			       102
+
+#define LOCALE_SISO639LANGNAME2 			       103
+#define LOCALE_SISO3166CTRYNAME2			       104
+
+#define LOCALE_SNAN					       105
+#define LOCALE_SPOSINFINITY				       106
+#define LOCALE_SNEGINFINITY				       107
+#define LOCALE_SSCRIPTS 				       108
+
+#if 0
+/* FIXME: Originally identified by Dimitri Papadopolous, as a Vista addition,
+ * but with unknown value, (and I see nothing in WinXP GetLocaleInfo() output,
+ * corresponding to ANY possible locale data identifier, which even remotely
+ * resembles an IETF language name); Microsoft now document this identifier
+ * as "deprecated in Vista and later", (which seems kind of contradictory).
+ * Does this serve any useful purpose?  Did it ever?  Maybe define it as an
+ * alias for LOCALE_SNAME, (which, as I've deduced its value, does seem to
+ * represent an IETF name, on my Win7 host)?  Or, just drop it altogether?
+ */
+#define LOCALE_SIETFLANGUAGE				       ???
+#endif
+
+#endif	/* Vista (and later) only */
+#endif	/* Win2K (and later) only */
+#endif	/* Win98/Win2K and later */
+
+
+/* Country identification codes.
+ */
 #define CTRY_DEFAULT						 0
 #define CTRY_ALBANIA					       355
 #define CTRY_ALGERIA					       213
@@ -350,6 +371,248 @@ _BEGIN_C_DECLS
 #define CTRY_VIET_NAM						84
 #define CTRY_YEMEN					       967
 #define CTRY_ZIMBABWE					       263
+
+
+/* Language group enumeration options; for documentation see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-enumsystemlanguagegroupsa
+ */
+#define LGRPID_INSTALLED					 1
+#define LGRPID_SUPPORTED					 2
+
+/* Language group identification codes; for documentation see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-enumlanguagegrouplocalesa
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-isvalidlanguagegroup
+ */
+#define LGRPID_WESTERN_EUROPE					 1
+#define LGRPID_CENTRAL_EUROPE					 2
+#define LGRPID_BALTIC						 3
+#define LGRPID_GREEK						 4
+#define LGRPID_CYRILLIC 					 5
+#define LGRPID_TURKISH						 6
+#define LGRPID_JAPANESE 					 7
+#define LGRPID_KOREAN						 8
+#define LGRPID_TRADITIONAL_CHINESE				 9
+#define LGRPID_SIMPLIFIED_CHINESE				10
+#define LGRPID_THAI						11
+#define LGRPID_HEBREW						12
+#define LGRPID_ARABIC						13
+#define LGRPID_VIETNAMESE					14
+#define LGRPID_INDIC						15
+#define LGRPID_GEORGIAN 					16
+#define LGRPID_ARMENIAN 					17
+
+
+/* String Handling API
+ * -------------------
+ * Code page enumeration options; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-enumsystemcodepagesw
+ */
+#define CP_INSTALLED						 1
+#define CP_SUPPORTED						 2
+
+/* Generic code page selectors for MBCS to/from UTF-16LE transformation:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-multibytetowidechar
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-widechartomultibyte
+ */
+#define CP_ACP							 0
+#define CP_OEMCP						 1
+#define CP_MACCP						 2
+#define CP_THREAD_ACP						 3
+#define CP_SYMBOL						42
+#define CP_UTF7 					     65000
+#define CP_UTF8 					     65001
+
+/* Options for MBCS to UTF-16LE transformations; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-multibytetowidechar
+ */
+#define MB_PRECOMPOSED					     0x001
+#define MB_COMPOSITE					     0x002
+#define MB_USEGLYPHCHARS				     0x004
+#define MB_ERR_INVALID_CHARS				     0x008
+
+/* Options for UTF-16LE to MBCS transformations; see:
+ */
+#define WC_DISCARDNS					     0x010
+#define WC_SEPCHARS					     0x020
+#define WC_DEFAULTCHAR					     0x040
+#define WC_COMPOSITECHECK				     0x200
+
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN2K
+/* The following is not supported on Win9x, nor on WinNT prior to Win-2000.
+ */
+#define WC_NO_BEST_FIT_CHARS				     0x400
+
+#endif	/* Windows-2000 and later */
+
+/* Character type classification operations; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-getstringtypew
+ */
+#define CT_CTYPE1						 1
+#define CT_CTYPE2						 2
+#define CT_CTYPE3						 4
+
+/* CT_CTYPE1 classification (approximately equivalent to ISO-C ctype);
+ * for each character in the string, returns any bit-wise combination of
+ * the following attributes:
+ */
+#define C1_UPPER					    0x0001
+#define C1_LOWER					    0x0002
+#define C1_DIGIT					    0x0004
+#define C1_SPACE					    0x0008
+#define C1_PUNCT					    0x0010
+#define C1_CNTRL					    0x0020
+#define C1_BLANK					    0x0040
+#define C1_XDIGIT					    0x0080
+#define C1_ALPHA					    0x0100
+#define C1_DEFINED					    0x0200
+
+/* CT_CTYPE2 classification; for each character in the string, returns
+ * one of the following mutually exclusive Unicode bidirectional layout
+ * attributes:
+ */
+#define C2_NOTAPPLICABLE					 0
+#define C2_LEFTTORIGHT						 1
+#define C2_RIGHTTOLEFT						 2
+#define C2_EUROPENUMBER 					 3
+#define C2_EUROPESEPARATOR					 4
+#define C2_EUROPETERMINATOR					 5
+#define C2_ARABICNUMBER 					 6
+#define C2_COMMONSEPARATOR					 7
+#define C2_BLOCKSEPARATOR					 8
+#define C2_SEGMENTSEPARATOR					 9
+#define C2_WHITESPACE						10
+#define C2_OTHERNEUTRAL 					11
+
+/* CT_CTYPE3 classification; for each character in the string, returns
+ * a bit-wise combination of any of the following attributes:
+ */
+#define C3_NOTAPPLICABLE				    0x0000
+#define C3_NONSPACING					    0x0001
+#define C3_DIACRITIC					    0x0002
+#define C3_VOWELMARK					    0x0004
+#define C3_SYMBOL					    0x0008
+#define C3_KATAKANA					    0x0010
+#define C3_HIRAGANA					    0x0020
+#define C3_HALFWIDTH					    0x0040
+#define C3_FULLWIDTH					    0x0080
+#define C3_IDEOGRAPH					    0x0100
+#define C3_KASHIDA					    0x0200
+#define C3_LEXICAL					    0x0400
+#define C3_ALPHA					    0x8000
+
+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+
+#define C3_HIGHSURROGATE				    0x0800
+#define C3_LOWSURROGATE 				    0x1000
+
+#endif	/* Windows-Vista and later */
+
+/* String sorting and transformation option flags; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-lcmapstringex
+ */
+#define LCMAP_LOWERCASE 				0x00000100
+#define LCMAP_UPPERCASE 				0x00000200
+#define LCMAP_SORTKEY					0x00000400
+#define LCMAP_BYTEREV					0x00000800
+#define LCMAP_HIRAGANA					0x00100000
+#define LCMAP_KATAKANA					0x00200000
+#define LCMAP_HALFWIDTH 				0x00400000
+#define LCMAP_FULLWIDTH 				0x00800000
+#define LCMAP_LINGUISTIC_CASING 			0x01000000
+#define LCMAP_SIMPLIFIED_CHINESE			0x02000000
+#define LCMAP_TRADITIONAL_CHINESE			0x04000000
+
+/* Additional Unicode string transformation options; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-foldstringw
+ */
+#define MAP_FOLDCZONE					0x00000010
+#define MAP_PRECOMPOSED 				0x00000020
+#define MAP_COMPOSITE					0x00000040
+#define MAP_FOLDDIGITS					0x00000080
+
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN2K
+/* This additional FoldString() transformation option was not supported,
+ * prior to Windows-2000.
+ */
+#define MAP_EXPAND_LIGATURES				0x00002000
+
+#endif	/* Windows-2000 and later */
+
+/* Normalization options for string comparison, sorting, and transformation:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-comparestringex
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-lcmapstringex
+ */
+#define NORM_IGNORECASE 				0x00000001
+#define NORM_IGNORENONSPACE				0x00000002
+#define NORM_IGNORESYMBOLS				0x00000004
+#define NORM_IGNOREKANATYPE				0x00010000
+#define NORM_IGNOREWIDTH				0x00020000
+
+/* String sorting options; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-comparestringex
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/winnls/nf-winnls-lcmapstringex
+ */
+#define SORT_STRINGSORT 				0x00001000
+
+/* String comparator return values; (note intentional difference from ISO-C):
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/stringapiset/nf-stringapiset-comparestringex
+ */
+#define CSTR_LESS_THAN						 1
+#define CSTR_EQUAL						 2
+#define CSTR_GREATER_THAN					 3
+
+/* Macros for UTF-16LE surrogate identification.
+ */
+#define IS_HIGH_SURROGATE(c)			(((c) & 0xFC00) == 0xD800)
+#define IS_LOW_SURROGATE(c)			(((c) & 0xFC00) == 0xDC00)
+#define IS_SURROGATE_PAIR(hc,lc)	(IS_HIGH_SURROGATE(hc) && IS_LOW_SURROGATE(lc))
+
+
+/* Date and Time Handling API
+ * --------------------------
+ * Calendar identification codes; these are documented at:
+ * https://docs.microsoft.com/en-gb/windows/desktop/Intl/calendar-identifiers
+ */
+#define CAL_GREGORIAN						 1
+#define CAL_GREGORIAN_US					 2
+#define CAL_JAPAN						 3
+#define CAL_TAIWAN						 4
+#define CAL_KOREA						 5
+#define CAL_HIJRI						 6
+#define CAL_THAI						 7
+#define CAL_HEBREW						 8
+#define CAL_GREGORIAN_ME_FRENCH 				 9
+#define CAL_GREGORIAN_ARABIC					10
+#define CAL_GREGORIAN_XLIT_ENGLISH				11
+#define CAL_GREGORIAN_XLIT_FRENCH				12
+
+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+/* Introduced for Windows-Vista and later; values in the interval 13..22 are
+ * reserved by Microsoft, and are unallocated.
+ */
+#define CAL_UMALQURA						23
+#endif
+
+#define ENUM_ALL_CALENDARS				       (-1)
+
+/* Calendar property identifiation codes; (inadequately) documented at:
+ * https://docs.microsoft.com/en-gb/windows/desktop/Intl/calendar-type-information
+ */
+#if WINVER >= _WIN32_WINDOWS_98
+/* Analagous to, and sharing values with, their corresponding locale property
+ * qualifying flags, these calendar property qualifying flags were unsupported
+ * prior to Windows-98, (and correpondingly, Windows-2000 for WinNT platforms).
+ */
+#define CAL_RETURN_NUMBER				0x20000000
+#define CAL_USE_CP_ACP					0x40000000
+#define CAL_NOUSEROVERRIDE				0x80000000
+#endif
+
+/* The calendar property identification codes themselves.  Each one is
+ * mutually exclusive of the others; while each one may be used with any
+ * combination of the preceding qualifier flags, no combination of these
+ * individually distinct property identification codes is permitted.
+ */
 #define CAL_ICALINTVALUE					 1
 #define CAL_SCALNAME						 2
 #define CAL_IYEAROFFSETRANGE					 3
@@ -396,107 +659,61 @@ _BEGIN_C_DECLS
 #define CAL_SABBREVMONTHNAME11					44
 #define CAL_SABBREVMONTHNAME12					45
 #define CAL_SABBREVMONTHNAME13					46
-#define CAL_GREGORIAN						 1
-#define CAL_GREGORIAN_US					 2
-#define CAL_JAPAN						 3
-#define CAL_TAIWAN						 4
-#define CAL_KOREA						 5
-#define CAL_HIJRI						 6
-#define CAL_THAI						 7
-#define CAL_HEBREW						 8
-#define CAL_GREGORIAN_ME_FRENCH 				 9
-#define CAL_GREGORIAN_ARABIC					10
-#define CAL_GREGORIAN_XLIT_ENGLISH				11
-#define CAL_GREGORIAN_XLIT_FRENCH				12
-#define CSTR_LESS_THAN						 1
-#define CSTR_EQUAL						 2
-#define CSTR_GREATER_THAN					 3
-#define LGRPID_INSTALLED					 1
-#define LGRPID_SUPPORTED					 2
-#define LGRPID_WESTERN_EUROPE					 1
-#define LGRPID_CENTRAL_EUROPE					 2
-#define LGRPID_BALTIC						 3
-#define LGRPID_GREEK						 4
-#define LGRPID_CYRILLIC 					 5
-#define LGRPID_TURKISH						 6
-#define LGRPID_JAPANESE 					 7
-#define LGRPID_KOREAN						 8
-#define LGRPID_TRADITIONAL_CHINESE				 9
-#define LGRPID_SIMPLIFIED_CHINESE				10
-#define LGRPID_THAI						11
-#define LGRPID_HEBREW						12
-#define LGRPID_ARABIC						13
-#define LGRPID_VIETNAMESE					14
-#define LGRPID_INDIC						15
-#define LGRPID_GEORGIAN 					16
-#define LGRPID_ARMENIAN 					17
-#define IS_HIGH_SURROGATE(c)			(((c) & 0xFC00) == 0xD800)
-#define IS_LOW_SURROGATE(c)			(((c) & 0xFC00) == 0xDC00)
-#define IS_SURROGATE_PAIR(hc,lc)	(IS_HIGH_SURROGATE(hc) && IS_LOW_SURROGATE(lc))
 
-#if WINVER >= _WIN32_WINDOWS_98		/* also >= Win2K */
-
+#if WINVER >= _WIN32_WINDOWS_98
+/* The following pair of calendar properties were unsupported prior to
+ * Windows-98, (or Windows-2000, for WinNT platforms).
+ */
 #define CAL_SYEARMONTH						47
 #define CAL_ITWODIGITYEARMAX					48
-#define CAL_NOUSEROVERRIDE			     LOCALE_NOUSEROVERRIDE
-#define CAL_RETURN_NUMBER			     LOCALE_RETURN_NUMBER
-#define CAL_USE_CP_ACP				     LOCALE_USE_CP_ACP
-#define LOCALE_SYEARMONTH				    0x1006
-#define LOCALE_SENGCURRNAME				    0x1007
-#define LOCALE_SNATIVECURRNAME				    0x1008
-#define LOCALE_SSORTNAME				    0x1013
-
-#endif /* >= Win98 / Win2K */
-
-#if _WIN32_WINNT >= _WIN32_WINNT_WIN2K
-
-#define LOCALE_IDEFAULTEBCDICCODEPAGE			    0x1012
-#define LOCALE_IDIGITSUBSTITUTION			    0x1014
-#define LOCALE_IPAPERSIZE				    0x100A
-#define DATE_YEARMONTH						 8
-#define DATE_LTRREADING 					16
-#define DATE_RTLREADING 					32
-#define MAP_EXPAND_LIGATURES				    0x2000
-#define WC_NO_BEST_FIT_CHARS				      1024
-
-#endif /* >= Win2K */
 
 #if _WIN32_WINNT >= _WIN32_WINNT_VISTA
 
-#if 0
-#define CAL_SSHORTESTDAYNAME1
-#define CAL_SSHORTESTDAYNAME2
-#define CAL_SSHORTESTDAYNAME3
-#define CAL_SSHORTESTDAYNAME4
-#define CAL_SSHORTESTDAYNAME5
-#define CAL_SSHORTESTDAYNAME6
-#define CAL_SSHORTESTDAYNAME7
+#define CAL_SSHORTESTDAYNAME1					49
+#define CAL_SSHORTESTDAYNAME2					50
+#define CAL_SSHORTESTDAYNAME3					51
+#define CAL_SSHORTESTDAYNAME4					52
+#define CAL_SSHORTESTDAYNAME5					53
+#define CAL_SSHORTESTDAYNAME6					54
+#define CAL_SSHORTESTDAYNAME7					55
 
-#define LOCALE_SSHORTESTDAYNAME1
-#define LOCALE_SSHORTESTDAYNAME2
-#define LOCALE_SSHORTESTDAYNAME3
-#define LOCALE_SSHORTESTDAYNAME4
-#define LOCALE_SSHORTESTDAYNAME5
-#define LOCALE_SSHORTESTDAYNAME6
-#define LOCALE_SSHORTESTDAYNAME7
-#endif
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+/* New calendar properties, supported on Windows-7 and later.  Note that
+ * these may not be accessible through LCID references; e.g. when running
+ * on Windows-7 Home Premium, it appears that GetCalendarInfoA() cannot
+ * retrieve them, but GetCalendarInfoEx() can.
+ */
+#define CAL_SMONTHDAY						56
+#define CAL_SABBREVERASTRING					57
 
-#define CAL_UMALQURA						23
+#endif	/* Windows-7 and later */
+#endif	/* Windows-Vista and later */
+#endif	/* Win98 / Win2K and later */
 
-#if 0
-#define LOCALE_SDURATION
-#define LOCALE_SIETFLANGUAGE
-#define LOCALE_SISO3166CTRYNAME2
-#define LOCALE_SISO639LANGNAME2
-#define LOCALE_SKEYBOARDSTOINSTALL
-#define LOCALE_SNAME
-#define LOCALE_SNAN
-#define LOCALE_SNEGINFINITY
-#define LOCALE_SPOSINFINITY
-#define LOCALE_SSCRIPTS
-#endif
+/* Date format options, for use with GetDateFormat*() functions; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/datetimeapi/nf-datetimeapi-getdateformatex
+ */
+#define DATE_SHORTDATE						 1
+#define DATE_LONGDATE						 2
+#define DATE_USE_ALT_CALENDAR					 4
 
-#endif /* >= WinVista */
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN2K
+/* The following are not supported on Win9x, nor on WinNT prior to Win-2000.
+ */
+#define DATE_YEARMONTH						 8
+#define DATE_LTRREADING 					16
+#define DATE_RTLREADING 					32
+
+#endif	/* Windows-2000 and later */
+
+/* Time format options, for use with GetTimeFormat*() functions; see:
+ * https://docs.microsoft.com/en-gb/windows/desktop/api/datetimeapi/nf-datetimeapi-gettimeformatex
+ */
+#define TIME_NOMINUTESORSECONDS 				 1
+#define TIME_NOSECONDS						 2
+#define TIME_NOTIMEMARKER					 4
+#define TIME_FORCE24HOURFORMAT					 8
+
 
 #ifndef RC_INVOKED
 
@@ -552,16 +769,16 @@ typedef BOOL (CALLBACK *GEO_ENUMPROC) (GEOID);
 
 typedef
 enum NLS_FUNCTION
-{ COMPARE_STRING	 =  1
+{ COMPARE_STRING	 =   1
 } NLS_FUNCTION;
 
 enum SYSGEOCLASS
-{ GEOCLASS_REGION	 =  14,
-  GEOCLASS_NATION	 =  16
+{ GEOCLASS_NATION	 =  16,
+  GEOCLASS_REGION	 =  14
 };
 
 enum SYSGEOTYPE
-{ GEO_NATION		 =  1,
+{ GEO_NATION		 =   1,
   GEO_LATITUDE,
   GEO_LONGITUDE,
   GEO_ISO2,
@@ -573,6 +790,9 @@ enum SYSGEOTYPE
   GEO_TIMEZONES,
   GEO_OFFICIALLANGUAGES
 };
+
+#define MAX_DEFAULTCHAR 	 2
+#define MAX_LEADBYTES		12
 
 typedef struct _cpinfo
 { UINT			MaxCharSize;
@@ -786,7 +1006,12 @@ WINBASEAPI WINAPI  LANGID GetSystemDefaultUILanguage (void);
 WINBASEAPI WINAPI  LANGID GetUserDefaultUILanguage (void);
 WINBASEAPI WINAPI  BOOL   IsValidLanguageGroup (LGRPID, DWORD);
 
-#endif /* >= Win2K */
+#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+
+WINBASEAPI WINAPI  int    GetCalendarInfoEx (LPCWSTR, CALID, LPCWSTR, CALTYPE, LPCSTR, int, LPDWORD );
+
+#endif /* Win-Vista and later */
+#endif /* Win2K and later */
 #endif /* ! RC_INVOKED */
 
 _END_C_DECLS
