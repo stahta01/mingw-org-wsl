@@ -1,5 +1,16 @@
 2020-01-17  Keith Marshall  <keith@users.osdn.me>
 
+	Update handling of <process.h> test-suite limitation.
+
+	* include/process.h (-Wbuiltin-declaration-mismatch)
+	[__IN_MINGWRT_TESTSUITE__ && __GNUC__ >= 7 && __cplusplus]: Drop...
+	[__cplusplus]: ...this diagnostic constraint, in test case when...
+	[__GNUC__ >= 9]: ...this applies; this diagnostic now affects both
+	C and C++ compilers, with respect to each of...
+	(execv, execve, execvp): ...these functions.
+
+2020-01-17  Keith Marshall  <keith@users.osdn.me>
+
 	Support GCC-9.x gratuitous use of non-standard errno accessor API.
 
 	* include/stdlib.h (_get_errno, _set_errno): Declare prototypes;

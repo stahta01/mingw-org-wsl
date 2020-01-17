@@ -189,13 +189,18 @@ intptr_t execlp (const char *, const char *, ...);
 _CRTIMP __cdecl __MINGW_NOTHROW
 intptr_t execlpe (const char *, const char *,...);
 
-#if defined __cplusplus && __IN_MINGWRT_TESTSUITE__ && __GNUC__ >= 7
-/* From GCC-7 onwards, with "-Wsystem-headers" enabled, the C++ compiler
- * may emit unwanted "-Wbuiltin-declaration-mismatch" diagnostics related
- * to the following "execv" function declarations; these will precipitate
+#if __IN_MINGWRT_TESTSUITE__ && __GNUC__ >= 7
+/* From GCC-7 onwards, with "-Wsystem-headers" enabled, the compiler may
+ * emit unwanted "-Wbuiltin-declaration-mismatch" diagnostics related to
+ * the following "execv" function declarations; these will precipitate
  * testsuite failures, so suppress them.
  */
-# pragma GCC diagnostic ignored "-Wbuiltin-declaration-mismatch"
+# if __GNUC__ >= 9 || defined __cplusplus
+  /* Prior to GCC-9, this limitation was apparent in the C++ compiler
+   * only; it became apparent in the C compiler, from GCC-9.
+   */
+#  pragma GCC diagnostic ignored "-Wbuiltin-declaration-mismatch"
+# endif
 #endif
 
 _CRTIMP __cdecl __MINGW_NOTHROW
