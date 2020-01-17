@@ -8,7 +8,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2016, MinGW.org Project
+# Copyright (C) 2016, 2020, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,9 +42,9 @@ assert.h dnl
 complex.h dnl
 conio.h dnl
 ctype.h dnl
+dir.h dnl
 direct.h dnl
 dirent.h dnl
-dir.h dnl
 dlfcn.h dnl
 dos.h dnl
 errno.h dnl
@@ -89,8 +89,8 @@ sys/file.h dnl
 sys/locking.h dnl
 sys/param.h dnl
 sys/stat.h dnl
-sys/timeb.h dnl
 sys/time.h dnl
+sys/timeb.h dnl
 sys/types.h dnl
 sys/unistd.h dnl
 sys/utime.h dnl

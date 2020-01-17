@@ -5,7 +5,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2016, 2017, 2019, MinGW.org Project
+# Copyright (C) 2016, 2017, 2019, 2020, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -85,13 +85,14 @@ testsuite.at.tmp: %.tmp: ../config.status %.in
 headers.at.pretest: MINGWRT_AT_ENUM := MINGWRT_AT_PACKAGE_HEADERS
 headers.at.pretest: %.pretest:
 	sed '/^m4_define(\[$(MINGWRT_AT_ENUM)],/q' ${srcdir}/$* > $@
-	$(call enum_headers,hdr,${top_srcdir}/include, dnl >> $@;)
-	$(call enum_headers,hdr,${top_srcdir}/include/sys, dnl >> $@;,sys)
+	$(call enum_headers,${top_srcdir}/include) >> $@
+	$(call enum_headers,${top_srcdir}/include, sys) >> $@
 	sed -n '/^])# $(MINGWRT_AT_ENUM)/,$$p' ${srcdir}/$* >> $@
 	cmp -s $@ ${srcdir}/$* || cp -f $@ ${srcdir}/$*
 	$(RM) $@
 
-enum_headers = $(foreach $1,$(notdir $(wildcard $2/*.h)),echo $(4:%=%/)$($1)$3)
+enum_headers = printf '%s dnl\n' $(call list_headers,$1$(2:%=/%),$(2:%=%/))
+list_headers = $(addprefix $2,$(sort $(notdir $(wildcard $1/*.h))))
 
 # Compile the testsuite, from autotest sources.
 #

@@ -8,7 +8,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2017, MinGW.org Project
+# Copyright (C) 2017, 2020, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -57,8 +57,8 @@ comcat.h dnl
 commctrl.h dnl
 commdlg.h dnl
 control.h dnl
-cplext.h dnl
 cpl.h dnl
+cplext.h dnl
 custcntl.h dnl
 dbt.h dnl
 dde.h dnl
@@ -104,6 +104,7 @@ isguids.h dnl
 ks.h dnl
 ksmedia.h dnl
 largeint.h dnl
+lm.h dnl
 lmaccess.h dnl
 lmalert.h dnl
 lmapibuf.h dnl
@@ -115,7 +116,6 @@ lmconfig.h dnl
 lmcons.h dnl
 lmerr.h dnl
 lmerrlog.h dnl
-lm.h dnl
 lmmsg.h dnl
 lmremutl.h dnl
 lmrepl.h dnl
@@ -124,8 +124,8 @@ lmshare.h dnl
 lmsname.h dnl
 lmstats.h dnl
 lmsvc.h dnl
-lmuseflg.h dnl
 lmuse.h dnl
+lmuseflg.h dnl
 lmwksta.h dnl
 lzexpand.h dnl
 mapi.h dnl
@@ -160,6 +160,7 @@ objsafe.h dnl
 objsel.h dnl
 ocidl.h dnl
 odbcinst.h dnl
+ole.h dnl
 ole2.h dnl
 ole2ver.h dnl
 oleacc.h dnl
@@ -167,7 +168,6 @@ oleauto.h dnl
 olectl.h dnl
 olectlid.h dnl
 oledlg.h dnl
-ole.h dnl
 oleidl.h dnl
 poppack.h dnl
 powrprof.h dnl
@@ -179,19 +179,19 @@ pshpack4.h dnl
 pshpack8.h dnl
 qedit.h dnl
 rapi.h dnl
+ras.h dnl
 rasdlg.h dnl
 raserror.h dnl
-ras.h dnl
 rassapi.h dnl
 reason.h dnl
 regstr.h dnl
 richedit.h dnl
 richole.h dnl
 routprot.h dnl
-rpcdce2.h dnl
-rpcdce.h dnl
-rpcdcep.h dnl
 rpc.h dnl
+rpcdce.h dnl
+rpcdce2.h dnl
+rpcdcep.h dnl
 rpcndr.h dnl
 rpcnsi.h dnl
 rpcnsip.h dnl
@@ -215,8 +215,8 @@ shlwapi.h dnl
 shobjidl.h dnl
 snmp.h dnl
 specstrings.h dnl
-sqlext.h dnl
 sql.h dnl
+sqlext.h dnl
 sqltypes.h dnl
 sqlucode.h dnl
 sspi.h dnl
@@ -254,8 +254,8 @@ winperf.h dnl
 winreg.h dnl
 winresrc.h dnl
 winsnmp.h dnl
-winsock2.h dnl
 winsock.h dnl
+winsock2.h dnl
 winspool.h dnl
 winsvc.h dnl
 winuser.h dnl

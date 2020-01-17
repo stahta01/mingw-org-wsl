@@ -5,7 +5,7 @@
 # $Id$
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2017, 2019, MinGW.org Project
+# Copyright (C) 2017, 2019, 2020, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -85,14 +85,15 @@ testsuite.at.tmp: %.tmp: ../config.status %.in
 headers.at.pretest: W32API_AT_ENUM := W32API_AT_PACKAGE_HEADERS
 headers.at.pretest: %.pretest:
 	sed '/^m4_define(\[$(W32API_AT_ENUM)],/q' ${srcdir}/$* > $@
-	$(call enum_headers,hdr,${top_srcdir}/include, dnl >> $@;)
-	$(call enum_header_subdirs,${top_srcdir}/include,$(HEADER_SUBDIRS),$@;)
+	$(call enum_headers,${top_srcdir}/include) >> $@
+	$(call enum_header_subdirs,${top_srcdir}/include,$(HEADER_SUBDIRS))
 	sed -n '/^])# $(W32API_AT_ENUM)/,$$p' ${srcdir}/$* >> $@
 	cmp -s $@ ${srcdir}/$* || cp -f $@ ${srcdir}/$*
 	$(RM) $@
 
-enum_headers = $(foreach $1,$(notdir $(wildcard $2/*.h)),echo $(4:%=%/)$($1)$3)
-enum_header_subdirs = $(foreach d,$2,$(call enum_headers,h,$1/$d, dnl >> $3,$d))
+enum_header_subdirs = $(foreach d,$2,$(call enum_headers,$1,$d) >> $@;)
+enum_headers = printf '%s dnl\n' $(call list_headers,$1$(2:%=/%),$(2:%=%/))
+list_headers = $(addprefix $2,$(sort $(notdir $(wildcard $1/*.h))))
 
 # Compile the testsuite, from autotest sources.
 #
