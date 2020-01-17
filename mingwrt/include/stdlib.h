@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997-2009, 2011, 2014-2016, 2018, MinGW.org Project.
+ * Copyright (C) 1997-2009, 2011, 2014-2016, 2018, 2020, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -156,16 +156,43 @@ __MINGW_IMPORT char **__argv_dll;
 #endif  /*  __DECLSPEC_SUPPORTED */
 #endif  /* MB_CUR_MAX */
 
-/* FIXME: Nominally in <errno.h>, Microsoft likes to declare errno
- * in <stdlib.h> as well; we should factor this out.
+/* In MSVCR80.DLL, Microsoft introduced the following pair of errno
+ * accessor functions; they subsequently became available in MSVCRT.DLL
+ * from Vista onward.  Although they are not required by ISO-C, and they
+ * are more cumbersome to use, than referring to errno directly, the GCC
+ * developers have gratuitously chosen to assume, in GCC-9.x, that they
+ * are always supported on MS-Windows, regardless of Windows version.
+ * Logically, we might expect these to be declared in <errno.h>, but
+ * Microsoft's documentation insists that they are actually declared
+ * here; thus, to satisfy the GCC-9.x requirement, we will declare
+ * them unconditionally here ...
  */
-#ifdef _UWIN
-# undef errno
-  extern int errno;
-#else
-_CRTIMP __cdecl __MINGW_NOTHROW  int *_errno(void);
-# define errno  (*_errno())
+__cdecl __MINGW_NOTHROW  int _get_errno(int *);
+__cdecl __MINGW_NOTHROW  int _set_errno(int);
+
+/* ... then provide in-line implementations, (depending on gratuitous
+ * exposure of EINVAL, which strictly belongs in <errno.h> only, while
+ * also requiring declaring the ISO-C errno feature, which Microsoft
+ * documentation calls for both here, and in <errno.h>; we satisfy
+ * both of these requirements by selective <errno.h> inclusion).
+ */
+#define __STDLIB_H_SOURCED__ 1
+#include "errno.h"
+
+#if __MSVCRT_VERSION__ < __MSVCR80_DLL && _WIN32_WINNT < _WIN32_WINNT_VISTA
+/* These in-line implementations will support universal use of this API,
+ * even on legacy Windows versions pre-dating Vista, without requiring use
+ * of non-free MSVCRT80.DLL or later.
+ */
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  int _get_errno( int *__val )
+{ return (__val == NULL) ? (errno = EINVAL) : 0 & (*__val = errno); }
+
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  int _set_errno( int __val )
+{ errno = __val; return 0; }
+
 #endif
+#undef __STDLIB_H_SOURCED__
+
 _CRTIMP __cdecl __MINGW_NOTHROW  int *__doserrno(void);
 #define _doserrno  (*__doserrno())
 

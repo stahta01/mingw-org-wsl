@@ -1,3 +1,17 @@
+2020-01-17  Keith Marshall  <keith@users.osdn.me>
+
+	Support GCC-9.x gratuitous use of non-standard errno accessor API.
+
+	* include/stdlib.h (_get_errno, _set_errno): Declare prototypes;
+	implement them in-line, for legacy Windows versions which may lack
+	them, since GCC-9.x gratuitously and ill-advisedly requires them.
+	(__STDLIB_H_SOURCED__): Define, and selectively #include...
+
+	* include/errno.h: ...this, subject to criterion...
+	[__STDLIB_H_SOURCED__]: ...for exposure of only...
+	(errno): ...this public API declaration, and...
+	(EINVAL): ...this symbolic constant.
+
 2019-10-26  Keith Marshall  <keith@users.osdn.me>
 
 	Fix MinGW-Issue #39757; avoid multiple vsnprintf() definitions.
