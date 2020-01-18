@@ -6,7 +6,7 @@
 # exported by various versions of MSVCRT.DLL and MSVCRxx.DLL
 #
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2014, 2015, 2016, MinGW.org Project.
+# Copyright (C) 2014, 2015, 2016, 2020, MinGW.org Project.
 #
 #
 # This is free software.  Permission is granted to copy, modify and
@@ -90,10 +90,16 @@ msvcrt-xref.$(OUTPUT_FORMAT): $(foreach p,$(platform_dlls),msvcrt-xref.$p.tbl)
 # The first step, in generation of the cross-reference document, is to
 # extract an unqualified list of all the symbols, regardless of whichever
 # DLL versions provide them; this list is derived from a single composite
-# template file, (filtered without regard to library version).
+# template file, (filtered without regard to library version, and noting
+# the special handling required for those symbols which are qualified
+# by assignment of the __MINGW_DLSYM attribute).
 #
+SYMBOLS_AGGREGATOR := sed -n \
+  -e '1,/^EXPORTS/d' -e 's/^__MINGW_DLSYM(\([^)]*\)).*/\1/' \
+  -e '/^[A-Z_a-z]/p'
+
 msvcrt.def.tbl: %.tbl: %.in
-	sed -n -e '1,/^EXPORTS/d' -e '/^[A-Z_a-z]/p' $< > $@
+	$(SYMBOLS_AGGREGATOR) $< > $@
 
 # The full gamut of supported DLL versions is the aggregate of the platform
 # specific MSVCRT.DLLs, and the non-free MSVCRxx.DLLs.

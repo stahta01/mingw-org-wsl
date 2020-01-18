@@ -1,3 +1,10 @@
+2020-01-18  Keith Marshall  <keith@users.osdn.me>
+
+	Correct DLSYM attribute handling in msvcrt-xref.pdf
+
+	* Makefile.in (SYMBOL_AGGREGATOR): New macro; define, and...
+	(msvcrt.def.tbl): ...use it.
+
 2016-02-09  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
 	Adapt for use in MSVCRT.DLL import library generation.
