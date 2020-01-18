@@ -7,7 +7,7 @@ PACKAGE_TARNAME := @PACKAGE_TARNAME@
 PACKAGE_VERSION := @PACKAGE_VERSION@
 
 # Written by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2014-2018, MinGW.org Project
+# Copyright (C) 2014-2020, MinGW.org Project
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -459,12 +459,12 @@ libmingwex.a: $(LIBMINGWEX_MEMALIGN_OBJECTS)
 
 # Some additional miscellaneous functions, in libmingwex.a
 #
+libmingwex.a: $(addsuffix .$(OBJEXT), ftruncate getdelim gettimeofday)
 libmingwex.a: $(addsuffix .$(OBJEXT), glob getopt basename dirname nsleep)
 libmingwex.a: $(addsuffix .$(OBJEXT), clockapi clockres clockset clocktime)
 libmingwex.a: $(addsuffix .$(OBJEXT), insque remque tdelete tfind tsearch twalk)
 libmingwex.a: $(addsuffix .$(OBJEXT), dirent wdirent dlfcn strerror_r strtok_r)
 libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
-libmingwex.a: $(addsuffix .$(OBJEXT), getdelim gettimeofday)
 
 vpath %.s ${mingwrt_srcdir}/mingwex
 vpath %.sx ${mingwrt_srcdir}/mingwex

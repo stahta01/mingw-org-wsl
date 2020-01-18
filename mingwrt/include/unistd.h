@@ -11,7 +11,7 @@
  *   Ramiro Polla <ramiro@lisha.ufsc.br>
  *   Gregory McGarry  <gregorymcgarry@users.sourceforge.net>
  *   Keith Marshall  <keithmarshall@users.sourceforge.net>
- * Copyright (C) 1997, 1999, 2002-2004, 2007-2009, 2014-2017,
+ * Copyright (C) 1997, 1999, 2002-2004, 2007-2009, 2014-2017, 2020,
  *   MinGW.org Project.
  *
  *
@@ -131,6 +131,15 @@ int __cdecl ftruncate( int, off_t );
 __CRT_INLINE __JMPSTUB__(( FUNCTION = ftruncate, DLLENTRY = _chsize ))
 int ftruncate( int __fd, off_t __length ){ return _chsize( __fd, __length ); }
 #endif
+
+/* Although non-standard, GCC's C++ library from GCC-9.x gratuitously
+ * assumes, and requires, this 64-bit off_t variant to be available; it
+ * could be emulated by Microsoft's _chsize_s() function, which is only
+ * supported from Vista onward; therefore, to ensure support on legacy
+ * platforms, we prefer our own libmingwex.a implementation, and so,
+ * we do not provide an inline implementation.
+ */
+int __cdecl ftruncate64( int, __off64_t );
 
 _END_C_DECLS
 

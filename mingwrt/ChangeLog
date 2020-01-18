@@ -1,5 +1,18 @@
 2020-01-17  Keith Marshall  <keith@users.osdn.me>
 
+	Support GCC-9.x gratuitous dependency on ftruncate64() function.
+
+	* include/unistd.h (ftruncate64): Declare prototype; implement it...
+	* mingwex/ftruncate.c: ...in this new file; it will delegate to...
+	(_chsize_s): ...this MSVCRT.DLL function, if available.
+
+	* Makefile.in (libmingwex.a): Add dependency on...
+	(ftruncate.$OBJEXT): ...this.
+
+	* msvcrt-xref/msvcrt.def.in (_chsize_s): Require dlsym look-up.
+
+2020-01-17  Keith Marshall  <keith@users.osdn.me>
+
 	Preserve order of tests for integrity of header files.
 
 	* tests/Makefile.in: Explicitly sort $wildcard output, within...

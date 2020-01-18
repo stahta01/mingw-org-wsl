@@ -5,7 +5,7 @@
  * definition files, supporting multiple OS platform versions.
  *
  * Compiled by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2014, 2016, 2018, MinGW.org Project.
+ * Copyright (C) 2014, 2016, 2018, 2020, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -656,7 +656,7 @@ _chmod
 _chsize
 #if __MSVCRT_VERSION__ >= 0x0600UL
 # if __MSVCRT_VERSION__ < 0x07000000UL || __MSVCRT_VERSION__ >= 0x08000000UL
-_chsize_s
+__MINGW_DLSYM(_chsize_s)
 # endif
 #endif
 #if __MSVCRT_VERSION__ >= 0x0600UL
