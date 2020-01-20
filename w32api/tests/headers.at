@@ -265,6 +265,7 @@ ws2tcpip.h dnl
 wsahelp.h dnl
 wsipx.h dnl
 wsnetbs.h dnl
+wspiapi.h dnl
 wtsapi32.h dnl
 wtypes.h dnl
 xprtdefs.h dnl
