@@ -508,6 +508,25 @@ _CRTIMP __cdecl __MINGW_NOTHROW  int mbtowc (wchar_t *, const char *, size_t);
 _CRTIMP __cdecl __MINGW_NOTHROW  int rand (void);
 _CRTIMP __cdecl __MINGW_NOTHROW  void srand (unsigned int);
 
+/* rand() is devoid of entropy, and is thus a mediocre pseudo-random number
+ * generator.  Microsoft do offer a better quality (bogusly dubbed as a more
+ * secure) PRNG, in the guise of rand_s(), but it
+ *
+ *   1) must be explicitly enabled, by user defined feature test macro;
+ */
+#ifdef _CRT_RAND_S
+/*
+ *   2) is not supported on Win9x, nor any WinNT version prior to WinXP;
+ *   3) on WinXP, requires linking with non-free MSVCR80.DLL, or later;
+ *   4) is provided by MSVCRT.DLL, only from Vista onward.
+ */
+#if __MSVCRT_VERSION__ >= __MSVCR80_DLL || _WIN32_WINNT >= _WIN32_WINNT_VISTA
+
+_CRTIMP __cdecl __MINGW_NOTHROW  int rand_s (unsigned int *);
+
+#endif	/* Win-Vista || MSVCR80.DLL || later */
+#endif	/* _CRT_RAND_S enabled */
+
 _CRTIMP __cdecl __MINGW_NOTHROW  void abort (void) __MINGW_ATTRIB_NORETURN;
 _CRTIMP __cdecl __MINGW_NOTHROW  void exit (int) __MINGW_ATTRIB_NORETURN;
 

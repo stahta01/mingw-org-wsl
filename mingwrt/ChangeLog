@@ -1,3 +1,14 @@
+2020-01-21  Keith Marshall  <keith@users.osdn.me>
+
+	Address MinGW-Issue #39658; declare rand_s() function.
+
+	* include/stdlib.h: When the user has defined...
+	[_CRT_RAND_S]: ...this optional feature test macro, and then...
+	[__MSVCRT_VERSION__ >= __MSVCR80_DLL]: ...either this non-free, or...
+	[_WIN32_WINNT >=_ WIN32_WINNT_VISTA]: ...this system-standard runtime
+	library version constraint is satisfied, then...
+	(rand_s): ...declare function prototype.
+
 2020-01-17  Keith Marshall  <keith@users.osdn.me>
 
 	Support GCC-9.x gratuitous dependency on ftruncate64() function.
