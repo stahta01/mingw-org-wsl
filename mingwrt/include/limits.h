@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- * Copyright (C) 1997, 1999-2001, 2004, 2005, 2010, 2012, 2017,
+ * Copyright (C) 1997, 1999-2001, 2004, 2005, 2010, 2012, 2017, 2020,
  *   MinGW.org Project
  *
  *
@@ -53,11 +53,13 @@
 
 /* Characteristics of the char data type.
  *
- * FIXME: Is MB_LEN_MAX correct?  Probably yes, for Microsoft MBCS, which
- * effectively seem to all be DBCS.
+ * FIXME: Is MB_LEN_MAX correct?  Earlier Microsoft documentation specified
+ * it as two, (which would probably have been okay, in the case of only DBCS
+ * encodings); today (2019), Microsoft's documentation says that five is the
+ * appropriate value.
  */
 #define CHAR_BIT	8
-#define MB_LEN_MAX	2
+#define MB_LEN_MAX	5
 
 #define SCHAR_MIN	(-128)
 #define SCHAR_MAX	127

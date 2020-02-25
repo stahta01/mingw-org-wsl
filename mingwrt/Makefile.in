@@ -468,9 +468,9 @@ libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
 
 vpath %.s ${mingwrt_srcdir}/mingwex
 vpath %.sx ${mingwrt_srcdir}/mingwex
-libmingwex.a: $(addsuffix .$(OBJEXT), fwide mbrtowc mbsinit strnlen wcrtomb \
-  wcsnlen wcstof wcstold wctob wctrans wctype wmemchr wmemcmp wmemcpy wmemmove \
-  wmemset)
+libmingwex.a: $(addsuffix .$(OBJEXT), codeset fwide mbrtowc mbsinit strnlen \
+  wcharmap wcrtomb wcsrtombs wcsnlen wcstof wcstold wctob wctrans wctype wmemchr \
+  wmemcmp wmemcpy wmemmove wmemset)
 
 # The wcsnlen() function, enumerated above, is an adaptation of strnlen();
 # we need a specific rule to compile it, from shared source.
