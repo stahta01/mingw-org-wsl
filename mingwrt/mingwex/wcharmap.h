@@ -36,6 +36,14 @@
 #include <stdlib.h>
 #include <errno.h>
 
+/* Define a logical boolean type, for use in C code; (note that we don't
+ * guard this, because we don't plan to use this header in C++ code).
+ */
+typedef int boolean;
+
+#define false  (boolean)(0)
+#define true   (! false)
+
 /* Provide a shorthand notation for declaring functions which
  * we would like to always be expanded in line.
  */
@@ -61,6 +69,22 @@ size_t errout (int errcode, size_t status){ errno = errcode; return status; }
  */
 unsigned int __mb_codeset_for_locale (void);
 unsigned int __mb_cur_max_for_codeset (unsigned int);
+
+/* Codeset initializers, and internal helper functions for
+ * multi-byte sequence to wide character conversions.
+ */
+unsigned int __mingw_mbrtowc_codeset_init (void);
+unsigned int __mingw_mbrlen_cur_max_init (unsigned int);
+unsigned int __mingw_mbrlen_cur_max (void);
+
+size_t __mingw_mbrscan_begin
+( wchar_t *restrict *, const char **restrict, size_t *, mbstate_t *restrict );
+
+int __mingw_mbtowc_convert( const char *, size_t, wchar_t *, size_t );
+size_t __mingw_mbtowc_copy( wchar_t *restrict, const char *restrict, size_t );
+
+size_t __mingw_mbrtowc_handler
+( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict );
 
 /* Codeset initializers, and internal helper functions for
  * wide character to multi-byte sequence conversions.

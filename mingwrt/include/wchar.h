@@ -560,6 +560,15 @@ __cdecl __MINGW_NOTHROW  size_t wcsrtombs
  * it exists in the process address space; otherwise, execution
  * will fall back to a MinGW implementation...
  */
+__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbrlen
+(const char *__restrict__, size_t, mbstate_t *__restrict__);
+
+__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbrtowc
+(wchar_t *__restrict__, const char *__restrict__, size_t, mbstate_t *__restrict__);
+
+__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbsrtowcs
+(wchar_t *__restrict__, const char **__restrict__, size_t, mbstate_t *__restrict__);
+
 __cdecl __MINGW_NOTHROW  size_t __msvcrt_wcrtomb
 (char * __restrict__, wchar_t, mbstate_t *__restrict__);
 
@@ -570,6 +579,15 @@ __cdecl __MINGW_NOTHROW  size_t __msvcrt_wcsrtombs
  * fall back implementations, without considering any possible
  * reference to MSVCRT.DLL or MSVCR80.DLL implementations.
  */
+__cdecl __MINGW_NOTHROW  size_t __mingw_mbrlen
+(const char *__restrict__, size_t, mbstate_t *__restrict__);
+
+__cdecl __MINGW_NOTHROW  size_t __mingw_mbrtowc
+(wchar_t *__restrict__, const char *__restrict__, size_t, mbstate_t *__restrict__);
+
+__cdecl __MINGW_NOTHROW  size_t __mingw_mbsrtowcs
+(wchar_t *__restrict__, const char **__restrict__, size_t, mbstate_t *__restrict__);
+
 __cdecl __MINGW_NOTHROW  size_t __mingw_wcrtomb
 (char * __restrict__, wchar_t, mbstate_t *__restrict__);
 
@@ -585,6 +603,18 @@ __cdecl __MINGW_NOTHROW  size_t __mingw_wcsrtombs
  * the libmingwex.a implementations, (which will delegate the calls
  * to the Microsoft DLL implementations, when they are available).
  */
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrlen
+(const char *__mbc, size_t __n, mbstate_t *__ps)
+{ return __msvcrt_mbrlen( __mbc, __n, __ps ); }
+
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrtowc
+(wchar_t *__wc, const char *__mbc, size_t __n, mbstate_t *__ps)
+{ return __msvcrt_mbrtowc( __wc, __mbc, __n, __ps ); }
+
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbsrtowcs
+(wchar_t *__wcs, const char **__mbs, size_t __n, mbstate_t *__ps)
+{ return __msvcrt_mbsrtowcs( __wcs, __mbs, __n, __ps ); }
+
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t wcrtomb
 (char * __mbc, wchar_t __wc, mbstate_t *__ps)
 { return __msvcrt_wcrtomb(__mbc, __wc, __ps); }
