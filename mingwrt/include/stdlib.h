@@ -426,6 +426,20 @@ unsigned long wcstoul (const wchar_t *, wchar_t **, int);
 
 _CRTIMP __cdecl __MINGW_NOTHROW  double wcstod (const wchar_t *, wchar_t **);
 
+/* The following MinGW specific alternatives to wcstod(), which may
+ * offer more robust performance than the MSVCRT.DLL implementation,
+ * are provided in libmingwex.a; (the float and long double variants
+ * are simply aliases for the ISO-C99 equivalents which follow).
+ */
+__cdecl __MINGW_NOTHROW
+double __mingw_wcstod (const wchar_t *__restrict__, wchar_t **__restrict__);
+
+__cdecl __MINGW_NOTHROW
+float __mingw_wcstof (const wchar_t *__restrict__, wchar_t **__restrict__);
+
+__cdecl __MINGW_NOTHROW
+long double __mingw_wcstold (const wchar_t *__restrict__, wchar_t **__restrict__);
+
 #ifdef _ISOC99_SOURCE
 /* Variants on wcstod(), specified by ISO-C99; once again, MSVCRT.DLL
  * doesn't have them, but we offer them in libmingwex.a

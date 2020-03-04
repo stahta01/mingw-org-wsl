@@ -1,3 +1,24 @@
+2020-03-04  Keith Marshall  <keith@users.osdn.me>
+
+	Reimplement wcstof(), and wcstold() functions.
+
+	* mingwex/wcstofp.c: New file; it implements...
+	(wcstof, wcstold): ...these functions; each is an alias for...
+	(__mingw_wcstof, __mingw_wcstold): ...these, respectively; also...
+	(__mingw_wcstod): ...this; all are implemented in terms of...
+	(__mingw_wcstofp_prescan, __mingw_wcstofp_prepare)
+	(__mingw_wcstofp_bufsize): ...these; implement them.
+
+	* Makefile.in (libmingwex.a): Add dependency references...
+	(wcstofp.$OBJEXT, wcstod.$OBJEXT): ...for these; also include with...
+	(wcstof.$OBJEXT, wcstold.$OBJEXT): ...these, in new build rule.
+
+	* include/stdlib.h (__mingw_wcstod, __mingw_wcstof)
+	(__mingw_wcstold): Declare them.
+
+	* mingwex/mb_wc_common.h mingwex/wcstof.c mingwex/wcstold.c: Files
+	are obsolete, and no longer required; delete them.
+
 2020-03-03  Keith Marshall  <keith@users.osdn.me>
 
 	Reimplement btowc(), and wctob() functions.

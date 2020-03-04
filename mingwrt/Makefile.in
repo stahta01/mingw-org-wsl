@@ -468,15 +468,23 @@ libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
 
 vpath %.s ${mingwrt_srcdir}/mingwex
 vpath %.sx ${mingwrt_srcdir}/mingwex
-libmingwex.a: $(addsuffix .$(OBJEXT), codeset fwide mbrconv mbrscan mbrlen \
-  mbrtowc mbsrtowcs mbsinit strnlen wcharmap wcrtomb wcsrtombs wcsnlen wcstof \
-  wcstold wctob wctrans wctype wmemchr wmemcmp wmemcpy wmemmove wmemset)
+libmingwex.a: $(addsuffix .$(OBJEXT), codeset fwide mbrconv mbrscan mbrlen)
+libmingwex.a: $(addsuffix .$(OBJEXT), mbrtowc mbsrtowcs mbsinit strnlen wcharmap)
+libmingwex.a: $(addsuffix .$(OBJEXT), wcrtomb wcsrtombs wcsnlen wcstod wcstof)
+libmingwex.a: $(addsuffix .$(OBJEXT), wcstofp wcstold wctob wctrans wctype)
+libmingwex.a: $(addsuffix .$(OBJEXT), wmemchr wmemcmp wmemcpy wmemmove wmemset)
 
 # The wcsnlen() function, enumerated above, is an adaptation of strnlen();
 # we need a specific rule to compile it, from shared source.
 #
 wcsnlen.$(OBJEXT): strnlen.sx
 	$(COMPILE.sx) -D_UNICODE $^ -o $@
+
+# Similarly, the wcstod(), wcstof(), and wcstold() functions are
+# compiled from the common wcstofp.c source file.
+#
+$(addsuffix .$(OBJEXT), wcstod wcstof wcstold): %.$(OBJEXT): wcstofp.c
+	$(CC) -c $(CPPFLAGS) $(ALL_CFLAGS) -D FUNCTION=$* -o $@ $<
 
 # For the math sources, we support the convention that a single
 # quux_generic.c source file will produce three objects: quux.o,
