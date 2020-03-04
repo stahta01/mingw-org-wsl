@@ -7,8 +7,8 @@
  * generally to C99 and SUSv3/POSIX specifications, with extensions
  * to support Microsoft's non-standard format specifications.
  *
- * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2008, 2009, 2011, 2014-2018, MinGW.org Project
+ * Written by Keith Marshall <keith@users.osdn.me>
+ * Copyright (C) 2008, 2009, 2011, 2014-2018, 2020, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -494,7 +494,23 @@ int __pformat_enable_thousands_grouping( __pformat_t *stream )
       memset( &state, 0, sizeof( state ) );
       if(  (*stream->grouping < CHAR_MAX)
       &&  ((len = mbrtowc( &ts, localeconv()->thousands_sep, 16, &state )) > 0)  )
-	stream->tschr = ts;
+      {
+	/* We have a potentially viable grouping character, but we
+	 * will accept it only if it can be represented as a single
+	 * wchar_t UTF-16LE code point...
+	 */
+	if( (ts & 0xF800) == 0xD800 )
+	{
+	  /* ...but anything matching this, (i.e. it is in the range
+	   * 0xD800..0xDFFF), represents one element of a surrogate
+	   * pair; we reject this.
+	   */
+	  ts = (wchar_t)(0);
+	  len = -1;
+	}
+	else
+	  stream->tschr = ts;
+      }
       stream->tslen = len;
     }
     /* Check that we've established a usable grouping strategy, (but
@@ -612,11 +628,22 @@ void __pformat_emit_digit( int c, __pformat_t *stream )
 	/* Fetch and convert the localised radix point representation...
 	 */
 	if( (len = mbrtowc( &rpchr, localeconv()->decimal_point, 16, &state )) > 0 )
-	  /*
-	   * and store it, if valid.
+	{
+	  /* We require the representation to be a single wchar_t
+	   * UTF-16LE code point...
 	   */
-	  stream->rpchr = rpchr;
+	  if( (rpchr & 0xF800) == 0xD800 )
+	    /*
+	     * ...but this is one element of a surrogate pair, which
+	     * we do not accept.
+	     */
+	    len = -1;
 
+	  else
+	    /* or store it, if valid.
+	     */
+	    stream->rpchr = rpchr;
+	}
 	/* In any case, store the reported effective multibyte length,
 	 * (or the error flag), marking initialisation as `done'.
 	 */

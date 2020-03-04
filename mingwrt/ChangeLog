@@ -1,5 +1,15 @@
 2020-03-04  Keith Marshall  <keith@users.osdn.me>
 
+	Disallow surrogates as printf() radix and grouping characters.
+
+	* mingwex/stdio/pformat.c (__pformat_emit_digit)
+	[(c == '.') && ((rpchr & 0xF800) == 0xD800)]: Radix point requires a
+	surrogate pair, for representation as UTF-16LE; decline to use it.
+	(__pformat_enable_thousands_grouping) [(tc & 0xF800) == 0xD800]:
+	Likewise, for thousands group separator.
+
+2020-03-04  Keith Marshall  <keith@users.osdn.me>
+
 	Reimplement wcstof(), and wcstold() functions.
 
 	* mingwex/wcstofp.c: New file; it implements...
