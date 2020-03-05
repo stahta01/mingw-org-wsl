@@ -8,7 +8,7 @@
  *
  * Written by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
  * Copyright (C) 1997, 1999, 2002-2007, 2009, 2010, 2014, 2016,
- *   2017, MinGW.org Project.
+ *   2017, 2020, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -319,7 +319,6 @@ static __MINGW_ATTRIB_NORETURN  void __mingw_CRTStartup (void)
   /* Set up the top-level exception handler so that signal handling
    * works as expected. The mapping between ANSI/POSIX signals and
    * Win32 SE is not 1-to-1, so caveat emptor.
-   *
    */
   SetUnhandledExceptionFilter (_gnu_exception_handler);
 
@@ -342,10 +341,20 @@ static __MINGW_ATTRIB_NORETURN  void __mingw_CRTStartup (void)
    */
   _pei386_runtime_relocator ();
 
-  /* Align the stack to 16 bytes for the sake of SSE ops in main
+  /* Align the stack to 16 bytes for the benefit of SSE ops in main
    * or in functions inlined into main.
+   *
+   * FIXME: Do we actually need this?  Modern GCC may already align
+   * the stack appropriately; in any case, GCC-9 objects to the "%esp"
+   * specification in the "clobber-list" of this original statement:
+   *
+   *   asm  __volatile__  ("andl $-16, %%esp" : : : "%esp");
+   *
+   * and it appears to make no difference to the generated code, if
+   * the "clobber-list" is omitted entirely ... indeed, how might we
+   * expect GCC to restore the clobbered stack pointer anyway?
    */
-  asm  __volatile__  ("andl $-16, %%esp" : : : "%esp");
+  asm  __volatile__  ("and{l}\t{$-16, %%}esp{|, -16}":);
 
   /* From libgcc.a, __main() calls global class constructors via
    * __do_global_ctors(); this in turn registers __do_global_dtors()

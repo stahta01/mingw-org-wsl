@@ -1,3 +1,12 @@
+2020-03-05  Keith Marshall  <keith@users.osdn.me>
+
+	Avoid deprecated specification of esp in asm clobber list.
+
+	* crt1.c (__mingw_CRTStartup): In inline assembly, forced modulo-16
+	alignment of esp is safe, but clobbered esp cannot be restored; GCC-9
+	deprecates its inclusion in clobber list; remove it.
+	[-masm=intel]: Support inline assembler syntax.
+
 2020-03-04  Keith Marshall  <keith@users.osdn.me>
 
 	Disallow surrogates as printf() radix and grouping characters.
