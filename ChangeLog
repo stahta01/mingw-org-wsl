@@ -1,3 +1,9 @@
+2020-03-05  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.3 release.
+
+	* All files (wsl-5.3-release): Tag assigned.
+
 2020-01-13  Keith Marshall  <keith@users.osdn.me>
 
 	Adjust repository version following WSL-5.2.3 release.

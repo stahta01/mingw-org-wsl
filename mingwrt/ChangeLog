@@ -1,5 +1,11 @@
 2020-03-05  Keith Marshall  <keith@users.osdn.me>
 
+	Prepare and publish MinGW.org WSL-5.3 release.
+
+	* All files (wsl-5.3-release): Tag assigned.
+
+2020-03-05  Keith Marshall  <keith@users.osdn.me>
+
 	Let _ISOC11_SOURCE imply _ISOC99_SOURCE.
 
 	* include/_mingw.h.in [! defined _ISOC99_SOURCE]
