@@ -1,5 +1,12 @@
 2020-03-05  Keith Marshall  <keith@users.osdn.me>
 
+	Let _ISOC11_SOURCE imply _ISOC99_SOURCE.
+
+	* include/_mingw.h.in [! defined _ISOC99_SOURCE]
+	[defined _ISOC11_SOURCE] (_ISOC99_SOURCE): Define as 0x0F.
+
+2020-03-05  Keith Marshall  <keith@users.osdn.me>
+
 	Avoid deprecated specification of esp in asm clobber list.
 
 	* crt1.c (__mingw_CRTStartup): In inline assembly, forced modulo-16

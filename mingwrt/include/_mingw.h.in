@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Mumit Khan  <khan@xraylith.wisc.edu>
- * Copyright (C) 1999, 2001-2011, 2014-2019, MinGW.org Project
+ * Copyright (C) 1999, 2001-2011, 2014-2020, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -569,7 +569,14 @@ allow GCC to optimize away some EH unwind code, at least in DW2 case.  */
   * to ensure that we can identify the reason for implicit declaration,
   * (in the event that we may need to discriminate).
   */
-# if __STDC_VERSION__ >= 199901L
+# ifdef _ISOC11_SOURCE
+  /* The user has explicitly selected ISO-C11 compliance; regardless of
+   * requested C11 compliance level, implicitly enable C99 compliance to
+   * the maximum level supported.
+   */
+#  define _ISOC99_SOURCE  0x0F
+
+# elif __STDC_VERSION__ >= 199901L
   /* This represents a compiler supporting ISO-C99; enable all potential
    * use of ISO-C99 features, (to the maximum extent supportable), which
    * presumably also covers all C++11 and POSIX.1 usage.
