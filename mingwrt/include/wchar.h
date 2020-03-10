@@ -603,40 +603,58 @@ __cdecl __MINGW_NOTHROW  size_t __mingw_wcsrtombs
 (char *__restrict__, const wchar_t **__restrict__, size_t, mbstate_t *__restrict__);
 
 #if __MSVCRT_VERSION__ < __MSVCR80_DLL
-/* FIXME: Maybe consider these mappings, even for linking with the
- * non-free MSVCR80.DLL, and its descendants.
- *
- * For linking with all versions of MSVCRT.DLL, and with non-free
+/* For linking with all versions of MSVCRT.DLL, and with non-free
  * alternatives predating MSVCR80.DLL, we enforce inline mapping to
  * the libmingwex.a implementations, (which will delegate the calls
- * to the Microsoft DLL implementations, when they are available).
+ * to the Microsoft DLL implementations, when they are available,
+ * but substitute the MinGW replacements as required).
+ */
+#undef __mingw_redirect
+#if _ISOC99_SOURCE & 0x08
+/* The user has explicitly requested ISO-C99 compatibility; ensure
+ * that calls to the following functions are serviced by the MinGW
+ * implementations, regardless of availability of any alternative
+ * MSVCRT.DLL implementation.
+ */
+# define __mingw_redirect(NAME)  __mingw_##NAME
+#else
+/* No explicit ISO-C99 compatibility has been requested; map calls
+ * to these functions to delegate to any MSVCRT.DLL implementations
+ * which may be available, or to fall back to the MinGW replacement
+ * implementations, when necessary.
+ */
+# define __mingw_redirect(NAME)  __msvcrt_##NAME
+#endif
+/* FIXME: Maybe consider these mappings, even for linking with the
+ * non-free MSVCR80.DLL, and its descendants.
  */
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  wint_t btowc (int __c)
-{ return __msvcrt_btowc( __c ); }
+{ return __mingw_redirect(btowc( __c )); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrlen
 (const char *__mbc, size_t __n, mbstate_t *__ps)
-{ return __msvcrt_mbrlen( __mbc, __n, __ps ); }
+{ return __mingw_redirect(mbrlen( __mbc, __n, __ps )); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrtowc
 (wchar_t *__wc, const char *__mbc, size_t __n, mbstate_t *__ps)
-{ return __msvcrt_mbrtowc( __wc, __mbc, __n, __ps ); }
+{ return __mingw_redirect(mbrtowc( __wc, __mbc, __n, __ps )); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbsrtowcs
 (wchar_t *__wcs, const char **__mbs, size_t __n, mbstate_t *__ps)
-{ return __msvcrt_mbsrtowcs( __wcs, __mbs, __n, __ps ); }
+{ return __mingw_redirect(mbsrtowcs( __wcs, __mbs, __n, __ps )); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  int wctob (wint_t __wc)
-{ return __msvcrt_wctob( __wc ); }
+{ return __mingw_redirect(wctob( __wc )); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t wcrtomb
 (char * __mbc, wchar_t __wc, mbstate_t *__ps)
-{ return __msvcrt_wcrtomb(__mbc, __wc, __ps); }
+{ return __mingw_redirect(wcrtomb(__mbc, __wc, __ps)); }
 
 __CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t wcsrtombs
 (char *__mbs, const wchar_t **__wcs, size_t __len, mbstate_t *__ps)
-{ return __msvcrt_wcsrtombs(__mbs, __wcs, __len, __ps); }
+{ return __mingw_redirect(wcsrtombs(__mbs, __wcs, __len, __ps)); }
 
+#undef	__mingw_redirect
 #endif	/* ! MSVCR80.DLL or later */
 
 #if defined _ISOC99_SOURCE || defined __cplusplus

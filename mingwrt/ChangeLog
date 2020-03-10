@@ -1,3 +1,14 @@
+2020-03-10  Keith Marshall  <keith@users.osdn.me>
+
+	Base MBCS converter function call redirection on _ISOC99_SOURCE.
+
+	* include/wchar.h (__mingw_redirect): New temporary macro; use it...
+	(btowc, mbrlen, mbrtowc, mbsrtowcs, wctob, wcrtomb, wcsrtombs): ...in
+	each of these inline function definitions, to select between use of...
+	[defined _ISOC99_SOURCE]: ...direct call to MinGW function, or...
+	[! defined _ISOC99_SOURCE]: ...attempt to call MSVCRT.DLL function,
+	with fall back to MinGW, when no MSVCRT.DLL function available.
+
 2020-03-05  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3 release.
