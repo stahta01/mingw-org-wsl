@@ -91,20 +91,21 @@ size_t __mingw_mbrtowc_handler
       if( pwc != NULL ) *pwc = state.wc[1];
       return (size_t)(0);
     }
-    /* FIXME: can we ever get a pending high surrogate without
-     * its accompanying low surrogate; if we can, should it be
-     * rejected as an invalid deferred conversion state?
-     */
-    //else if( (state.mb[3] != '\0') && IS_HIGH_SURROGATE( state.wc[0] ) )
-    //  return errout( EINVAL, (size_t)(-1) );
-
     /* When the conversion state does not represent a deferred
-     * surrogate pair, then restore it, and pass this through as
+     * low surrogate, then restore it, and pass this through as
      * an effective no-op.
      */
     *ps = state.st;
     return (size_t)(-2);
   }
+  /* In any context, other than the preceding (special) n == 0
+   * case, for retrieval of a deferred low surrogate, a pending
+   * conversion state which represents a surrogate pair is not
+   * a valid state; reject it.
+   */
+  if( IS_SURROGATE_PAIR( state.wc[0], state.wc[1] ) )
+    return errout( EINVAL, (size_t)(-1) );
+
   /* Step over any pending MBCS bytes, which may already be
    * present within the conversion state buffer, accumulating
    * both the count of such pending bytes, together with a
@@ -130,6 +131,12 @@ size_t __mingw_mbrtowc_handler
   if( len < mbrlen_cur_max ) state.mb[len] = '\0';
   if( (int)(count = mbrlen_min( state.mb, len, retval.wc )) > 0 )
   {
+    /* No valid conversion state should ever exist, where no
+     * additional bytes are required to complete a previously
+     * deferred multibyte character.
+     */
+    if( pending >= count ) return errout( EILSEQ, (size_t)(-1) );
+
     /* The accumulated encoding state does now represent a
      * complete MBCS sequence; when servicing an mbrtowc() call,
      * with non-NULL return value pointer, we must store that

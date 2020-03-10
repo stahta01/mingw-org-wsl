@@ -1,5 +1,14 @@
 2020-03-10  Keith Marshall  <keith@users.osdn.me>
 
+	Correct defects in mbrtowc() invalid conversion state handling.
+
+	* mingwex/mbrconv.c (__mingw_mbrtowc_handler): Abort if restarting a
+	conversion when a low surrogate is pending, but has not been correctly
+	retrieved; additionally, reject any mbstate_t object content which is
+	already representative of a complete multibyte character sequence.
+
+2020-03-10  Keith Marshall  <keith@users.osdn.me>
+
 	Base MBCS converter function call redirection on _ISOC99_SOURCE.
 
 	* include/wchar.h (__mingw_redirect): New temporary macro; use it...
