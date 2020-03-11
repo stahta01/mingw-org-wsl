@@ -41,49 +41,37 @@
  */
 #include <dlfcn.h>
 
-/* We also need <limits.h>, for UCHAR_MAX, and <stdio.h>, for EOF.
+/* We also need <stdio.h>, for EOF.
  */
-#include <limits.h>
 #include <stdio.h>
 
-/* We need to look up the effective working codeset, before choosing
- * between MSVCRT.DLL and MinGW fallback implementations; to avoid a
- * need to look it up again, within the MinGW fallback, we store the
- * result of the initial look up in this file-global variable.
- */
-static __thread unsigned int cs;
-
 static wint_t __mingw_btowc_fallback( int c )
-{
-  /* Fallback function, providing an implementation of the btowc()
+{ /* Fallback function, providing an implementation of the btowc()
    * function, when none is available within the Microsoft runtime.
    * This performs an MBCS to wchar_t conversion on the given single
    * character argument, (expressed as an int), returning WEOF in
    * the event that conversion fails.
    */
-  wint_t wc = WEOF;
-
   if( c != EOF )
-  { if( (cs == 0) && (UCHAR_MAX >= (unsigned int)(c)) ) return (wchar_t)(c);
-    MultiByteToWideChar( cs, MB_ERR_INVALID_CHARS, (char *)(&c), 1, &wc, 1 );
+  { wint_t wc_result;
+    if( __mingw_mbtowc_convert( (char *)(&c), 1, &wc_result, 1) == 1 )
+      return wc_result;
   }
-  return wc;
+  return WEOF;
 }
 
 wint_t __mingw_btowc( int c )
-{
-  /* Wrapper for the btowc() function; this will unconditionally
+{ /* Wrapper for the btowc() function; this will unconditionally
    * delegate the call to the MinGW fallback implementation, (as
    * implemented above), after initialization of the effective
    * codeset file-global variable.
    */
-  cs = __mb_codeset_for_locale();
+  (void)(__mingw_mbrtowc_codeset_init());
   return __mingw_btowc_fallback( c );
 }
 
 wint_t __msvcrt_btowc( int c )
-{
-  /* Wrapper for the btowc() function; it will initially attempt
+{ /* Wrapper for the btowc() function; it will initially attempt
    * to delegate the call to a Microsoft-provided implementation,
    * but if no such implementation can be found, fall back to the
    * MinGW substitute (defined above).
@@ -95,7 +83,7 @@ wint_t __msvcrt_btowc( int c )
    * Microsoft's btowc() is likely to be similarly unreliable, so we
    * always use the MinGW fallback with such code pages.
    */
-  if( __mb_cur_max_for_codeset( cs = __mb_codeset_for_locale() ) > 2 )
+  if( __mb_cur_max_for_codeset(__mingw_mbrtowc_codeset_init()) > 2 )
     return __mingw_btowc_fallback( c );
 
   /* On first time call, we don't know which implementation is to be

@@ -1,3 +1,14 @@
+2020-03-11  Keith Marshall  <keith@users.osdn.me>
+
+	Correct a defect in detection of failed btowc() conversions.
+
+	* mingwex/btowc.c (__mingw_btowc_fallback): Use...
+	(__mingw_mbtowc_convert): ...this; verify successful conversion of
+	exactly one byte, to equivalent wchar, otherwise return WEOF.
+	(__mingw_btowc, __msvcrt_btowc): Delegate codeset initialization to...
+	(__mingw_mbrtowc_codeset_init): ...this, so delegating its management
+	externally; remove local provision.
+
 2020-03-10  Keith Marshall  <keith@users.osdn.me>
 
 	Correct defects in mbrtowc() invalid conversion state handling.
