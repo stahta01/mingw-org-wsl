@@ -1,3 +1,16 @@
+2020-03-12  Keith Marshall  <keith@users.osdn.me>
+
+	Rationalize implementations of fwide() and mbsinit() functions.
+
+	* include/wchar.h (mbsinit): Mark as __LIBIMPL__; reimplement its
+	inline definition, to evaluate its mbstate_t reference argument.
+	(fwide): Mark as __LIBIMPL__.
+
+	* Makefile.in (libmingwex.a): Remove explicit dependencies on...
+	(fwide, mbsinit): ...these; they are implied by __LIBIMPL__ marks.
+
+	* mingwex/fwide.c mingwex/mbsinit.c: Redundant files; delete them.
+
 2020-03-11  Keith Marshall  <keith@users.osdn.me>
 
 	Correct a defect in detection of failed btowc() conversions.

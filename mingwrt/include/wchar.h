@@ -667,13 +667,13 @@ __cdecl __MINGW_NOTHROW  int fwide (FILE *, int);
 __cdecl __MINGW_NOTHROW  int mbsinit (const mbstate_t *);
 
 #ifndef __NO_INLINE__
-__CRT_INLINE __cdecl __MINGW_NOTHROW
-int fwide (FILE *__UNUSED_PARAM(stream), int mode)
-  { return mode; } /* Nothing to do  */
+__CRT_INLINE __LIBIMPL__(( FUNCTION = fwide ))
+__cdecl __MINGW_NOTHROW  int fwide (FILE *__UNUSED_PARAM(__stream), int __mode)
+{ return __mode; } /* Nothing to do  */
 
-__CRT_INLINE __cdecl __MINGW_NOTHROW
-int mbsinit (const mbstate_t *__UNUSED_PARAM(ps))
-  { return 1; }
+__CRT_INLINE __LIBIMPL__(( FUNCTION = mbsinit ))
+__cdecl __MINGW_NOTHROW  int mbsinit (const mbstate_t *__ps)
+{ return ((__ps == NULL) || (*__ps == (mbstate_t)(0))); }
 #endif
 
 __cdecl __MINGW_NOTHROW  wchar_t *wmemset (wchar_t *, wchar_t, size_t);
