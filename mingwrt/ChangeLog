@@ -1,3 +1,10 @@
+2020-03-19  Keith Marshall  <keith@users.osdn.me>
+
+	Correct a potential mbsrtowcs() surrogate pair overrun.
+
+	* mingwex/mbrscan.c (__mingw_mbtowc_copy) [(count + 1) == len)]: Stop,
+	without storing current multibyte conversion, if surrogate pair.
+
 2020-03-12  Keith Marshall  <keith@users.osdn.me>
 
 	Rationalize implementations of fwide() and mbsinit() functions.

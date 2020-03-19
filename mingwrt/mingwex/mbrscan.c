@@ -264,23 +264,58 @@ size_t __mingw_mbtowc_copy
    * an internal scratch buffer, to facilitate counting the number of
    * such elements which would be copied, without storing them).
    */
-  wchar_t scratch[2]; size_t count = (size_t)(0);
+  size_t count = (size_t)(0);
   while( count < len )
-  {
-    int copy, scan = 0;
-    wchar_t *wc = (wcs == NULL) ? scratch : wcs;
+  { /* Scan the multibyte sequence, one character at a time, while we
+     * still have sufficient space to store each conversion, (ensuring
+     * that there is always at least enough space to accommodate one
+     * full conversion, avoiding possible surrogate pair overflow.
+     */
+    int copy, scan = 0, gap = len - count;
+    wchar_t scratch[2], *wc = ((wcs == NULL) || (gap < 2)) ? scratch : wcs;
+
+    /* Determine the length of the next multibyte character, and the
+     * number of wchar_t entities required to store it.
+     */
     do { copy = __mingw_mbtowc_convert( src, ++scan, wc, 2 );
        } while( (copy == 0) && (scan < mbrlen_cur_max) );
 
+    /* Bail out, if no conversion is possible; (this can only occur
+     * if an invalid multibyte sequence is detected).
+     */
     if( copy == 0 ) return errout( EILSEQ, (size_t)(-1) );
 
-    if( *wc == L'\0' ) len = count;
+    /* Stop at any terminating NUL character, or if a surrogate pair
+     * will overflow at the end of the designated buffer...
+     */
+    if( (*wc == L'\0') || (gap < copy) )
+    {
+      /* ...storing a NUL terminator, if necessary...
+       */
+      if( (wcs != NULL) && (*wc == L'\0') ) *wcs = L'\0';
+      len = count;
+    }
     else
-    { count += copy;
-      if( wcs != NULL ) wcs += copy;
+    { /* ...otherwise, adjust the count of wchar_t entities, which
+       * have been converted thus far...
+       */
+      count += copy;
+      if( wcs != NULL )
+      { /* ...ensuring that the conversion is appropriately stored,
+	 * and the storage buffer pointer is advanced...
+	 */
+       	if( wc == scratch ) while( copy-- > 0 ) *wcs++ = *wc++;
+	else wcs += copy;
+      }
+      /* ...and that the scan pointer is repositioned, to process
+       * the next multibyte character, (if any).
+       */
       src += scan;
     }
   }
+  /* Finally, we return the total number of wchar_t entities which have,
+   * (or would have), been stored for this conversion.
+   */
   return count;
 }
 
