@@ -1,3 +1,36 @@
+2020-03-28  Keith Marshall  <keith@users.osdn.me>
+
+	Make <winsvc.h> header effectively self-contained.
+
+	* include/winsvc.h: Tidy layout; assert copyright.
+	Include <windef.h>, so supporting stand-alone inclusion.
+	(pragma GCC system_header): Remove redundant GCC version guard.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+	(__AW_ALIAS__): Use it to selectively typedef...
+	[UNICODE vs. ! UNICODE] (LPSERVICE_MAIN_FUNCTION)
+	(SERVICE_FAILURE_ACTIONS, LPSERVICE_FAILURE_ACTIONS)
+	(ENUM_SERVICE_STATUS_PROCESS, LPENUM_SERVICE_STATUS_PROCESS)
+	(QUERY_SERVICE_LOCK_STATUS, LPQUERY_SERVICE_LOCK_STATUS)
+	(QUERY_SERVICE_CONFIG, LPQUERY_SERVICE_CONFIG)
+	(SERVICE_TABLE_ENTRY, LPSERVICE_TABLE_ENTRY)
+	(SERVICE_DESCRIPTION, LPSERVICE_DESCRIPTION)
+	(ENUM_SERVICE_STATUS, LPENUM_SERVICE_STATUS): ...these.
+	(__AW_SUFFIXED__): Likewise, use it to selectively define...
+	[UNICODE vs. ! UNICODE] (SERVICES_ACTIVE_DATABASE)
+	(SERVICES_FAILED_DATABASE, SC_GROUP_IDENTIFIER)
+	(CreateService, ChangeServiceConfig, ChangeServiceConfig2)
+	(EnumDependentServices, EnumServicesStatus, EnumServicesStatusEx)
+	(GetServiceDisplayName, GetServiceKeyName, OpenSCManager)
+	(OpenService, QueryServiceConfig, QueryServiceConfig2)
+	(QueryServiceLockStatus, RegisterServiceCtrlHandler)
+	(StartService, StartServiceCtrlDispatcher)
+	(RegisterServiceCtrlHandlerEx): ...these.
+	(__AW_STRING_W__): Use it to derive definitions for...
+	(SERVICES_ACTIVE_DATABASEW, SERVICES_FAILED_DATABASEW)
+	(SC_GROUP_IDENTIFIERW): ...each of these, from...
+	(SERVICES_ACTIVE_DATABASEA, SERVICES_FAILED_DATABASEA)
+	(SC_GROUP_IDENTIFIERA): ...these, respectively.
+
 2020-03-05  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3 release.
