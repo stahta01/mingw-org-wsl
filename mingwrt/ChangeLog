@@ -1,5 +1,14 @@
 2020-04-02  Keith Marshall  <keith@users.osdn.me>
 
+	Handle wcsrtombs() initial surrogate completion.
+
+	* mingwex/wcsrtombs.c (__mingw_wcsrtombs_fallback)
+	[*ps -> high surrogate && **wcs -> low surrogate]: Complete surrogate
+	pair, and evaluate conversion; compute its length, and account for its
+	effect on alloted conversion buffer size.  Reset *ps to initial state.
+
+2020-04-02  Keith Marshall  <keith@users.osdn.me>
+
 	Correct wchar_t to MBCS unpaired surrogate handling.
 
 	* mingwex/wcharmap.c (__mingw_wctomb_convert) [codeset >= CP_UTF7]:

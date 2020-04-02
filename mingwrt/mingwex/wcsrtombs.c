@@ -41,7 +41,7 @@
 
 static size_t __mingw_wcsrtombs_fallback
 ( char *restrict mbs, const wchar_t **restrict wcs, size_t len,
-  mbstate_t *__UNUSED_PARAM(ps)
+  mbstate_t *restrict ps
 )
 { /* Fallback function, providing an implementation of the wcsrtombs()
    * function, when none is available within the Microsoft C runtime, or
@@ -52,7 +52,31 @@ static size_t __mingw_wcsrtombs_fallback
    * the size of buffer required to accommodate the conversion.
    */
   int errno_reset = save_error_status_and_clear( errno, 0 );
-  size_t wanted = __mingw_wctomb_convert( NULL, 0, *wcs, -1 );
+  union { mbstate_t ps; wchar_t wc[2]; } resume = { (mbstate_t)(0) };
+  size_t count = (size_t)(0), wanted = (size_t)(0);
+
+  /* This wcsrtombs() implementation will not use any mbstate...
+   */
+  if( ps != NULL )
+  { /* ...unless it is provided by the caller, in which case we will,
+     * ultimately, reset it to initial state, after processing it...
+     */
+    resume.ps = *ps;
+    *ps = (mbstate_t)(0);
+    if( IS_SURROGATE_PAIR( resume.wc[0], **wcs ) )
+    { /* ...subject to the expectation that it represents deferred
+       * completion of a surrogate pair.
+       */
+      resume.wc[1] = *(*wcs)++;
+      count = __mingw_wctomb_convert( NULL, 0, resume.wc, 2 );
+    }
+  }
+
+  /* The total buffer space wanted is the aggregate of any deferred
+   * surrogate pair completion, plus the contribution from conversion
+   * of the remainder of the wide character string.
+   */
+  wanted = count + __mingw_wctomb_convert( NULL, 0, *wcs, -1 );
 
   if( mbs == NULL )
     /* There is no buffer designated to store the encoded multibyte
@@ -69,7 +93,9 @@ static size_t __mingw_wcsrtombs_fallback
      * initial minimum buffer size determination; encode the entire
      * input sequence for return, and clean up the input state.
      */
-    len = __mingw_wctomb_convert( mbs, len, *wcs, -1 ) - 1;
+    if( count != (size_t)(0) )
+      mbs += __mingw_wctomb_convert( mbs, len, resume.wc, 2 );
+    count += __mingw_wctomb_convert( mbs, len - count, *wcs, -1 ) - 1;
     *wcs = NULL;
   }
 
@@ -80,7 +106,21 @@ static size_t __mingw_wcsrtombs_fallback
      * either exhaust the encoding buffer space, or we encounter the
      * encoding error previously identified.
      */
-    size_t count = 0; errno = 0;
+    errno = 0;
+
+    /* Initially, if there's a pending surrogate completion, and there
+     * is insufficient buffer space to accommodate its conversion, then
+     * we must squash all conversion...
+     */
+    if( count > len ) count = len = 0;
+    else if( count != 0 )
+    { /* ...otherwise, we store the completed surrogate conversion, at
+       * the start of the buffer, adjusting the buffer pointer, and its
+       * residual length counter, to suit.
+       */
+      mbs += __mingw_wctomb_convert( mbs, len, resume.wc, 2 );
+      len -= count;
+    }
     while( (len >= __mingw_wctomb_convert( NULL, 0, *wcs, 1 )) && (errno == 0) )
     {
       /* There is still sufficient space to store the encoding of one
@@ -96,20 +136,12 @@ static size_t __mingw_wcsrtombs_fallback
      * if we did, then we must bail out.
      */
     if( errno != 0 ) return (size_t)(-1);
-
-    /* If we're still here, then we've encoded as much of the input
-     * sequence as we can accommodate; the input pointer has already
-     * been adjusted, as required, but we must preserve the count of
-     * cumulatively encoded bytes, for return.
-     */
-    len = count;
   }
-
   /* We have now successfully encoded as much of the input sequence
    * as possible, without encountering any encoding error; restore
    * the saved errno state, and return the encoded byte count.
    */
-  return errout( errno_reset, len );
+  return errout( errno_reset, count );
 }
 
 size_t __mingw_wcsrtombs
