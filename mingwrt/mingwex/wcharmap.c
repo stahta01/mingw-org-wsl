@@ -92,7 +92,7 @@ size_t __mingw_wctomb_convert
    *    	space in the designated buffer to store the encoded
    *    	multibyte character sequence.
    */
-  size_t retval; int eilseq_flag = 0;
+  size_t retval; int eilseq_flag = 0, *eilseq_ptr = NULL;
 
   if( codeset == 0 )
   { /* Code page zero is assumed to represent the encoding which applies
@@ -179,12 +179,69 @@ size_t __mingw_wctomb_convert
    * may be unrepresentable UTF-16 code points, and we must pass a
    * flag reference to detect their presence in the UTF-16LE input
    * sequence; OTOH, any valid UTF-16 code point is representable
-   * in both CP_UTF7 and CP_UTF8, so no such flag is required, and
-   * WideCharToMultiByte() will choke, if the flag reference is
-   * not passed as NULL.
+   * in both CP_UTF7 and CP_UTF8, but invalid UTF-16 code points
+   * may still arise, due to malformed surrogate pairs.
    */
+  if( codeset >= CP_UTF7 )
+  { /* Target codeset is either UTF-7, or UTF-8; unfortunately,
+     * Microsoft's WideCharToMultiByte() is critically broken in
+     * respect of invalid sequence detection, when converting to
+     * either of these codeset's ... specifically, the function
+     * will fail if the EILSEQ flag reference is non-NULL, but
+     * without it, orphaned surrogates are not detected, and to
+     * work around this defect, we must explicitly scan for any
+     * such degenerate wide character sequence.
+     */
+    size_t count = wclen;
+    const wchar_t *chk = wcs;
+
+    while( count != 0 )
+    { /* Test each wide character in the source sequence, until
+       * we reach the specified length limit, or we encounter a
+       * NUL terminator.
+       */
+      if( count != (size_t)(-1) ) --count;
+      else if( *chk == L'\0' ) count = 0;
+
+      /* Derived from the <winnls.h> tests for high surrogates,
+       * and for low surrogates...
+       */
+      switch( 0xFC00 & *chk++ )
+      { /* ...this mask will capture both surrogate types...
+	 */
+	case 0xD800:
+	  /* ...and this explicitly identifies a high surrogate,
+	   * and this must be paired with a low surrogate, which
+	   * must immediately follow, so check...
+	   */
+	  if( (count != 0) && IS_LOW_SURROGATE( *chk++ ) )
+	  {
+	    /* ...accept, and account for it, when it does...
+	     */
+	    if( count != (size_t)(-1) ) --count;
+	    break;
+	  }
+
+	case 0xDC00:
+	  /* This either explicitly matches a low surrogate, with
+	   * no immediately preceding high surrogate, or we have
+	   * fallen through from the preceding case of detecting
+	   * a high surrogate without an immediately following low
+	   * surrogate; either is invalid, so bail out.
+	   */
+	  return errout( EILSEQ, (size_t)(-1) );
+      }
+    }
+  }
+  else
+    /* Target codeset is neither UTF-7, nor UTF-8; we may safely
+     * call WideCharToMultiByte(), with a non-NULL reference for
+     * the EILSEQ detection flag.
+     */
+    eilseq_ptr = &eilseq_flag;
+
   retval = WideCharToMultiByte( codeset, 0, wcs, wclen, mbs, mblen, NULL,
-      (CP_UTF7 > codeset) ? &eilseq_flag : NULL
+      eilseq_ptr
     );
   return (eilseq_flag || (retval == 0)) ? errout( EILSEQ, (size_t)(-1) )
     : retval;

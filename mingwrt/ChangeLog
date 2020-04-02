@@ -1,3 +1,12 @@
+2020-04-02  Keith Marshall  <keith@users.osdn.me>
+
+	Correct wchar_t to MBCS unpaired surrogate handling.
+
+	* mingwex/wcharmap.c (__mingw_wctomb_convert) [codeset >= CP_UTF7]:
+	Scan source wchar_t sequence, prior to conversion, checking it for...
+	[high surrogate]: Abort unless immediately followed by low surrogate.
+	[low surrogate]: Likewise, if not preceded by high surrogate.
+
 2020-03-19  Keith Marshall  <keith@users.osdn.me>
 
 	Correct a potential mbsrtowcs() surrogate pair overrun.
