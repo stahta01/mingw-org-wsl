@@ -1,3 +1,11 @@
+2020-04-07  Keith Marshall  <keith@users.osdn.me>
+
+	Document MinGW MBCS/wide character conversion functions.
+
+	* man/btowc.3.man man/mbrlen.3.man man/mbrtowc.3.man
+	* man/mbsinit.3.man man/mbsrtowcs.3.man man/wcrtomb.3.man
+	* man/wcsrtombs.3.man man/wctob.3.man: New files.
+
 2020-04-02  Keith Marshall  <keith@users.osdn.me>
 
 	Handle wcsrtombs() initial surrogate completion.

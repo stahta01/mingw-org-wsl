@@ -1,0 +1,174 @@
+.\" vim: ft=nroff
+.TH %PAGEREF% MinGW "MinGW Programmer's Reference Manual"
+.
+.SH NAME
+.B \%wctob
+\- convert a wide character to a single byte
+.
+.
+.SH SYNOPSIS
+.B  #include
+.RB < stdio.h >
+.br
+.B  #include
+.RB < wchar.h >
+.PP
+.B  int wctob( wint_t
+.I  c
+.B  );
+.
+.IP \& -4n
+Feature Test Macro Requirements for libmingwex:
+.PP
+.BR \%__MSVCRT_VERSION__ :
+since \%mingwrt\(hy5.3,
+if this feature test macro is
+.IR defined ,
+with a value of
+.I at least
+.IR \%0x0800 ,
+(corresponding to the symbolic constant,
+.BR \%__MSCVR80_DLL ,
+and thus declaring intent to link with \%MSVCR80.DLL,
+or any later version of \%Microsoft\(aqs \%non\(hyfree runtime library,
+instead of with \%MSVCRT.DLL),
+calls to
+.BR \%wctob ()
+will be directed to the implementation thereof,
+within \%Microsoft\(aqs runtime DLL.
+.
+.PP
+.BR \%_ISOC99_SOURCE ,
+.BR \%_ISOC11_SOURCE :
+since \%mingwrt\(hy5.3.1,
+when linking with \%MSVCRT.DLL,
+or when
+.B \%__MSVCRT_VERSION__
+is either
+.IR undefined ,
+or is
+.I defined
+with any value which is
+.I less than
+.IR \%0x0800 ,
+(thus denying intent to link with \%MSVCR80.DLL,
+or any later \%non\(hyfree version of Microsoft\(aqs runtime library),
+.I explicitly
+defining either of these feature test macros
+will cause any call to
+.BR \%wctob ()
+to be directed to the
+.I \%libmingwex
+implementation;
+if neither macro is defined,
+calls to
+.BR \%wctob ()
+will be directed to Microsoft\(aqs runtime implementation,
+if it is available,
+otherwise falling back to the
+.I \%libmingwex
+implementation.
+.
+.PP
+Prior to \%mingwrt\(hy5.3,
+none of the above feature test macros have any effect on
+.BR \%wctob ();
+all calls will be directed to the
+.I \%libmingwex
+implementation.
+.
+.
+.SH DESCRIPTION
+The
+.BR \%wctob ()
+function converts the wide character,
+represented by
+.IR c ,
+to a multibyte character sequence
+in the codeset which is associated with the
+.B \%LC_CTYPE
+category of the active process locale.
+Provided the entire conversion can be accommodated
+within a single byte,
+the value of that byte,
+interpreted as an
+.IR unsigned\ char ,
+and cast to an
+.IR int ,
+is returned;
+otherwise,
+.B EOF
+is returned.
+.
+.
+.SH RETURN VALUE
+If the conversion of
+.IR c ,
+to a multibyte character sequence,
+in its entirety,
+occupies exactly
+.I one
+byte,
+the value of that byte,
+interpreted as an
+.IR unsigned\ char ,
+and cast to an
+.IR int ,
+is returned;
+otherwise,
+.B EOF
+is returned.
+.
+.
+.SH ERROR CONDITIONS
+No error conditions are defined.
+.
+.
+.SH STANDARDS CONFORMANCE
+Except to the extent that it may be affected by limitations
+of the underlying \%MS\(hyWindows API,
+the
+.I \%libmingwex
+implementation of
+.BR \%wctob ()
+conforms generally to
+.BR \%ISO\(hyC99 ,
+.BR \%POSIX.1\(hy2001 ,
+and
+.BR \%POSIX.1\(hy2008 ;
+(prior to \%mingwrt\(hy5.3,
+and in those cases where calls may be delegated
+to a Microsoft runtime DLL implementation,
+this level of conformity may not be achieved).
+.
+.
+.\"SH EXAMPLE
+.
+.
+.SH CAVEATS AND BUGS
+Use of the
+.BR \%wctob ()
+function is
+.IR discouraged ;
+it serves no purpose which may not be better served by the
+.BR \%wcrtomb (3)
+function,
+which should be considered as a preferred alternative.
+.
+.
+.SH SEE ALSO
+.BR wcrtomb (3)
+.
+.
+.SH AUTHOR
+This manpage was written by \%Keith\ Marshall,
+\%<keith@users.osdn.me>,
+to document the
+.BR \%wctob ()
+function as it has been implemented for the MinGW.org Project.
+It may be copied, modified and redistributed,
+without restriction of copyright,
+provided this acknowledgement of contribution by
+the original author remains in place.
+.
+.\" EOF

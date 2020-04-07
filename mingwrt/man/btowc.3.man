@@ -1,0 +1,169 @@
+.\" vim: ft=nroff
+.TH %PAGEREF% MinGW "MinGW Programmer's Reference Manual"
+.
+.SH NAME
+.B \%btowc
+\- convert a single byte to a wide character
+.
+.
+.SH SYNOPSIS
+.B  #include
+.RB < stdio.h >
+.br
+.B  #include
+.RB < wchar.h >
+.PP
+.B  wint_t btowc( int
+.I  c
+.B  );
+.
+.IP \& -4n
+Feature Test Macro Requirements for libmingwex:
+.PP
+.BR \%__MSVCRT_VERSION__ :
+since \%mingwrt\(hy5.3,
+if this feature test macro is
+.IR defined ,
+with a value of
+.I at least
+.IR \%0x0800 ,
+(corresponding to the symbolic constant,
+.BR \%__MSCVR80_DLL ,
+and thus declaring intent to link with \%MSVCR80.DLL,
+or any later version of \%Microsoft\(aqs \%non\(hyfree runtime library,
+instead of with \%MSVCRT.DLL),
+calls to
+.BR \%btowc ()
+will be directed to the implementation thereof,
+within \%Microsoft\(aqs runtime DLL.
+.
+.PP
+.BR \%_ISOC99_SOURCE ,
+.BR \%_ISOC11_SOURCE :
+since \%mingwrt\(hy5.3.1,
+when linking with \%MSVCRT.DLL,
+or when
+.B \%__MSVCRT_VERSION__
+is either
+.IR undefined ,
+or is
+.I defined
+with any value which is
+.I less than
+.IR \%0x0800 ,
+(thus denying intent to link with \%MSVCR80.DLL,
+or any later \%non\(hyfree version of Microsoft\(aqs runtime library),
+.I explicitly
+defining either of these feature test macros
+will cause any call to
+.BR \%btowc ()
+to be directed to the
+.I \%libmingwex
+implementation;
+if neither macro is defined,
+calls to
+.BR \%btowc ()
+will be directed to Microsoft\(aqs runtime implementation,
+if it is available,
+otherwise falling back to the
+.I \%libmingwex
+implementation.
+.
+.PP
+Prior to \%mingwrt\(hy5.3,
+none of the above feature test macros have any effect on
+.BR \%btowc ();
+all calls will be directed to the
+.I \%libmingwex
+implementation.
+.
+.
+.SH DESCRIPTION
+If
+.I c
+is not
+.BR EOF ,
+the
+.BR \%btowc ()
+function attempts to interpret
+.I c
+as a multibyte character sequence of length
+.IR one ;
+if the single byte evaluated represents a complete multibyte character,
+in the codeset which is associated with the
+.B \%LC_CTYPE
+category of the active process locale,
+.BR \%btowc ()
+converts it to,
+and returns,
+its equivalent wide character value.
+.
+.
+.SH RETURN VALUE
+If
+.I c
+is
+.BR EOF ,
+or if it does not represent a complete multibyte
+character sequence of length
+.IR one ,
+.BR \%btowc ()
+returns
+.BR WEOF ;
+otherwise the conversion of the single byte character,
+to its equivalent wide character value,
+is returned.
+.
+.
+.SH ERROR CONDITIONS
+No error conditions are defined.
+.
+.
+.SH STANDARDS CONFORMANCE
+Except to the extent that it may be affected by limitations
+of the underlying \%MS\(hyWindows API,
+the
+.I \%libmingwex
+implementation of
+.BR \%btowc ()
+conforms generally to
+.BR \%ISO\(hyC99 ,
+.BR \%POSIX.1\(hy2001 ,
+and
+.BR \%POSIX.1\(hy2008 ;
+(prior to \%mingwrt\-5.3,
+and in those cases where calls may be delegated
+to a Microsoft runtime DLL implementation,
+this level of conformity may not be achieved).
+.
+.
+.\"SH EXAMPLE
+.
+.
+.SH CAVEATS AND BUGS
+Use of the
+.BR \%btowc ()
+function is
+.IR discouraged ;
+it serves no purpose which may not be better served by the
+.BR \%mbrtowc (3)
+function,
+which should be considered as a preferred alternative.
+.
+.
+.SH SEE ALSO
+.BR mbrtowc (3)
+.
+.
+.SH AUTHOR
+This manpage was written by \%Keith\ Marshall,
+\%<keith@users.osdn.me>,
+to document the
+.BR \%btowc ()
+function as it has been implemented for the MinGW.org Project.
+It may be copied, modified and redistributed,
+without restriction of copyright,
+provided this acknowledgement of contribution by
+the original author remains in place.
+.
+.\" EOF
