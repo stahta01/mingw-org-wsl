@@ -1,5 +1,13 @@
 2020-04-08  Keith Marshall  <keith@users.osdn.me>
 
+	Ensure PDF manpages are generated from local sources.
+
+	* Makefile.in (%.$man3ext.pdf): Specify explicit path to $<.$man3ext
+	file, when invoking the 'man -t' command; without it, the command may
+	refer to the build host's native copy, instead of our local version.
+
+2020-04-08  Keith Marshall  <keith@users.osdn.me>
+
 	Automatically enumerate manpages for publication.
 
 	* Makefile.in (manpages): New macro; define, and use it...

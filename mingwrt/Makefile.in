@@ -994,7 +994,7 @@ install-html-files install-pdf-files: install-%-files: \
 	chmod 644 ${htmldir}/$(notdir $@)
 
 %.$(man3ext).pdf: %.$(man3ext)
-	man -t $< | ps2pdf - > ${pdfdir}/$(notdir $@)
+	man -t $(dir $<)$< | ps2pdf - > ${pdfdir}/$(notdir $@)
 	chmod 644 ${pdfdir}/$(notdir $@)
 
 html-docdist pdf-docdist: %-docdist:
