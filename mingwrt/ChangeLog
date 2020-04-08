@@ -1,3 +1,12 @@
+2020-04-08  Keith Marshall  <keith@users.osdn.me>
+
+	Automatically enumerate manpages for publication.
+
+	* Makefile.in (manpages): New macro; define, and use it...
+	(mingwrt-man3): ...for this, to enumerate associated manpage sources.
+	(manpage_copy, mancopy, manpage_ref): New macros; define them, and...
+	(basename.3, getdelim.3): ...use them.
+
 2020-04-07  Keith Marshall  <keith@users.osdn.me>
 
 	Document MinGW MBCS/wide character conversion functions.

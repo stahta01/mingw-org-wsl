@@ -839,9 +839,13 @@ install-%-optional-dll: %.dll.a bindir libdir
 # Install manpages.
 #
 vpath %.man ${mingwrt_srcdir}/man
+manpages = $(basename $(notdir $(wildcard $1/man/*.$2.man)))
+mancopy = $(call manpage_ref,$1,$2.man)$(eval $1: %: %.$0-recursive)
+manpage_ref = $(eval $1: export reference_manpage = $2)
+
 install-man install-manpages: install-mingwrt-manpages
-mingwrt-man$(man3ext): $(addsuffix .$(man3ext),basename dirname getline getdelim)
-install-mingwrt-manpages: mandir mingwrt-man3
+mingwrt-man$(man3ext): $(call manpages,${mingwrt_srcdir},$(man3ext))
+install-mingwrt-manpages: mandir mingwrt-man$(man3ext)
 
 mingwrt-man%:
 	$(call mkinstalldirs,,${man$*dir})
@@ -854,11 +858,9 @@ mingwrt-man%:
 format_manpage = sed \
   -e "s/%PAGEREF%/`echo $1 | tr a-z A-Z` $(2:.%=%) `date -r $3 +%d-%b-%Y`/"
 
-basename.$(man3ext): export reference_manpage = dirname.$(man3ext).man
-basename.$(man3ext): %: %.mancopy-recursive
-
-getdelim.$(man3ext): export reference_manpage = getline.$(man3ext).man
-getdelim.$(man3ext): %: %.mancopy-recursive
+manpage_copy = $(eval $1$3: $2.$3)$(call mancopy,$2.$3,$4)
+$(call manpage_copy,mingwrt-man,basename,$(man3ext),dirname.$(man3ext))
+$(call manpage_copy,mingwrt-man,getdelim,$(man3ext),getline.$(man3ext))
 
 %.mancopy-recursive:
 	$(MAKE) --no-print-directory $*.mancopy
