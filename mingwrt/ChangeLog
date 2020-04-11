@@ -1,3 +1,10 @@
+2020-04-11  Keith Marshall  <keith@users.osdn.me>
+
+	Manpage stylistic consistency updates.
+
+	* man/dirname.3.man man/getline.3.man: Miscellaneous stylistic
+	formatting changes.
+
 2020-04-08  Keith Marshall  <keith@users.osdn.me>
 
 	Ensure PDF manpages are generated from local sources.

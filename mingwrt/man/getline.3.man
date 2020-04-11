@@ -1,5 +1,5 @@
 .\" vim: ft=nroff
-.TH %PAGEREF% MinGW "Programmer's Reference Manual"
+.TH %PAGEREF% MinGW "MinGW Programmer's Reference Manual"
 .
 .SH NAME
 .BR getline ,\0 getdelim
@@ -28,8 +28,7 @@
 .BI * stream
 .B  );
 .
-.PP
-.in -4n
+.IP \& -4n
 Feature Test Macro Requirements for libmingwex:
 .TP 4
 .BR getdelim (),\~ getline ():
@@ -41,52 +40,52 @@ Available since libmingwex version 3.22:
 .
 .SH DESCRIPTION
 The
-.BR getdelim ()
+.BR \%getdelim ()
 function reads data from
-.IR stream ,
+.IR \%stream ,
 until either a character entity matching
-.IR delim ,
+.IR \%delim ,
 or
 .I EOF
 is encountered;
 the data so read,
 including the
-.I delim
+.I \%delim
 character if present,
 is stored into the buffer referenced by the pointer at
 .B *\c
-.IR linebuf ,
+.IR \%linebuf ,
 and is
 .I NUL
 terminated.
 .PP
 The
-.BR getline ()
+.BR \%getline ()
 function is a special case of
-.BR getdelim (),
+.BR \%getdelim (),
 with the
-.I delim
+.I \%delim
 argument implicitly specified as the POSIX newline character,
 .IR '\en' .
 .
 .PP
 The
-.I linebuf
+.I \%linebuf
 argument must be a reference to a pointer which is safe to pass to
-.BR free ();
+.BR \%free ();
 either a
-.I NULL
+.I \%NULL
 pointer,
 or a pointer to a buffer of size as indicated by
 .B *\c
 .IR n ,
 allocated by
-.BR malloc ().
+.BR \%malloc ().
 Passing a value of
-.I NULL
+.I \%NULL
 in
 .B *\c
-.IR linebuf ,
+.IR \%linebuf ,
 with a value of zero in
 .B *\c
 .IR n ,
@@ -96,7 +95,7 @@ of a default buffer.
 .
 .PP
 The
-.I delim
+.I \%delim
 argument is specified as an
 .BR int ;
 it must be passed a value which is representable as an
@@ -108,21 +107,21 @@ otherwise the behaviour is undefined.
 If
 .BI * linebuf
 is initially passed as a
-.I NULL
+.I \%NULL
 pointer,
 then
-.BR getdelim ()
+.BR \%getdelim ()
 or
-.BR getline ()
+.BR \%getline ()
 will call
-.BR malloc (),
+.BR \%malloc (),
 in an attempt to allocate
 .BI * n
 bytes,
 or an arbitrarily sized smaller default buffer,
 if such an allocation is not achievable.
 In either case,
-.BI * linebuf
+.BI \%* linebuf
 and
 .BI * n
 will be updated to reflect the allocated buffer location,
@@ -132,11 +131,11 @@ and the actual size allocated.
 If,
 at any time during collection of the input record,
 the buffer referenced by
-.BI * linebuf
+.BI \%* linebuf
 becomes too small to store the record,
 it will be expanded as necessary,
 and both
-.BI * linebuf
+.BI \%* linebuf
 and
 .BI * n
 will be adjusted to reflect the change in allocation.
@@ -145,14 +144,14 @@ will be adjusted to reflect the change in allocation.
 .SH RETURN VALUE
 .
 On successful completion,
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
+.BR \%getdelim ()
 return the number of characters stored into the buffer at
 .B *\c
-.IR linebuf ,
+.IR \%linebuf ,
 including the
-.I delim
+.I \%delim
 character if this was encountered before
 .IR EOF ,
 but excluding the terminating
@@ -162,22 +161,22 @@ character.
 .PP
 If no characters were read,
 and
-.I stream
+.I \%stream
 is at end-of-file,
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
+.BR \%getdelim ()
 return \(mi1,
 and the end-of-file indicator is set for
-.IR stream .
+.IR \%stream .
 .
 .PP
 If an error occurs,
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
+.BR \%getdelim ()
 set
-.IR errno ,
+.IR \%errno ,
 as indicated under the heading
 .B ERROR CONDITIONS
 below,
@@ -186,95 +185,100 @@ and return \(mi1.
 .
 .SH ERROR CONDITIONS
 .
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim
+.BR \%getdelim
 may fail for any of the reasons described as failure conditions for
-.BR fgetc ();
+.BR \%fgetc ();
 when any such error occurs,
-.I errno
+.I \%errno
 is left as set by
-.BR fgetc (),
+.BR \%fgetc (),
 and
-.BR getline ()
+.BR \%getline ()
 or
-.BR getdelim ()
+.BR \%getdelim ()
 returns \(mi1.
 .
 .PP
 In addition to
-.BR fgetc ()
+.BR \%fgetc ()
 failure conditions,
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
+.BR \%getdelim ()
 may fail,
 returning \(mi1 after setting
-.I errno
+.I \%errno
 to indicate occurrence of any of the following errors:
 .
 .RS 4
 .TP 10
-.B EINVAL
-.I linebuf
+.B \%EINVAL
+.I \%linebuf
 or
 .I n
 is
-.IR NULL .
+.IR \%NULL .
 .
 .TP 10
 .B EBADF
-.I stream
+.I \%stream
 is a
-.I NULL
+.I \%NULL
 pointer,
 or otherwise is not a valid stream opened for reading,
 as determined by
-.BR fgetc ().
+.BR \%fgetc ().
 .
 .TP 10
 .B ENOMEM
 An attempt to allocate a buffer,
 or to expand the buffer referenced by
 .B *
-.IR linebuf ,
+.IR \%linebuf ,
 was unsuccessful.
 .
 .TP 10
 .B ERANGE
 More than
-.B SSIZE_MAX
+.B \%SSIZE_MAX
 characters were read,
 without finding
-.IR delim .
-(Note that POSIX specifies that
+.IR \%delim .
+(Note that
+.B \%POSIX.1
+specifies that
 .I errno
 should be set to
-.B EOVERFLOW
+.B \%EOVERFLOW
 for this error condition;
 see heading
 .B CAVEATS AND BUGS
 below,
 for the rationale for the use of
-.B ERANGE
+.B \%ERANGE
 in this implementation).
 .RE
 .
 .
-.SH CONFORMING TO
+.SH STANDARDS CONFORMANCE
 .
 Originally implemented as GNU extension functions,
 both
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
-were adopted into POSIX.1-2008;
-implementations conforming to this POSIX standard have been
-integrated into libmingwex from version 3.22 onwards.
+.BR \%getdelim ()
+were adopted into
+.BR \%POSIX.1\(hy2008 ;
+implementations conforming to this
+.B \%POSIX.1
+standard have been integrated into libmingwex
+from version 3.22 onwards.
 .
 .
 .SH EXAMPLE
-.nf
+.EX
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -297,62 +301,63 @@ int main ()
   fclose (fp);
   return 0;
 }
-.fi
+.EE
 .
 .
 .SH CAVEATS AND BUGS
 .
 A return value of \(mi1 may indicate that
-.I stream
+.I \%stream
 is already at end-of-file when
-.BR getline ()
+.BR \%getline ()
 or
-.BR getdelim ()
+.BR \%getdelim ()
 is called,
 or it may indicate an error condition;
 use
-.BR ferror ()
+.BR \%ferror ()
 or
-.BR feof ()
+.BR \%feof ()
 to distinguish error and end-of-file conditions.
 .
 .PP
 The return type of
-.I ssize_t
+.I \%ssize_t
 can accommodate a maximum character count of
-.BR SSIZE_MAX ,
+.BR \%SSIZE_MAX ,
 and thus,
 the return value will overflow if
-.BR getline ()
+.BR \%getline ()
 or
-.BR getdelim ()
+.BR \%getdelim ()
 reads
-.B SSIZE_MAX
+.B \%SSIZE_MAX
 characters without encountering a line delimiter;
 for this overflow condition,
-POSIX.1-2008 stipulates an
+.B \%POSIX.1\(hy2008
+stipulates an
 .I errno
 condition code of
-.B EOVERFLOW .
+.B \%EOVERFLOW .
 However,
 MSVCRT.DLL provides no significant interpretation for
 an arbitrarily assigned
-.B EOVERFLOW
-.I errno
+.B \%EOVERFLOW
+.I \%errno
 code.
 Thus,
 this implementation of
-.BR getline ()
+.BR \%getline ()
 and
-.BR getdelim ()
+.BR \%getdelim ()
 substitutes the semantically similar,
 (but not semantically identical),
-.B ERANGE
-.I errno
+.B \%ERANGE
+.I \%errno
 code for
-.BR EOVERFLOW ,
+.BR \%EOVERFLOW ,
 to ensure that MSVCRT.DLL's
-.BR strerror ()
+.BR \%strerror ()
 can return an acceptable description for this error condition.
 .
 .
@@ -361,20 +366,21 @@ can return an acceptable description for this error condition.
 Please refer to Microsoft's documentation,
 on MSDN,
 for standard I/O streams,
-.BR fgetc (),
-.BR ferror (),
-.BR feof (),
-.BR malloc (),
-.BR free (),
-.BR strerror (),
+.BR \%fgetc (),
+.BR \%ferror (),
+.BR \%feof (),
+.BR \%malloc (),
+.BR \%free (),
+.BR \%strerror (),
 and
-.BR errno .
+.BR \%errno .
 .
 .
 .SH AUTHOR
 .
 This manpage was written by \%Keith\ Marshall,
-\%<keithmarshall@users.sourceforge.net>, to document the
+\%<keith@users.osdn.me>,
+to document the
 .BR \%getline ()
 and
 .BR \%getdelim ()
@@ -382,6 +388,6 @@ functions as they have been implemented for the MinGW.org Project.
 It may be copied, modified and redistributed,
 without restriction of copyright,
 provided this acknowledgement of contribution by
-the original author remains unchanged.
+the original author remains in place.
 .
 .\" EOF
