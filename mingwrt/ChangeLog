@@ -1,3 +1,14 @@
+2020-04-18  Keith Marshall  <keith@users.osdn.me>
+
+	Implement ISO-C11/C++17 aligned_alloc() function.
+
+	* include/stdlib.h (free, realloc): Define as inline aliases for...
+	(__mingw_free, __mingw_realloc): ...these replacements, respectively.
+	[__STDC_VERSION__>=201112L || __cplusplus >=201703L] (aligned_alloc):
+	Implement as inline alias, with libmemalign.a stub, in terms of...
+	(__mingw_aligned_offset_malloc): ...this; duplicate declaration.
+	(_GLIBCXX_HAVE_ALIGNED_ALLOC): Define it.
+
 2020-04-11  Keith Marshall  <keith@users.osdn.me>
 
 	Manpage stylistic consistency updates.

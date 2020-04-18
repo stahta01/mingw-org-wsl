@@ -574,6 +574,45 @@ _CRTIMP __cdecl __MINGW_NOTHROW  void free (void *);
 __cdecl __MINGW_NOTHROW  void *__mingw_realloc (void *, size_t);
 __cdecl __MINGW_NOTHROW  void __mingw_free (void *);
 
+/* Since MinGW's __mingw_free() and __mingw_realloc() are able to
+ * operate transparently on pointers returned by any of Microsoft's
+ * heap allocators, except their over-aligned variants, just as they
+ * operate on pointers returned by MinGW's over-aligned allocators,
+ * and all of ISO-C11, C++17, and POSIX.1 require this capability,
+ * always prefer these replacements for free() and realloc().
+ */
+__JMPSTUB__(( LIB = memalign, FUNCTION = free ))
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  void free (void *__ptr)
+{ __mingw_free (__ptr); }
+
+__JMPSTUB__(( LIB = memalign, FUNCTION = realloc ))
+__CRT_ALIAS __cdecl __MINGW_NOTHROW  void *realloc (void *__ptr, size_t __want)
+{ return __mingw_realloc (__ptr, __want); }
+
+#if __STDC_VERSION__ >= 201112L || __cplusplus >= 201703L
+/* ISO-C99 adds support for over-aligned heap memory allocation, by use
+ * of the aligned_alloc() function, (which was subsequently incorporated
+ * into ISO-C++17 as std::aligned_alloc()); we may conveniently support
+ * this by use of MinGW's __mingw_aligned_offset_malloc(), which is
+ * nominally declared in <malloc.h>, and reproduced here:
+ */
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+void *__mingw_aligned_offset_malloc (size_t, size_t, size_t);
+
+__CRT_ALIAS __LIBIMPL__(( LIB = memalign, FUNCTION = aligned_alloc ))
+
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+void *aligned_alloc (size_t __alignment, size_t __want)
+{ return __mingw_aligned_offset_malloc( __want, __alignment, (size_t)(0) ); }
+
+/* For the ISO-C++17 case, we need to ensure that the feature test
+ * macro _GLIBCXX_HAVE_ALIGNED_ALLOC is defined, with non-zero value;
+ * (it is interpreted in <cstdlib>, but only for C++17 and later).
+ */
+#undef  _GLIBCXX_HAVE_ALIGNED_ALLOC
+#define _GLIBCXX_HAVE_ALIGNED_ALLOC  1
+#endif	/* ISO-C11 || ISO-C++17 */
+
 /* bsearch() and qsort() are declared both here, in <stdlib.h>, and in
  * non-ANSI header <search.h>; we reproduce these declarations in both,
  * with no attempt to guard them, so the compiler may verify that they
