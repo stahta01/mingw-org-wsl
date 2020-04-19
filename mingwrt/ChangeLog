@@ -1,3 +1,11 @@
+2020-04-19  Keith Marshall  <keith@users.osdn.me>
+
+	Implement POSIX.1-2001 posix_memalign() function.
+
+	* include/stdlib.h [_POSIX_C_SOURCE >= 200112L] (posix_memalign):
+	Implement as inline alias, with libmemalign.a stub, in terms of...
+	(__mingw_aligned_offset_malloc): ...this; duplicate declaration.
+
 2020-04-18  Keith Marshall  <keith@users.osdn.me>
 
 	Implement ISO-C11/C++17 aligned_alloc() function.

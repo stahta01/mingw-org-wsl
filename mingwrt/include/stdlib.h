@@ -613,6 +613,34 @@ void *aligned_alloc (size_t __alignment, size_t __want)
 #define _GLIBCXX_HAVE_ALIGNED_ALLOC  1
 #endif	/* ISO-C11 || ISO-C++17 */
 
+#if _POSIX_C_SOURCE >= 200112L
+/* POSIX.1-2001 supports an (earlier) alternative to the preceding
+ * ISO-C11 aligned_alloc(), namely posix_memalign().  Once again, we
+ * may conveniently use __mingw_aligned_offset_malloc() to implement
+ * this, (duplicating its prototype once again, just in case we did
+ * not implement the ISO-C11 function).
+ */
+__cdecl __MINGW_NOTHROW __MINGW_ATTRIB_MALLOC
+void *__mingw_aligned_offset_malloc (size_t, size_t, size_t);
+
+__CRT_ALIAS __LIBIMPL__(( LIB = memalign, FUNCTION = memalign ))
+
+/* posix_memalign() differs semantically from aligned_alloc(), in
+ * returning a status code, which is zero on success, or the value
+ * of errno on failure, with the allocated memory pointer returned
+ * via a reference parameter.  Normally, the reference to errno as
+ * a possible return value would preclude inline implementation of
+ * this function, but since Microsoft gratuitously defines errno
+ * here, in <stdlib.h>, as well as in <errno.h>, this is okay.
+ */
+__cdecl __MINGW_NOTHROW
+int posix_memalign (void **__p, size_t __alignment, size_t __want)
+{ if( sizeof (void *) > __alignment ) __alignment = (sizeof (void *) << 1) - 1;
+  *__p = __mingw_aligned_offset_malloc (__want, __alignment, (size_t)(0));
+  return (*__p == NULL) ? errno : 0;
+}
+#endif	/* POSIX.1-2001 */
+
 /* bsearch() and qsort() are declared both here, in <stdlib.h>, and in
  * non-ANSI header <search.h>; we reproduce these declarations in both,
  * with no attempt to guard them, so the compiler may verify that they
