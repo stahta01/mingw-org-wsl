@@ -1,3 +1,9 @@
+2020-04-30  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.3.1 release.
+
+	* All files (wsl-5.3.1-release): Tag assigned.
+
 2020-04-19  Keith Marshall  <keith@users.osdn.me>
 
 	Implement POSIX.1-2001 posix_memalign() function.
