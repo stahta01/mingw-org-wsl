@@ -1,3 +1,11 @@
+2020-05-27  Keith Marshall  <keith@users.osdn.me>
+
+	Fix libmingwex-n.dll dependencies; cf. Issue #40438.
+
+	* Makefile.in (libmingwex.a): Remove...
+	(mbrscan.$OBJEEXT, wcharmap.$OBJEXT): ...these; relocate them to...
+	(libmingw32.a): ...here.
+
 2020-04-30  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3.1 release.

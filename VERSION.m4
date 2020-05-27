@@ -23,7 +23,7 @@ m4_define([__VERSION__],[5.3.2])
 #    as required, in accordance with libtool conventions.
 #
 m4_define([MINGW_AC_ENUMERATE_DLLVERSION_SPECS],dnl
-[MINGW_AC_SET_DLLVERSION([LIBMINGWEX], [libmingwex.dll.a], [2:0:0])dnl
+[MINGW_AC_SET_DLLVERSION([LIBMINGWEX], [libmingwex.dll.a], [3:0:0])dnl
 ])
 
 # $RCSfile$: end of file

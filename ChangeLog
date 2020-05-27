@@ -1,3 +1,9 @@
+2020-05-27  Keith Marshall  <keith@users.osdn.me>
+
+	Fix libmingwex-n.dll dependencies; cf. Issue #40438.
+
+	* VERSION.m4 (LIBMINGWEX): Increment interface version to 3:0:0.
+
 2020-05-26  Keith Marshall  <keith@users.osdn.me>
 
 	Adjust repository version following WSL-5.3.1 release.
