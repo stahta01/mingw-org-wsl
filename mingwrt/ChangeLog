@@ -1,3 +1,10 @@
+2020-05-28  Keith Marshall  <keith@users.osdn.me>
+
+	Avoid recursive optional DLL import library linking.
+
+	* Makefile.in (%.dll.a): Remove target before generation; if it
+	pre-exists, the DLL may appear to recursively depend on itself.
+
 2020-05-27  Keith Marshall  <keith@users.osdn.me>
 
 	Fix libmingwex-n.dll dependencies; cf. Issue #40438.

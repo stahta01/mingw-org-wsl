@@ -695,7 +695,7 @@ $(call optional_dll,libmingwex,@MAP_LIBMINGWEX_A_DLLVERSION@)
 # --no-whole-archive operation.
 #
 %.dll.a: %.a configure
-	$(LN_S) -f $< tmp$<
+	$(RM) $@; $(LN_S) -f $< tmp$<
 	$(CC) $(call a2dll,tmp$<,$(call dllname,$*)) -L. -Wl,--out-implib=$@
 	$(RM) tmp$<
 
