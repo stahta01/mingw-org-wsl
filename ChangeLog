@@ -1,5 +1,11 @@
 2020-05-28  Keith Marshall  <keith@users.osdn.me>
 
+	Prepare and publish MinGW.org WSL-5.3.2 release.
+
+	* All files (wsl-5.3.2-release): Tag assigned.
+
+2020-05-28  Keith Marshall  <keith@users.osdn.me>
+
 	Prepare empty dist directory when required.
 
 	* Makefile.in (dist-prepare): Delete goal; move its commands...
