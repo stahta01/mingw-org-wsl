@@ -1,3 +1,10 @@
+2020-05-28  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare empty dist directory when required.
+
+	* Makefile.in (dist-prepare): Delete goal; move its commands...
+	(dist): ...to here; remove dependency on defective "dist-prepare".
+
 2020-05-27  Keith Marshall  <keith@users.osdn.me>
 
 	Fix libmingwex-n.dll dependencies; cf. Issue #40438.

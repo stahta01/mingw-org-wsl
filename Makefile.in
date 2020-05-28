@@ -105,10 +105,8 @@ check-recursive: %: %-subdirs
 MKDIR_P = @MKDIR_P@
 LN = @LN@
 
-dist-prepare:
+dist: dist-subdirs dist-extra
 	$(RM) -r $@; $(MKDIR_P) $@
-
-dist: dist-prepare dist-subdirs dist-extra
 	for file in $(addsuffix /$@/*,${subdirs}); do \
 	  test -f $$file && $(LN) $$file $@; done
 
