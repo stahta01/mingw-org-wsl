@@ -1,3 +1,13 @@
+2020-06-03  Keith Marshall  <keith@users.osdn.me>
+
+	Revert 2020-05-27 changes relating to issue #40438.
+
+	* Makefile.in (libmingw32.a): Remove, and relocate...
+	(codeset.$OBJEXT, mbrscan.$OBJEXT): ...each of these, back to...
+	(libmingwex.a): ...here; the previous relocation created more problems
+	than it solved, and indeed, I can no longer reproduce the issue which
+	prompted the earlier relocation.
+
 2020-05-28  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3.2 release.

@@ -468,9 +468,8 @@ libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
 
 vpath %.s ${mingwrt_srcdir}/mingwex
 vpath %.sx ${mingwrt_srcdir}/mingwex
-libmingw32.a: $(addsuffix .$(OBJEXT), mbrscan wcharmap)
-libmingwex.a: $(addsuffix .$(OBJEXT), codeset mbrconv mbrlen)
-libmingwex.a: $(addsuffix .$(OBJEXT), mbrtowc mbsrtowcs strnlen)
+libmingwex.a: $(addsuffix .$(OBJEXT), codeset mbrconv mbrscan mbrlen)
+libmingwex.a: $(addsuffix .$(OBJEXT), mbrtowc mbsrtowcs strnlen wcharmap)
 libmingwex.a: $(addsuffix .$(OBJEXT), wcrtomb wcsrtombs wcsnlen wcstod wcstof)
 libmingwex.a: $(addsuffix .$(OBJEXT), wcstofp wcstold wctob wctrans wctype)
 libmingwex.a: $(addsuffix .$(OBJEXT), wmemchr wmemcmp wmemcpy wmemmove wmemset)

@@ -1,5 +1,12 @@
 2020-06-03  Keith Marshall  <keith@users.osdn.me>
 
+	Revert 2020-05-27 changes relating to issue #40438.
+
+	* VERSION.m4 (LIBMINGWEX): Increment DLL age; this has the effect of
+	indicating restored backward compatibility with linmingwex-2.dll
+
+2020-06-03  Keith Marshall  <keith@users.osdn.me>
+
 	Adjust repository version following WSL-5.3.2 release.
 
 	* VERSION.m4 (__VERSION__): Increment it to 5.3.3
