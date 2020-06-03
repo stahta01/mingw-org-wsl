@@ -1,5 +1,12 @@
 2020-06-03  Keith Marshall  <keith@users.osdn.me>
 
+	Discard obsolete distribution files from subdirectories.
+
+	* Makefile.in (dist-subdirs): Add dependency on...
+	(dist-subdirs-discard-obsolete): ...this new rule; define it.
+
+2020-06-03  Keith Marshall  <keith@users.osdn.me>
+
 	Revert 2020-05-27 changes relating to issue #40438.
 
 	* VERSION.m4 (LIBMINGWEX): Increment DLL age; this has the effect of

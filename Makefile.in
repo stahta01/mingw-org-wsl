@@ -110,6 +110,9 @@ dist: dist-subdirs dist-extra
 	for file in $(addsuffix /$@/*,${subdirs}); do \
 	  test -f $$file && $(LN) $$file $@; done
 
+dist-subdirs: dist-subdirs-discard-obsolete
+dist-subdirs-discard-obsolete:; $(RM) $(addsuffix /dist/*.tar*,${subdirs})
+
 LUA = @LUA@
 LUACMD = $(if $(LUA),$(LUA) -e,false)
 
