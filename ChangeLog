@@ -1,5 +1,11 @@
 2020-06-03  Keith Marshall  <keith@users.osdn.me>
 
+	Prepare and publish MinGW.org WSL-5.3.3 release.
+
+	* All files (wsl-5.3.3-release): Tag assigned.
+
+2020-06-03  Keith Marshall  <keith@users.osdn.me>
+
 	Discard obsolete distribution files from subdirectories.
 
 	* Makefile.in (dist-subdirs): Add dependency on...
