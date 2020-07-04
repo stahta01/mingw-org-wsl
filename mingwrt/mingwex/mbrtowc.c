@@ -1,9 +1,11 @@
 /*
  * mbrtowc.c
  *
- * MinGW.org replacement for the ISO-C99 mbrtowc() function; delegates to a
- * Microsoft implementation, if available in the C runtime DLL, (unless this
- * is overridden by user choice); otherwise handles the call locally.
+ * MinGW.org replacement for the ISO-C99 mbrtowc() function, supporting
+ * use of this function on legacy Windows versions, for which Microsoft
+ * does not provide it, while replacing the Microsoft implementation on
+ * those Windows versions for which it is provided.
+ *
  *
  * $Id$
  *
@@ -33,20 +35,11 @@
  */
 #include "wcharmap.h"
 
-/* For runtime delegation, we need a mechanism for detection of an
- * implementation, within the default C runtime DLL; we may use the
- * MinGW dlfcn emulation, to facilitate this.
- */
-#include <dlfcn.h>
-
-static size_t __mingw_mbrtowc_fallback
+size_t mbrtowc
 ( wchar_t *restrict pwc, const char *restrict s, size_t n,
   mbstate_t *restrict ps
 )
-{ /* Fallback function, providing an implementation of the mbrtowc()
-   * function, when none is available within the Microsoft C runtime,
-   * or the user has explicitly overridden accessibility of any such
-   * Microsoft implementation.
+{ /* Implementation of ISO-C99 mbrtowc() function, in libmingwex.a
    *
    * When s is a NULL pointer, ISO-C99 decrees that the call shall
    * be interpreted as the equivalent of:
@@ -55,69 +48,25 @@ static size_t __mingw_mbrtowc_fallback
    *
    * with any other supplied values for pwc and n being ignored.
    */
-  if( s == NULL ) return __mingw_mbrtowc_fallback( NULL, "", 1, ps );
+  if( s == NULL ) return mbrtowc( NULL, "", 1, ps );
 
   /* Otherwise, we simply delegate the the call to the common
-   * handler, which implements the fallback action for both the
-   * mbrlen() function, and the mbrtowc() function.
+   * handler, which implements the action for both the mbrlen()
+   * function, and the mbrtowc() function.
    */
   return __mingw_mbrtowc_handler( pwc, s, n, __mbrtowc_state( ps ) );
 }
 
+/* FIXME: these aliases are provided for link-compatibitity with
+ * libraries compiled against mingwrt-5.3.x; they may be removed
+ * from future versions of mingwrt.
+ */
 size_t __mingw_mbrtowc
-( wchar_t *restrict pwc, const char *restrict s, size_t n,
-  mbstate_t *restrict ps
-)
-{ /* Wrapper for the mbrtowc() function; this will unconditionally
-   * delegate the call to the MinGW fallback implementation, (defined
-   * above), irrespective of availability of any Microsoft-provided
-   * implementation.
-   *
-   * Note that, before handing off the call, we must unconditionally
-   * initialize the working codeset, and its effective MB_CUR_MAX.
-   */
-  (void)(__mingw_mbrlen_cur_max_init( __mingw_mbrtowc_codeset_init() ));
-  return __mingw_mbrtowc_fallback( pwc, s, n, ps );
-}
+( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("mbrtowc")));
 
 size_t __msvcrt_mbrtowc
-( wchar_t *restrict pwc, const char *restrict s, size_t n,
-  mbstate_t *restrict ps
-)
-{ /* Wrapper for the mbrtowc() function; this will initially attempt
-   * to delegate the call to a Microsoft-provided implementation, but
-   * if no such implementation can be found, fall back to the MinGW
-   * substitute (defined above).
-   */
-  typedef size_t (*redirector_t)
-  ( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict );
-  static redirector_t redirector_hook = NULL;
-
-  /* MSVCRT.DLL's setlocale() cannot reliably handle code pages with
-   * more than two bytes per code point, (e.g. UTF-7 and UTF-8); thus,
-   * Microsoft's mbrtowc() is likely to be similarly unreliable, so
-   * always use the MinGW fallback with such code pages.
-   */
-  if( __mingw_mbrlen_cur_max_init( __mingw_mbrtowc_codeset_init() ) > 2 )
-    return __mingw_mbrtowc_fallback( pwc, s, n, ps );
-
-  /* On first time call, we don't know which implementation is to be
-   * selected; look for a Microsoft implementation, which, if available,
-   * may be registered for immediate use on this, and any subsequent,
-   * calls to this function wrapper...
-   */
-  if(  (redirector_hook == NULL)
-  &&  ((redirector_hook = dlsym( RTLD_DEFAULT, "mbrtowc" )) == NULL)  )
-
-    /* ...but when no Microsoft implementation can be found, register
-     * the MinGW fall back in its stead.
-     */
-    redirector_hook = __mingw_mbrtowc_fallback;
-
-  /* Finally, delegate the call to whichever implementation has been
-   * registered on first-time call.
-   */
-  return redirector_hook( pwc, s, n, ps );
-}
+( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("mbrtowc")));
 
 /* $RCSfile$: end of file */

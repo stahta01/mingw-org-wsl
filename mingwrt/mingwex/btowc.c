@@ -7,6 +7,7 @@
  * potential wchar_t overflow error, which may occur with functions such
  * as mbrtowc(), which may need to return surrogate pairs.
  *
+ *
  * $Id$
  *
  * Written by Keith Marshall <keith@users.osdn.me>
@@ -35,74 +36,30 @@
  */
 #include "wcharmap.h"
 
-/* For runtime delegation, we need a mechanism for detection of an
- * implementation, within the default C runtime DLL; we may use the
- * MinGW dlfcn emulation, to facilitate this.
- */
-#include <dlfcn.h>
-
 /* We also need <stdio.h>, for EOF.
  */
 #include <stdio.h>
 
-static wint_t __mingw_btowc_fallback( int c )
-{ /* Fallback function, providing an implementation of the btowc()
-   * function, when none is available within the Microsoft runtime.
-   * This performs an MBCS to wchar_t conversion on the given single
+wint_t btowc( int c )
+{ /* Implementation of ISO-C99 btowc() function, in libmingwex.a;
+   * this performs an MBCS to wchar_t conversion on the given single
    * character argument, (expressed as an int), returning WEOF in
    * the event that conversion fails.
    */
   if( c != EOF )
   { wint_t wc_result;
+    (void)(__mingw_mbrtowc_codeset_init());
     if( __mingw_mbtowc_convert( (char *)(&c), 1, &wc_result, 1) == 1 )
       return wc_result;
   }
   return WEOF;
 }
 
-wint_t __mingw_btowc( int c )
-{ /* Wrapper for the btowc() function; this will unconditionally
-   * delegate the call to the MinGW fallback implementation, (as
-   * implemented above), after initialization of the effective
-   * codeset file-global variable.
-   */
-  (void)(__mingw_mbrtowc_codeset_init());
-  return __mingw_btowc_fallback( c );
-}
-
-wint_t __msvcrt_btowc( int c )
-{ /* Wrapper for the btowc() function; it will initially attempt
-   * to delegate the call to a Microsoft-provided implementation,
-   * but if no such implementation can be found, fall back to the
-   * MinGW substitute (defined above).
-   */
-  static wint_t (*redirector_hook)( int ) = NULL;
-
-  /* MSVCRT.DLL's setlocale() cannot reliably handle code pages with
-   * more than two bytes per code point, (e.g. UTF-7 and UTF-8); thus,
-   * Microsoft's btowc() is likely to be similarly unreliable, so we
-   * always use the MinGW fallback with such code pages.
-   */
-  if( __mb_cur_max_for_codeset(__mingw_mbrtowc_codeset_init()) > 2 )
-    return __mingw_btowc_fallback( c );
-
-  /* On first time call, we don't know which implementation is to be
-   * selected; look for a Microsoft implementation, which, if available,
-   * may be registered for immediate use on this, and any subsequent,
-   * calls to this function wrapper...
-   */
-  if(  (redirector_hook == NULL)
-  &&  ((redirector_hook = dlsym( RTLD_DEFAULT, "btowc" )) == NULL)  )
-
-    /* ...but when no Microsoft implementation can be found, register
-     * the MinGW fall back in its stead.
-     */
-    redirector_hook = __mingw_btowc_fallback;
-
-  /* Finally, delegate the call to whichever implementation has been
-   * registered on first-time call.
-   */
-  return redirector_hook( c );
-}
+/* FIXME: these aliases are provided for link-compatibitity with
+ * libraries compiled against mingwrt-5.3.x; they may be removed
+ * from future versions of mingwrt.
+ */
+wint_t __msvcrt_btowc( int c )__attribute__((__weak__,__alias__("btowc")));
+wint_t __mingw_btowc( int c )__attribute__((__weak__,__alias__("btowc")));
 
 /* $RCSfile$: end of file */

@@ -1,9 +1,11 @@
 /*
  * wcrtomb.c
  *
- * MinGW.org replacement for the wcrtomb() function; delegates to the
- * Microsoft implementation, if available in the C runtime DLL, otherwise
- * handles the call locally.
+ * MinGW.org replacement for the wcrtomb() function; supports use of this
+ * function on legacy Windows versions, for which it is not available in the
+ * C runtime DLL, and replaces the Microsoft implementation, in those cases
+ * where one is available.
+ *
  *
  * $Id$
  *
@@ -33,19 +35,11 @@
  */
 #include "wcharmap.h"
 
-/* For runtime delegation, we need a mechanism for detection of an
- * implementation, within the default C runtime DLL; we may use the
- * MinGW dlfcn emulation, to facilitate this.
- */
-#include <dlfcn.h>
-
-static __mb_inline__ size_t __wcrtomb_fallback
+static __mb_inline__ size_t __wcrtomb_internal
 ( char *restrict mb, wchar_t wc, mbstate_t *ps )
 {
-  /* Fallback function, providing an implementation of the wcrtomb()
-   * function, when none is available within the Microsoft C runtime,
-   * or the user has explicitly overridden accessibility of any such
-   * Microsoft implementation.
+  /* Internal implementation of the wcrtomb() function; this is
+   * expanded inline, within the public implementation.
    */
   if( *ps != (mbstate_t)(0) )
   {
@@ -114,65 +108,24 @@ static __mb_inline__ size_t __wcrtomb_fallback
   return __mingw_wctomb_convert( mb, __mingw_wctomb_cur_max(), &wc, 1 );
 }
 
-static size_t __mingw_wcrtomb_fallback
-( char *restrict mb, wchar_t wc, mbstate_t *ps )
+size_t wcrtomb( char *restrict mb, wchar_t wc, mbstate_t *restrict ps )
 {
-  /* A thin wrapper around the preceding fallback implementation,
-   * (which is expanded in-line); this serves as the sole interface
-   * between either of the two following public API entry points, and
-   * the fallback implementation, ensuring that a private mbstate_t
-   * reference is provided, if the caller doesn't supply its own.
-   */
-  return __wcrtomb_fallback( mb, wc, __mbrtowc_state( ps ) );
-}
-
-size_t __mingw_wcrtomb
-( char *restrict mb, wchar_t wc, mbstate_t *restrict ps )
-{
-  /* Wrapper for the wcrtomb() function; this will unconditionally
-   * delegate the call to the MinGW fallback implementation, (defined
-   * above), irrespective of availability of any Microsoft-provided
-   * implementation.
+  /* Implementation of ISO-C99 wcrtomb() function, in libmingwex.a;
+   * after storing the effective codeset properties, this returns the
+   * result from expansion of the preceding inline implementation.
    */
   (void)(__mingw_wctomb_cur_max_init( __mingw_wctomb_codeset_init() ));
-  return __mingw_wcrtomb_fallback( mb, wc, ps );
+  return __wcrtomb_internal( mb, wc, __mbrtowc_state( ps ) );
 }
 
-size_t __msvcrt_wcrtomb( char *restrict mb, wchar_t wc, mbstate_t *restrict ps )
-{
-  /* Wrapper for the wcrtomb() function; this will initially attempt
-   * to delegate the call to a Microsoft-provided implementation, but
-   * if no such implementation can be found, fall back to the MinGW
-   * substitute (defined above).
-   */
-  typedef size_t (*redirect_t)( char *restrict, wchar_t, mbstate_t *restrict );
-  static redirect_t redirector_hook = NULL;
+/* FIXME: these aliases are provided for link-compatibitity with
+ * libraries compiled against mingwrt-5.3.x; they may be removed
+ * from future versions of mingwrt.
+ */
+size_t __msvcrt_wcrtomb( char *restrict, wchar_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("wcrtomb")));
 
-  /* MSVCRT.DLL's setlocale() cannot reliably handle code pages with
-   * more than two bytes per code point, (e.g. UTF-7 and UTF-8); thus,
-   * Microsoft's wcrtomb() is likely to be similarly unreliable, so
-   * always use the MinGW fallback with such code pages.
-   */
-  if( (__mingw_wctomb_cur_max_init( __mingw_wctomb_codeset_init() )) > 2 )
-    return __mingw_wcrtomb_fallback( mb, wc, ps );
-
-  /* On first time call, we don't know which implementation is to be
-   * selected; look for a Microsoft implementation, which, if available,
-   * may be registered for immediate use on this, and any subsequent,
-   * calls to this function wrapper...
-   */
-  if(  (redirector_hook == NULL)
-  &&  ((redirector_hook = dlsym( RTLD_DEFAULT, "wcrtomb" )) == NULL)  )
-
-    /* ...but when no Microsoft implementation can be found, register
-     * the MinGW fall back in its stead.
-     */
-    redirector_hook = __mingw_wcrtomb_fallback;
-
-  /* Finally, delegate the call to whichever implementation has been
-   * registered on first-time call.
-   */
-  return redirector_hook( mb, wc, ps );
-}
+size_t __mingw_wcrtomb( char *restrict, wchar_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("wcrtomb")));
 
 /* $RCSfile$: end of file */

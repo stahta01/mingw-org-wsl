@@ -1,3 +1,60 @@
+2020-07-04  Keith Marshall  <keith@users.osdn.me>
+
+	Discontinue use of Microsoft's MBCS/wide character converters.
+
+	* include/wchar.h (__mingw_redirect): Delete macro definition.
+	(__mingw_mbrlen, __msvcrt_mbrlen, __mingw_mbrtowc, __msvcrt_mbrtowc)
+	(__mingw_btowc, __msvcrt_btowc, __mingw_mbsrtowcs, __msvcrt_mbsrtowcs)
+	(__mingw_wctob, __msvcrt_wctob, __mingw_wcrtomb, __msvcrt_wcrtomb)
+	(__mingw_wcsrtombs, __msvcrt_wcsrtombs): Delete prototypes, and...
+	(mbrlen, mbrtowc, btowc, mbsrtowcs, wctomb, wcrtomb, wcsrtombs):
+	...their corresponding redirected inline implementations.
+
+	* mingwex/btowc.c (__msvcrt_btowc): Delete implementation.
+	(__mingw_btowc_fallback, __mingw_btowc): Fold together, into...
+	(btowc): ...this publicly accessible function; add weak aliases...
+	(__mingw_btowc, __msvcrt_btowc): ...named thus.
+
+	* mingwex/mbrlen.c (__msvcrt_mbrlen): Delete implementation.
+	(__mingw_mbrlen_fallback, __mingw_mbrlen): Fold together, into...
+	(mbrlen): ...this publicly accessible function; factor out codeset
+	and codeset property initializations; add weak aliases...
+	(__mingw_mbrlen, __msvcrt_mbrlen): ...named thus.
+
+	* mingwex/mbrtowc.c (__msvcrt_mbrtowc): Delete implementation.
+	(__mingw_mbrtowc_fallback, __mingw_mbrtowc): Fold together, into...
+	(mbrtowc): ...this publicly accessible function; factor out codeset
+	and codeset property initializations; add weak aliases...
+	(__mingw_mbrtowc, __msvcrt_mbrtowc): ...named thus.
+
+	* mingwex/mbsrtowcs.c (__msvcrt_mbsrtowcs): Delete implementation.
+	(__mingw_mbsrtowcs_fallback, __mingw_mbsrtowcs): Fold; rename as...
+	(mbsrtowcs): ...this publicly accessible function; add weak aliases...
+	(__mingw_mbsrtowcs, __msvcrt_mbsrtowcs): ...named thus.
+	(__mbsrtowcs_fallback): Rename it as...
+	(__mbsrtowcs_internal): ...this.
+
+	* mingwex/mbrconv.c (__mingw_mbrtowc_handler): Initialize codeset.
+
+	* mingwex/wcrtomb.c (__msvcrt_wcrtomb): Delete implementation.
+	(__mingw_wcrtomb_fallback, __mingw_wcrtomb): Fold together, into...
+	(wcrtomb): ...this publicly accessible function; add weak aliases...
+	(__mingw_wcrtomb, __msvcrt_wcrtomb): ...named thus.
+	(__wcrtomb_fallback): Rename it as...
+	(__wcrtomb_internal): ...this.
+
+	* mingwex/wcsrtombs.c (__mingw_wcsrtombs): Rename it as...
+	(wcsrtombs): ...this ISO-C99 name; preserve delegation to...
+	(__mingw_wcsrtombs_fallback): ...this, but rename it as...
+	(__mingw_wcsrtombs_internal): ...this; inline it.
+	(__msvcrt_wcsrtombs): Delete implementation.
+	(__mingw_wcsrtombs, __msvcrt_wcsrtombs): Reinstate as weak aliases.
+
+	* mingwex/wctob.c (__msvcrt_wctob): Delete implementation.
+	(__mingw_wctob_fallback, __mingw_wctob): Fold together, into...
+	(wctob): ...this publicly accessible function; add weak aliases...
+	(__mingw_wctob, __msvcrt_wctob): ...named thus.
+
 2020-06-03  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3.3 release.

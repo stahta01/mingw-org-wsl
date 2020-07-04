@@ -534,7 +534,7 @@ typedef int mbstate_t;
  * maybe also in some earlier non-free DLLs, such as MSVCP60.DLL and
  * later); they are also available in MSVCRT.DLL, from Vista onward,
  * but to provide continuing support for earlier Windows versions,
- * we invoke them via MinGW specific wrappers, defined below.
+ * we always use MinGW replacements, provided in libmingwex.a
  */
 __cdecl __MINGW_NOTHROW  wint_t btowc (int);
 __cdecl __MINGW_NOTHROW  int wctob (wint_t);
@@ -553,109 +553,6 @@ __cdecl __MINGW_NOTHROW  size_t wcrtomb
 
 __cdecl __MINGW_NOTHROW  size_t wcsrtombs
 (char *__restrict__, const wchar_t **__restrict__, size_t, mbstate_t *__restrict__);
-
-/* To provide support for the above, on legacy Windows versions,
- * we implement fall back wrappers in libmingwex.a; each of these
- * will delegate to the corresponding Microsoft implementation, if
- * it exists in the process address space; otherwise, execution
- * will fall back to a MinGW implementation...
- */
-__cdecl __MINGW_NOTHROW  wint_t __msvcrt_btowc (int);
-
-__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbrlen
-(const char *__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbrtowc
-(wchar_t *__restrict__, const char *__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __msvcrt_mbsrtowcs
-(wchar_t *__restrict__, const char **__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  int __msvcrt_wctob (wint_t);
-
-__cdecl __MINGW_NOTHROW  size_t __msvcrt_wcrtomb
-(char * __restrict__, wchar_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __msvcrt_wcsrtombs
-(char *__restrict__, const wchar_t **__restrict__, size_t, mbstate_t *__restrict__);
-
-/* ...whereas, these alternatives will always invoke the MinGW
- * fall back implementations, without considering any possible
- * reference to MSVCRT.DLL or MSVCR80.DLL implementations.
- */
-__cdecl __MINGW_NOTHROW  wint_t __mingw_btowc (int);
-
-__cdecl __MINGW_NOTHROW  size_t __mingw_mbrlen
-(const char *__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __mingw_mbrtowc
-(wchar_t *__restrict__, const char *__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __mingw_mbsrtowcs
-(wchar_t *__restrict__, const char **__restrict__, size_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  int __mingw_wctob (wint_t);
-
-__cdecl __MINGW_NOTHROW  size_t __mingw_wcrtomb
-(char * __restrict__, wchar_t, mbstate_t *__restrict__);
-
-__cdecl __MINGW_NOTHROW  size_t __mingw_wcsrtombs
-(char *__restrict__, const wchar_t **__restrict__, size_t, mbstate_t *__restrict__);
-
-#if __MSVCRT_VERSION__ < __MSVCR80_DLL
-/* For linking with all versions of MSVCRT.DLL, and with non-free
- * alternatives predating MSVCR80.DLL, we enforce inline mapping to
- * the libmingwex.a implementations, (which will delegate the calls
- * to the Microsoft DLL implementations, when they are available,
- * but substitute the MinGW replacements as required).
- */
-#undef __mingw_redirect
-#if _ISOC99_SOURCE & 0x08
-/* The user has explicitly requested ISO-C99 compatibility; ensure
- * that calls to the following functions are serviced by the MinGW
- * implementations, regardless of availability of any alternative
- * MSVCRT.DLL implementation.
- */
-# define __mingw_redirect(NAME)  __mingw_##NAME
-#else
-/* No explicit ISO-C99 compatibility has been requested; map calls
- * to these functions to delegate to any MSVCRT.DLL implementations
- * which may be available, or to fall back to the MinGW replacement
- * implementations, when necessary.
- */
-# define __mingw_redirect(NAME)  __msvcrt_##NAME
-#endif
-/* FIXME: Maybe consider these mappings, even for linking with the
- * non-free MSVCR80.DLL, and its descendants.
- */
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  wint_t btowc (int __c)
-{ return __mingw_redirect(btowc( __c )); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrlen
-(const char *__mbc, size_t __n, mbstate_t *__ps)
-{ return __mingw_redirect(mbrlen( __mbc, __n, __ps )); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbrtowc
-(wchar_t *__wc, const char *__mbc, size_t __n, mbstate_t *__ps)
-{ return __mingw_redirect(mbrtowc( __wc, __mbc, __n, __ps )); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t mbsrtowcs
-(wchar_t *__wcs, const char **__mbs, size_t __n, mbstate_t *__ps)
-{ return __mingw_redirect(mbsrtowcs( __wcs, __mbs, __n, __ps )); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  int wctob (wint_t __wc)
-{ return __mingw_redirect(wctob( __wc )); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t wcrtomb
-(char * __mbc, wchar_t __wc, mbstate_t *__ps)
-{ return __mingw_redirect(wcrtomb(__mbc, __wc, __ps)); }
-
-__CRT_ALIAS __cdecl __MINGW_NOTHROW  size_t wcsrtombs
-(char *__mbs, const wchar_t **__wcs, size_t __len, mbstate_t *__ps)
-{ return __mingw_redirect(wcsrtombs(__mbs, __wcs, __len, __ps)); }
-
-#undef	__mingw_redirect
-#endif	/* ! MSVCR80.DLL or later */
 
 #if defined _ISOC99_SOURCE || defined __cplusplus
 /* These ISO-C99 functions are implemented in libmingwex.a,

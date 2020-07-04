@@ -1,9 +1,11 @@
 /*
  * mbsrtowcs.c
  *
- * MinGW.org replacement for the ISO-C99 mbsrtowcs() function; may delegate
- * to a Microsoft implementation, if available in the C runtime DLL, (unless
- * this is overridden by user choice); otherwise handles the call locally.
+ * MinGW.org replacement for the ISO-C99 mbsrtowcs() function, supporting
+ * its use on legacy Windows versions, for which Microsoft does not provide
+ * it, while replacing the Microsoft implementation on any Windows version
+ * for which it is provided.
+ *
  *
  * $Id$
  *
@@ -33,7 +35,6 @@
  */
 #include "wcharmap.h"
 
-#include <dlfcn.h>
 #include <limits.h>
 
 static __mb_inline__
@@ -45,14 +46,12 @@ boolean __mingw_mbtowc_verify( const char *src, size_t len )
   return __mingw_mbtowc_copy( NULL, src, len ) != (size_t)(-1);
 }
 
-static __mb_inline__ size_t __mbsrtowcs_fallback
+static __mb_inline__ size_t __mbsrtowcs_internal
 ( wchar_t *restrict wcs, const char **restrict src, size_t len,
   mbstate_t *restrict ps
 )
-{ /* Internal fallback function, providing an implementation of the
-   * mbsrtowcs() function, when none is available in the Microsoft C
-   * runtime DLL, or the user has explicitly overridden selection of
-   * any such Microsoft implementation.
+{ /* Internal implementation of the mbsrtowcs() function; this is
+     expanded inline, within the public implementation.
    */
   size_t count = (size_t)(0);
   if( (src != NULL) && (*src != NULL) )
@@ -156,72 +155,28 @@ static __mb_inline__ size_t __mbsrtowcs_fallback
   return count;
 }
 
-static size_t __mingw_mbsrtowcs_fallback
-( wchar_t *restrict wcs, const char **restrict src, size_t len,
-  mbstate_t *restrict ps __attribute__((__unused__))
-)
-{ /* MinGW fallback implementation for the mbsrtowcs() function; this
-   * is a trivial wrapper around the preceding implementation, (which
-   * should be expanded in-line), ensuring that an internal buffer is
-   * assigned for the "ps" argument, if the caller doesn't pass one.
-   */
-  return __mbsrtowcs_fallback( wcs, src, len, __mbrtowc_state( ps ) );
-}
-
-size_t __mingw_mbsrtowcs
+size_t mbsrtowcs
 ( wchar_t *restrict wcs, const char **restrict src, size_t len,
   mbstate_t *restrict ps
 )
-{ /* Wrapper for the mbsrtowcs() function; this will unconditionally
-   * delegate the call to the MinGW fallback implementation, (defined
-   * above), irrespective of availability of any Microsoft-provided
-   * implementation.
-   *
-   * Note that, before handing off the call, we must unconditionally
-   * initialize the working codeset, and its effective MB_CUR_MAX.
+{ /* Implementation of ISO-C99 mbsrtowcs() function, in libmingwex.a;
+   * this stores the effective codeset properties, before returning the
+   * result from expansion of the preceding inline implementation.
    */
   (void)(__mingw_mbrlen_cur_max_init( __mingw_mbrtowc_codeset_init() ));
-  return __mingw_mbsrtowcs_fallback( wcs, src, len, ps );
+  return __mbsrtowcs_internal( wcs, src, len, __mbrtowc_state( ps ) );
 }
+
+/* FIXME: these aliases are provided for link-compatibitity with
+ * libraries compiled against mingwrt-5.3.x; they may be removed
+ * from future versions of mingwrt.
+ */
+size_t __mingw_mbsrtowcs
+( wchar_t *restrict, const char **restrict, size_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("mbsrtowcs")));
 
 size_t __msvcrt_mbsrtowcs
-( wchar_t *restrict wcs, const char **restrict src, size_t len,
-  mbstate_t *restrict ps
-)
-{ /* Wrapper for the mbsrtowcs() function; this will initially attempt
-   * to delegate the call to a Microsoft-provided implementation, but if
-   * no such implementation can be found, it will fall back to the MinGW
-   * substitute (defined above).
-   */
-  typedef size_t (*redirector_t)
-  ( wchar_t *restrict, const char **restrict, size_t, mbstate_t *restrict );
-  static redirector_t redirector_hook = NULL;
-
-  /* MSVCRT.DLL's setlocale() cannot reliably handle code pages with
-   * more than two bytes per code point, (e.g. UTF-7 and UTF-8); thus,
-   * Microsoft's mbsrtowcs() is likely to be similarly unreliable, so
-   * always use the MinGW fallback with such code pages.
-   */
-  if( __mingw_mbrlen_cur_max_init( __mingw_mbrtowc_codeset_init() ) > 2 )
-    return __mingw_mbsrtowcs_fallback( wcs, src, len, ps );
-
-  /* On first time call, we don't know which implementation is to be
-   * selected; look for a Microsoft implementation, which, if available,
-   * may be registered for immediate use on this, and any subsequent,
-   * calls to this function wrapper...
-   */
-  if(  (redirector_hook == NULL)
-  &&  ((redirector_hook = dlsym( RTLD_DEFAULT, "mbsrtowcs" )) == NULL)  )
-
-    /* ...but when no Microsoft implementation can be found, register
-     * the MinGW fall back in its stead.
-     */
-    redirector_hook = __mingw_mbsrtowcs_fallback;
-
-  /* Finally, delegate the call to whichever implementation has been
-   * registered on first-time call.
-   */
-  return redirector_hook( wcs, src, len, ps );
-}
+( wchar_t *restrict, const char **restrict, size_t, mbstate_t *restrict )
+__attribute__((__weak__,__alias__("mbsrtowcs")));
 
 /* $RCSfile$: end of file */
