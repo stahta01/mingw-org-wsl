@@ -396,7 +396,7 @@ extern const struct in6_addr in6addr_loopback;
 	 ) == 0							\
  )
 
-typedef unsigned int socklen_t;
+typedef int socklen_t;
 
 typedef
 struct ipv6_mreq

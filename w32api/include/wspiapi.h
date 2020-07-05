@@ -914,7 +914,7 @@ WSAAPI int __wspiapi_getnameinfo
    * Microsoft's invalid parameter handler, while reporting it as an
    * EAI_SYSTEM exception.
    */
-  if( (sa == NULL) || (len < sizeof( struct sockaddr )) )
+  if( (sa == NULL) || (len < (socklen_t)(sizeof( struct sockaddr ))) )
     return __wspiapi_syserrout( EINVAL );
 
   { /* When the "sa" argument is valid, we delegate the call to the
