@@ -160,13 +160,11 @@ No error conditions are defined.
 .
 .
 .SH STANDARDS CONFORMANCE
-There is no Microsoft implementation of the
-.BR mbsinit ()
-function,
-which is readily accessible for use in MinGW applications;
-the
+The
 .I \%libmingwex
-implementation conforms generally to
+implementation of
+.BR mbsinit ()
+conforms generally to
 .BR \%ISO\(hyC99 ,
 .BR \%POSIX.1\(hy2001 ,
 and

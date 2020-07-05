@@ -1,3 +1,13 @@
+2020-07-05  Keith Marshall  <keith@users.osdn.me>
+
+	Update MBCS to wide character conversion man pages.
+
+	* man/btowc.3.man man/mbrlen.3.man man/mbrtowc.3.man
+	* man/mbsinit.3.man man/mbsrtowcs.3.man man/wcrtomb.3.man
+	* man/wcsrtombs.3.man man/wctob.3.man: Remove references to Microsoft
+	implementations of documented functions; all means of access to such
+	function implementations have been disabled for MinGW applications.
+
 2020-07-04  Keith Marshall  <keith@users.osdn.me>
 
 	Discontinue use of Microsoft's MBCS/wide character converters.
