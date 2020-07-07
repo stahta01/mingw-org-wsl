@@ -8,7 +8,7 @@
  * as mbrtowc(), which may need to return surrogate pairs.
  *
  *
- * $Id$
+ * $Id: btowc.c,v 28b17d1c4eab 2020/07/07 21:02:51 keith $
  *
  * Written by Keith Marshall <keith@users.osdn.me>
  * Copyright (C) 2020, MinGW.org Project
@@ -55,11 +55,4 @@ wint_t btowc( int c )
   return WEOF;
 }
 
-/* FIXME: these aliases are provided for link-compatibitity with
- * libraries compiled against mingwrt-5.3.x; they may be removed
- * from future versions of mingwrt.
- */
-wint_t __msvcrt_btowc( int c )__attribute__((__weak__,__alias__("btowc")));
-wint_t __mingw_btowc( int c )__attribute__((__weak__,__alias__("btowc")));
-
-/* $RCSfile$: end of file */
+/* $RCSfile: btowc.c,v $: end of file */

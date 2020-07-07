@@ -7,7 +7,7 @@
  * where one is available.
  *
  *
- * $Id$
+ * $Id: wcrtomb.c,v 28b17d1c4eab 2020/07/07 21:02:51 keith $
  *
  * Written by Keith Marshall <keith@users.osdn.me>
  * Copyright (C) 2019, 2020, MinGW.org Project
@@ -118,14 +118,4 @@ size_t wcrtomb( char *restrict mb, wchar_t wc, mbstate_t *restrict ps )
   return __wcrtomb_internal( mb, wc, __mbrtowc_state( ps ) );
 }
 
-/* FIXME: these aliases are provided for link-compatibitity with
- * libraries compiled against mingwrt-5.3.x; they may be removed
- * from future versions of mingwrt.
- */
-size_t __msvcrt_wcrtomb( char *restrict, wchar_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("wcrtomb")));
-
-size_t __mingw_wcrtomb( char *restrict, wchar_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("wcrtomb")));
-
-/* $RCSfile$: end of file */
+/* $RCSfile: wcrtomb.c,v $: end of file */

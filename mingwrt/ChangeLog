@@ -1,3 +1,18 @@
+2020-07-07  Keith Marshall  <keith@users.osdn.me>
+
+	Remove redundant MBCS/wide character converter aliases.
+
+	* mingwex/btowc.c (__mingw_btowc, __msvcrt_btowc):
+	* mingwex/mbrlen.c (__mingw_mbrlen, __msvcrt_mbrlen):
+	* mingwex/mbrtowc.c (__mingw_mbrtowc, __msvcrt_mbrtowc):
+	* mingwex/mbsrtowcs.c (__mingw_mbsrtowcs, __msvcrt_mbsrtowcs):
+	* mingwex/wcsrtombs.c (__mingw_wcsrtombs, __msvcrt_wcsrtombs):
+	* mingwex/wcrtomb.c (__mingw_wcrtomb, __msvcrt_wcrtomb):
+	* mingwex/wctob.c (__mingw_wctob, __msvcrt_wctob): Delete aliases.
+
+	* VERSION.m4 (MINGW_AC_SET_DLLVERSION) [LIBMINGWEX]: Increment it
+	to 4:0:0; alias removal breaks ABI backward compatibility.
+
 2020-07-06  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3.4 release.

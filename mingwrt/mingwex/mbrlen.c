@@ -7,7 +7,7 @@
  * for which it is provided.
  *
  *
- * $Id$
+ * $Id: mbrlen.c,v 28b17d1c4eab 2020/07/07 21:02:51 keith $
  *
  * Written by Keith Marshall <keith@users.osdn.me>
  * Copyright (C) 2020, MinGW.org Project
@@ -44,14 +44,4 @@ size_t mbrlen( const char *restrict s, size_t n, mbstate_t *restrict ps )
   return __mingw_mbrtowc_handler( NULL, s, n, __mbrtowc_state( ps ) );
 }
 
-/* FIXME: these aliases are provided for link-compatibitity with
- * libraries compiled against mingwrt-5.3.x; they may be removed
- * from future versions of mingwrt.
- */
-size_t __mingw_mbrlen( const char *restrict, size_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("mbrlen")));
-
-size_t __msvcrt_mbrlen( const char *restrict, size_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("mbrlen")));
-
-/* $RCSfile$: end of file */
+/* $RCSfile: mbrlen.c,v $: end of file */

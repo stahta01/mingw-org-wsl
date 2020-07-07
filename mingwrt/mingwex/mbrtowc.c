@@ -7,7 +7,7 @@
  * those Windows versions for which it is provided.
  *
  *
- * $Id$
+ * $Id: mbrtowc.c,v 28b17d1c4eab 2020/07/07 21:02:51 keith $
  *
  * Written by Keith Marshall <keith@users.osdn.me>
  * Copyright (C) 2020, MinGW.org Project
@@ -57,16 +57,4 @@ size_t mbrtowc
   return __mingw_mbrtowc_handler( pwc, s, n, __mbrtowc_state( ps ) );
 }
 
-/* FIXME: these aliases are provided for link-compatibitity with
- * libraries compiled against mingwrt-5.3.x; they may be removed
- * from future versions of mingwrt.
- */
-size_t __mingw_mbrtowc
-( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("mbrtowc")));
-
-size_t __msvcrt_mbrtowc
-( wchar_t *restrict, const char *restrict, size_t, mbstate_t *restrict )
-__attribute__((__weak__,__alias__("mbrtowc")));
-
-/* $RCSfile$: end of file */
+/* $RCSfile: mbrtowc.c,v $: end of file */

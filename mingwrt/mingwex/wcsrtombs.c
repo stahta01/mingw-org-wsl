@@ -6,7 +6,7 @@
  * provide it, and replaces the Microsoft implementation, when they do.
  *
  *
- * $Id$
+ * $Id: wcsrtombs.c,v 28b17d1c4eab 2020/07/07 21:02:51 keith $
  *
  * Written by Keith Marshall <keith@users.osdn.me>
  * Copyright (C) 2019, 2020, MinGW.org Project
@@ -154,14 +154,4 @@ size_t wcsrtombs( char *mbs, const wchar_t **wcs, size_t len, mbstate_t *ps )
   return __mingw_wcsrtombs_internal( mbs, wcs, len, ps );
 }
 
-/* FIXME: these aliases are provided for link-compatibitity with
- * libraries compiled against mingwrt-5.3.x; they may be removed
- * from future versions of mingwrt.
- */
-size_t __msvcrt_wcsrtombs( char *, const wchar_t **, size_t, mbstate_t * )
-__attribute__((__weak__,__alias__("wcsrtombs")));
-
-size_t __mingw_wcsrtombs( char *, const wchar_t **, size_t, mbstate_t * )
-__attribute__((__weak__,__alias__("wcsrtombs")));
-
-/* $RCSfile$: end of file */
+/* $RCSfile: wcsrtombs.c,v $: end of file */
