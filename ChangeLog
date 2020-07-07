@@ -1,3 +1,10 @@
+2020-07-07  Keith Marshall  <keith@users.osdn.me>
+
+	Switch to new 5.4-trunk development branch.
+
+	* VERSION.m4 (__VERSION__): Increment it to 5.4
+	* All files (5.4-trunk): Bookmark assigned.
+
 2020-07-06  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.3.4 release.
