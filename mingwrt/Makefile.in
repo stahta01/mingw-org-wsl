@@ -1,5 +1,5 @@
 # @configure_input@
-# $Id$
+# $Id: Makefile.in,v 5f021e118870 2020/07/20 19:17:27 keith $
 #
 # Makefile template for MinGW.org Runtime Library Package
 
@@ -464,7 +464,7 @@ libmingwex.a: $(addsuffix .$(OBJEXT), glob getopt basename dirname nsleep)
 libmingwex.a: $(addsuffix .$(OBJEXT), clockapi clockres clockset clocktime)
 libmingwex.a: $(addsuffix .$(OBJEXT), insque remque tdelete tfind tsearch twalk)
 libmingwex.a: $(addsuffix .$(OBJEXT), dirent wdirent dlfcn strerror_r strtok_r)
-libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp cryptnam setenv)
+libmingwex.a: $(addsuffix .$(OBJEXT), mkstemp mkdtemp memcrypt cryptnam setenv)
 
 vpath %.s ${mingwrt_srcdir}/mingwex
 vpath %.sx ${mingwrt_srcdir}/mingwex
@@ -1028,4 +1028,4 @@ maintainer-clean-local: maintainer-clean-warning distclean-local
 
 clean mostlyclean distclean maintainer-clean: %clean: %clean-local
 
-# $RCSfile$: end of file
+# $RCSfile: Makefile.in,v $: end of file

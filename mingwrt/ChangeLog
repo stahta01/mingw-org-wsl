@@ -1,3 +1,22 @@
+2020-07-20  Keith Marshall  <keith@users.osdn.me>
+
+	Add support for emulation of Microsoft's rand_s() function.
+
+	* mingwex/cryptnam.c (crypto_provider, crypto_randomize): Factor out
+	this pair of static inline functions; relocate them to...
+	* mingwex/memcrypt.c: ...this new file.
+	(crypto_randomize): Change linkage to extern; rename it as...
+	(__mingw_crypto_randomize): ...this; use it...
+	* mingwex/cryptnam.c (crypto_random_filename_char): ...here, via...
+	(crypto_randomize): ...this static inline reimplementation.
+
+	* Makefile.in (libmingwex.a): Add dependency reference for...
+	(memcrypt.$OBJEXT): ...this new object file.
+
+	* VERSION.m4 (MINGW_AC_SET_DLLVERSION) [LIBMINGWEX]: Increment it
+	to 5:0:1; __mingw_crypto_randomize adds a new interface, but it does
+	not break ABI backward compatibility.
+
 2020-07-08  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.4 release.

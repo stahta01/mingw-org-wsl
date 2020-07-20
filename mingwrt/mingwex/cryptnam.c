@@ -7,10 +7,10 @@
  * the file name, or the directory name, in MinGW.org implementations of
  * the mkstemp(3) and mkdtemp(3) functions, respectively.
  *
- * $Id$
+ * $Id: cryptnam.c,v 5f021e118870 2020/07/20 19:17:27 keith $
  *
- * Written by Keith Marshall  <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2013, 2014, 2018, 2019, MinGW.org Project.
+ * Written by Keith Marshall  <keith@users.osdn.me>
+ * Copyright (C) 2013, 2014, 2018-2020, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,66 +33,14 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
-#define WIN32_LEAN_AND_MEAN
-
 #include <limits.h>
-#include <windows.h>
-#include <wincrypt.h>
 #include <string.h>
 
 #define CRYPTO_INLINE  static __inline__ __attribute__((__always_inline__))
 
-CRYPTO_INLINE HCRYPTPROV crypto_provider( void )
-#define RSA_MODE( OPT, FLAG )  PROV_RSA_##OPT, CRYPT_##FLAG
-{
-  /* Helper to establish a cryptographic provider context for the
-   * cryptographically secure random number generator.
-   *
-   * At the outset, this provider requires initialization.
-   */
-  static HCRYPTPROV id = (HCRYPTPROV)(0);
-
-  /* On second, and subsequent calls, it should already have been
-   * initialized...
-   */
-  if( id != (HCRYPTPROV)(0) )
-    /*
-     * ...so, simply return the saved context handle...
-     */
-    return id;
-
-  /* If we're still here, this must be the first call, (or any
-   * preceding call failed to initialize the context); initialize
-   * it now, and if successful...
-   */
-  if( CryptAcquireContext( &id, NULL, NULL, RSA_MODE( FULL, VERIFYCONTEXT ) ) )
-    /*
-     * ...return the now-initialized context handle.
-     */
-    return id;
-
-  /* And finally, if we ever get to here, the context remains
-   * uninitialized; ensure that it remains marked as such, and
-   * return the uninitialized context handle.
-   */
-  return id = (HCRYPTPROV)(0);
-}
-
+void *__mingw_crypto_randomize( void *, size_t );
 CRYPTO_INLINE void *crypto_randomize( void *buf, size_t buflen )
-{
-  /* Helper to fill a specified buffer, of specified length,
-   * with cryptographically secure random bytes...
-   */
-  if( CryptGenRandom( crypto_provider(), buflen, buf ) )
-    /*
-     * ...returning a pointer to the buffer, when successful...
-     */
-    return buf;
-
-  /* ...or nothing, otherwise.
-   */
-  return NULL;
-}
+{ return __mingw_crypto_randomize( buf, buflen ); }
 
 CRYPTO_INLINE
 unsigned char *crypto_random_filename_char( unsigned char *caret )
@@ -186,4 +134,4 @@ char *__mingw_crypto_tmpname( char *template )
   return template;
 }
 
-/* $RCSfile$: end of file */
+/* $RCSfile: cryptnam.c,v $: end of file */
