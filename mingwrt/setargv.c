@@ -7,8 +7,8 @@
  *
  * $Id$
  *
- * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2014, 2017, 2018, MinGW.org Project
+ * Written by Keith Marshall <keith@users.osdn.me>
+ * Copyright (C) 2014, 2017, 2018, 2020, MinGW.org Project
  *
  * ---------------------------------------------------------------------------
  *
@@ -36,11 +36,11 @@
 #define _ISOC99_SOURCE
 
 #include <glob.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <winbase.h>
 
 /* Access to a standard 'main'-like argument count and list.
  */
@@ -266,6 +266,19 @@ void _setargv()
      * MSVCRT.DLL
      */
     __mingw32_setargv( GetCommandLine() );
+
+    /* In addition to setting up _argc and _argv, Microsoft's
+     * setup routine, as invoked by __mingw32_init_mainargs(),
+     * appears to initialize MSVCRT.DLL's _pgmptr reference, to
+     * point to a string representing the full path name of the
+     * calling executable; mimic this behaviour.
+     */
+    if( _pgmptr == NULL )
+    { char buf[MAX_PATH];
+      unsigned int len = GetModuleFileName( NULL, buf, MAX_PATH );
+      if( (len != 0) && (len < MAX_PATH) )
+	_pgmptr = strdup( buf );
+    }
   }
 }
 
