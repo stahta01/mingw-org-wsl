@@ -1,12 +1,12 @@
 # VERSION.m4 -- vim: filetype=config
 #
-# $Id: VERSION.m4,v 5f021e118870 2020/07/20 19:17:27 keith $
+# $Id$
 #
 # Non-copyrightable material; adjust the following definition, to
 # assign a common version number to each of the mingwrt and w32api
 # MinGW System Library sub-packages.
 #
-m4_define([__VERSION__],[5.4.1])
+m4_define([__VERSION__],[5.4.2])
 
 # This is also a convenient place to specify the import library
 # associations, and DLLVERSION information for each DLL which may
@@ -26,4 +26,4 @@ m4_define([MINGW_AC_ENUMERATE_DLLVERSION_SPECS],dnl
 [MINGW_AC_SET_DLLVERSION([LIBMINGWEX], [libmingwex.dll.a], [5:0:1])dnl
 ])
 
-# $RCSfile: VERSION.m4,v $: end of file
+# $RCSfile$: end of file
