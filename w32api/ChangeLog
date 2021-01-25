@@ -1,3 +1,15 @@
+2021-01-25  Keith Marshall  <keith@users.osdn.me>
+
+	Represent <winbase.h> file creation bit-flags in hexadecimal.
+
+	* include/winbase.h (FILE_FLAG_OVERLAPPED)
+	(FILE_FLAG_NO_BUFFERING, FILE_FLAG_RANDOM_ACCESS)
+	(FILE_FLAG_SEQUENTIAL_SCAN, FILE_FLAG_DELETE_ON_CLOSE)
+	(FILE_FLAG_BACKUP_SEMANTICS, FILE_FLAG_POSIX_SEMANTICS)
+	(FILE_FLAG_OPEN_REPARSE_POINT, FILE_FLAG_OPEN_NO_RECALL): Use of
+	decimal-value definitions needlessly obfuscates bit-mapped intent;
+	convert all to their hexadecimal equivalents.
+
 2020-07-23  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.4.1 release.

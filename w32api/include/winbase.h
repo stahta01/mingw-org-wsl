@@ -6,7 +6,7 @@
  * $Id$
  *
  * Written by Anders Norlander <anorland@hem2.passagen.se>
- * Copyright (C) 1998-2012, 2016, 2017, MinGW.org Project.
+ * Copyright (C) 1998-2012, 2016, 2017, 2021, MinGW.org Project.
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -263,15 +263,15 @@ _BEGIN_C_DECLS
 #define TRUNCATE_EXISTING					       5
 
 #define FILE_FLAG_WRITE_THROUGH 			      0x80000000
-#define FILE_FLAG_OVERLAPPED				      1073741824
-#define FILE_FLAG_NO_BUFFERING				       536870912
-#define FILE_FLAG_RANDOM_ACCESS 			       268435456
-#define FILE_FLAG_SEQUENTIAL_SCAN			       134217728
-#define FILE_FLAG_DELETE_ON_CLOSE				67108864
-#define FILE_FLAG_BACKUP_SEMANTICS				33554432
-#define FILE_FLAG_POSIX_SEMANTICS				16777216
-#define FILE_FLAG_OPEN_REPARSE_POINT				 2097152
-#define FILE_FLAG_OPEN_NO_RECALL				 1048576
+#define FILE_FLAG_OVERLAPPED				      0x40000000
+#define FILE_FLAG_NO_BUFFERING				      0x20000000
+#define FILE_FLAG_RANDOM_ACCESS 			      0x10000000
+#define FILE_FLAG_SEQUENTIAL_SCAN			      0x08000000
+#define FILE_FLAG_DELETE_ON_CLOSE			      0x04000000
+#define FILE_FLAG_BACKUP_SEMANTICS			      0x02000000
+#define FILE_FLAG_POSIX_SEMANTICS			      0x01000000
+#define FILE_FLAG_OPEN_REPARSE_POINT			      0x00200000
+#define FILE_FLAG_OPEN_NO_RECALL			      0x00100000
 
 #define SYMBOLIC_LINK_FLAG_DIRECTORY				     0x1
 
