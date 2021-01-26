@@ -1,3 +1,18 @@
+2021-01-26  Keith Marshall  <keith@users.osdn.me>
+
+	Avoid proliferation of static snprintf() implementations.
+
+	* mingwex/dlfcn.c (dlfcn_store_error_message): Do NOT use...
+	(vsnprintf): ...this static inline function; prefer to call...
+	(__mingw_vsnprintf): ...this extern implementation, directly.
+
+	* mingwex/dlfcn.c (dlfcn_strerror)
+	* mingwex/setenv.c (__mingw_setenv)
+	* mingwex/strerror_r.c (strerror_r): Do NOT use...
+	(snprintf): ...this; it expands to create static clones of...
+	(__mingw_snprintf): ...this extern implementation; prefer to call it
+	directly, to avoid code redundancy.
+
 2020-08-07  Keith Marshall  <keith@users.osdn.me>
 
 	Initialize MSVCRT.DLL's _pgmptr reference.

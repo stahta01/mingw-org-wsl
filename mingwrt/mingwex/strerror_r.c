@@ -5,8 +5,8 @@
  *
  * $Id$
  *
- * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2016, 2017, MinGW.org Project
+ * Written by Keith Marshall <keith@users.osdn.me>
+ * Copyright (C) 2016, 2017, 2021, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,13 +68,13 @@ int strerror_r( int errnum, char *buf, size_t len )
      * range INT_MAX < errnum <= UINT_MAX, while sys_nerr is expected
      * to be less than INT_MAX.
      */
-    snprintf( buf, len, "Unknown error: %d", errnum );
+    __mingw_snprintf( buf, len, "Unknown error: %d", errnum );
     return errno = EINVAL;
   }
   /* errnum appears to be valid; copy the associated message, while
    * checking that its entire text is copied...
    */
-  if( snprintf( buf, len, "%s", strerror( errnum )) >= len )
+  if( __mingw_snprintf( buf, len, "%s", strerror( errnum )) >= len )
     /*
      * ...otherwise, set errno on truncation.
      */

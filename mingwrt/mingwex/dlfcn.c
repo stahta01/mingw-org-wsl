@@ -6,8 +6,8 @@
  *
  * $Id$
  *
- * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2014, MinGW.org Project
+ * Written by Keith Marshall <keith@users.osdn.me>
+ * Copyright (C) 2014, 2021, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -91,12 +91,12 @@ static void dlfcn_store_error_message( const char *fmt, ... )
   int msglen;
   va_list argv;
   va_start( argv, fmt );
-  msglen = 1 + vsnprintf( NULL, 0, fmt, argv );
+  msglen = 1 + __mingw_vsnprintf( NULL, 0, fmt, argv );
   if( (dlfcn_error_pending = realloc( dlfcn_error_message, msglen )) != NULL )
     /*
      * Store message, only if a buffer was successfully allocated.
      */
-    vsnprintf( dlfcn_error_pending, msglen, fmt, argv );
+    __mingw_vsnprintf( dlfcn_error_pending, msglen, fmt, argv );
   dlfcn_error_message = dlfcn_error_pending;
   va_end( argv );
 }
@@ -132,8 +132,8 @@ static char *dlfcn_strerror( int errcode )
      * formatted reference to the unknown error code.
      */
     char *fmt = "Unknown error %d";
-    char tmp[1 + snprintf( NULL, 0, fmt, errcode )];
-    snprintf( tmp, sizeof( tmp ), fmt, errcode );
+    char tmp[1 + __mingw_snprintf( NULL, 0, fmt, errcode )];
+    __mingw_snprintf( tmp, sizeof( tmp ), fmt, errcode );
     text = strdup( tmp );
   }
   /* However we derived it, the error description is now available

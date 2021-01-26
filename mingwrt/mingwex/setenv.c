@@ -7,8 +7,8 @@
  *
  * $Id$
  *
- * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
- * Copyright (C) 2016, MinGW.org Project
+ * Written by Keith Marshall <keith@users.osdn.me>
+ * Copyright (C) 2016, 2021, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -64,8 +64,8 @@ int __mingw_setenv( const char *var, const char *value, int overwrite )
        */
       const char *fmt = "%s=%s";
       const char *val = value ? value : "";
-      char buf[1 + snprintf( NULL, 0, fmt, var, val )];
-      snprintf( buf, sizeof( buf ), fmt, var, val );
+      char buf[1 + __mingw_snprintf( NULL, 0, fmt, var, val )];
+      __mingw_snprintf( buf, sizeof( buf ), fmt, var, val );
 
       /* "buf" is now formatted as "var=value", in the form
        * required by putenv(), but it exists only within our
