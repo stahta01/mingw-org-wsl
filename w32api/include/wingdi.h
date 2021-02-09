@@ -61,6 +61,10 @@ typedef BYTE  BCHAR;
 #define BI_BITFIELDS					 3
 #define BI_JPEG 					 4
 #define BI_PNG						 5
+#define BI_ALPHABITFIELDS				 6
+#define BI_CMYK 					11
+#define BI_CMYKRLE8					12
+#define BI_CMYKRLE4					13
 #define LF_FACESIZE					32
 #define LF_FULLFACESIZE 				64
 #define CA_NEGATIVE					 1
@@ -347,8 +351,9 @@ typedef BYTE  BCHAR;
 #define COMPLEXREGION					 3
 #define ERROR						 0
 #define CBM_INIT					 4
-#define DIB_PAL_COLORS					 1
 #define DIB_RGB_COLORS					 0
+#define DIB_PAL_COLORS					 1
+#define DIB_PAL_INDICES 				 2
 #define FW_DONTCARE					 0
 #define FW_THIN 				       100
 #define FW_EXTRALIGHT				       200
@@ -394,6 +399,7 @@ typedef BYTE  BCHAR;
 #define OUT_TT_ONLY_PRECIS				 7
 #define OUT_OUTLINE_PRECIS				 8
 /* http://www.pinvoke.net/default.aspx/Structures/LOGFONT.html */
+#define OUT_SCREEN_OUTLINE_PRECIS			 9
 #define OUT_PS_ONLY_PRECIS				10
 #define CLIP_DEFAULT_PRECIS				 0
 #define CLIP_CHARACTER_PRECIS				 1
@@ -985,12 +991,20 @@ typedef BYTE  BCHAR;
 #define BS_DIBPATTERNPT 				 6
 #define BS_PATTERN8X8					 7
 #define BS_DIBPATTERN8X8				 8
+#define BS_MONOPATTERN  				 9
 #define LCS_CALIBRATED_RGB				 0
 #define LCS_DEVICE_RGB					 1
 #define LCS_DEVICE_CMYK 				 2
+#define LCS_sRGB				0x73524742
+#define LCS_WINDOWS_COLOR_SPACE 		0x57696E20
+#define LCS_PROFILE_LINKED			0x4C494E4B
+#define LCS_PROFILE_EMBEDDED			0x4D424544
+#define PROFILE_LINKED			LCS_PROFILE_LINKED
+#define PROFILE_EMBEDDED	      LCS_PROFILE_EMBEDDED
 #define LCS_GM_BUSINESS 				 1
 #define LCS_GM_GRAPHICS 				 2
 #define LCS_GM_IMAGES					 4
+#define LCS_GM_ABS_COLORIMETRIC 		         8
 #define RASTER_FONTTYPE 				 1
 #define DEVICE_FONTTYPE 				 2
 #define TRUETYPE_FONTTYPE				 4
@@ -1226,6 +1240,7 @@ typedef BYTE  BCHAR;
 #define AC_SRC_NO_ALPHA 			      0x02
 #define AC_DST_NO_PREMULT_ALPHA 		      0x10
 #define AC_DST_NO_ALPHA 			      0x20
+#define LAYOUT_LTR					 0
 #define LAYOUT_RTL					 1
 #define LAYOUT_BITMAPORIENTATIONPRESERVED		 8
 

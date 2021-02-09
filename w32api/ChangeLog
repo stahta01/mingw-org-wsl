@@ -1,3 +1,13 @@
+2021-02-09  Alexei Podtelezhnikov  <apodtele@gmail.com>
+
+	Add missing <wingdi.h> definitions.
+
+	* include/wingdi.h (BI_ALPHABITFIELDS, BI_CMYK, BI_CMYKRLE4)
+	(BI_CMYKRLE8, DIB_PAL_INDICES, OUT_SCREEN_OUTLINE_PRECIS)
+	(BS_MONOPATTERN, LAYOUT_LTR, LCS_sRGB, LCS_WINDOWS_COLOR_SPACE)
+	(PROFILE_EMBEDDED, LCS_PROFILE_EMBEDDED, PROFILE_LINKED)
+	(LCS_PROFILE_LINKED, LCS_GM_ABS_COLORIMETRIC): Define.
+
 2021-01-25  Keith Marshall  <keith@users.osdn.me>
 
 	Represent <winbase.h> file creation bit-flags in hexadecimal.
