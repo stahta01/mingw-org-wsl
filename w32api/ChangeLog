@@ -1,5 +1,14 @@
 2021-02-12  Keith Marshall  <keith@users.osdn.me>
 
+	Make <winperf.h> header effectively self-contained.
+
+	* include/winperf.h: Tidy layout; assert copyright.
+	(GCC system_header) [__GNUC__ >= 3]: Remove prerequisite condition.
+	(winbase.h): Include this, to support stand-alone use.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+
+2021-02-12  Keith Marshall  <keith@users.osdn.me>
+
 	Make <winspool.h> header effectively self-contained.
 
 	* include/winspool.h: Tidy layout; assert copyright.
