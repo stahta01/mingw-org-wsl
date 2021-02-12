@@ -1,3 +1,56 @@
+2021-02-12  Keith Marshall  <keith@users.osdn.me>
+
+	Make <winspool.h> header effectively self-contained.
+
+	* include/winspool.h: Tidy layout; assert copyright.
+	(GCC system_header) [__GNUC__ >= 3]: Remove prerequisite condition.
+	(winbase.h, wingdi.h): Include these, to support stand-alone use.
+	[_WIN32_WINNT >= _WIN32_WINNT_WIN2K]: Always test symbolically.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+	[UNICODE vs. ! UNICODE] (__AW_ALIAS__): Use it to declare...
+	(ADDJOB_INFO_1), PADDJOB_INFO_1, LPADDJOB_INFO_1)
+	(DATATYPES_INFO_1, PDATATYPES_INFO_1, LPDATATYPES_INFO_1)
+	(JOB_INFO_1, PJOB_INFO_1, LPJOB_INFO_1)
+	(JOB_INFO_2, PJOB_INFO_2, LPJOB_INFO_2)
+	(DOC_INFO_1, PDOC_INFO_1, LPDOC_INFO_1)
+	(DOC_INFO_2, PDOC_INFO_2, LPDOC_INFO_2)
+	(DRIVER_INFO_1, PDRIVER_INFO_1, LPDRIVER_INFO_1)
+	(DRIVER_INFO_2, PDRIVER_INFO_2, LPDRIVER_INFO_2)
+	(DRIVER_INFO_3, PDRIVER_INFO_3, LPDRIVER_INFO_3)
+	(DRIVER_INFO_4, PDRIVER_INFO_4, LPDRIVER_INFO_4)
+	(DRIVER_INFO_5, PDRIVER_INFO_5, LPDRIVER_INFO_5)
+	(DRIVER_INFO_6, PDRIVER_INFO_6, LPDRIVER_INFO_6)
+	(MONITOR_INFO_1, PMONITOR_INFO_1, LPMONITOR_INFO_1)
+	(PORT_INFO_1, PPORT_INFO_1, LPPORT_INFO_1)
+	(MONITOR_INFO_2, PMONITOR_INFO_2, LPMONITOR_INFO_2)
+	(PORT_INFO_2, PPORT_INFO_2, LPPORT_INFO_2)
+	(PORT_INFO_3, PPORT_INFO_3, LPPORT_INFO_3)
+	(PRINTER_ENUM_VALUES, PPRINTER_ENUM_VALUES)
+	(PRINTER_INFO_1, PPRINTER_INFO_1, LPPRINTER_INFO_1)
+	(PRINTER_INFO_2, PPRINTER_INFO_2, LPPRINTER_INFO_2)
+	(PRINTER_INFO_4, PPRINTER_INFO_4, LPPRINTER_INFO_4)
+	(PRINTER_INFO_5, PPRINTER_INFO_5, LPPRINTER_INFO_5)
+	(PRINTER_INFO_7, PPRINTER_INFO_7, LPPRINTER_INFO_7)
+	(PRINTPROCESSOR_INFO_1, PPRINTPROCESSOR_INFO_1)
+	(FORM_INFO_1, PFORM_INFO_1, LPFORM_INFO_1)
+	(PRINTER_DEFAULTS, PPRINTER_DEFAULTS, LPPRINTER_DEFAULTS)
+	(PROVIDOR_INFO_1, PPROVIDOR_INFO_1, LPROVIDOR_INFO_1)
+	(PROVIDOR_INFO_2, PPROVIDOR_INFO_2, LPROVIDOR_INFO_2): ...these.
+	[UNICODE vs. ! UNICODE] (__AW_SUFFIXED__): Use it to declare...
+	(AddForm, AddJob, AddMonitor, AddPort, AddPrinter)
+	(AddPrinterConnection, AddPrinterDriver, AddPrintProcessor)
+	(AddPrintProvidor, AdvancedDocumentProperties, ConfigurePort)
+	(DeleteForm, DeleteMonitor, DeletePort, DeletePrinterConnection)
+	(DeletePrinterData, DeletePrinterDriver, DeletePrintProcessor)
+	(DeletePrintProvidor, DocumentProperties, EnumForms, EnumJobs)
+	(EnumMonitors, EnumPorts, EnumPrinterData, EnumPrinterDrivers)
+	(EnumPrinters, EnumPrintProcessorDatatypes, EnumPrintProcessors)
+	(GetDefaultPrinter, GetForm, GetJob, GetPrinter, GetPrinterData)
+	(GetPrinterDriver, GetPrinterDriverDirectory, OpenPrinter)
+	(GetPrintProcessorDirectory, PrinterMessageBox, ResetPrinter)
+	(SetForm, SetJob, SetPrinter, SetPrinterData)
+	(StartDocPrinter): ...these.
+
 2021-02-09  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
 	Add missing <wingdi.h> definitions.
