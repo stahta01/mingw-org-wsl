@@ -1,5 +1,12 @@
 2021-02-13  Keith Marshall  <keith@users.osdn.me>
 
+	Update support for Internet Explorer features selection macros.
+
+	* include/sdkddkver.h (_WIN32_IE_IE90)
+	(_WIN32_IE_IE100, _WIN32_IE_IE110): Define.
+
+2021-02-13  Keith Marshall  <keith@users.osdn.me>
+
 	Add support for Windows-10 features selection macros.
 
 	* include/sdkddkver.h (_WIN32_WINNT_WIN10): Define.

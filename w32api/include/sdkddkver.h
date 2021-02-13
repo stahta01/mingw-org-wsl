@@ -89,6 +89,9 @@
 #define _WIN32_IE_IE60SP2 	0x0603
 #define _WIN32_IE_IE70  	0x0700
 #define _WIN32_IE_IE80  	0x0800
+#define _WIN32_IE_IE90  	0x0900
+#define _WIN32_IE_IE100  	0x0A00
+#define _WIN32_IE_IE110  	0x0A00
 
 #define _WIN32_IE_IE30  	0x0300
 #define _WIN32_IE_IE301 	0x0301
