@@ -7,7 +7,7 @@
  * $Id$
  *
  * Written by Earnie Boyd  <earnie@users.sourceforge.net>
- * Copyright (C) 2012, 2013, 2015, MinGW.org Project
+ * Copyright (C) 2012, 2013, 2015, 2021, MinGW.org Project
  *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -75,6 +75,7 @@
 #define _WIN32_WINNT_WIN7	0x0601		/* Windows 7 */
 #define _WIN32_WINNT_WIN8	0x0602		/* Windows 8 */
 #define _WIN32_WINNT_WINBLUE	0x0603		/* Windows 8.1 */
+#define _WIN32_WINNT_WIN10	0x0A00		/* Windows 10 */
 
 /* Version constants specifying Internet Explorer versions; also defined at
  * http://msdn.microsoft.com/en-us/library/windows/desktop/aa383745(v=vs.85).aspx
@@ -105,11 +106,14 @@
 #define __NTDDI_WIN61		0x06010000
 #define __NTDDI_WIN62		0x06020000
 #define __NTDDI_WIN63		0x06030000
+#define __NTDDI_WIN10		0x0A000000
 #define __NTDDI_SP0		0x00000000
 #define __NTDDI_SP1		0x00000100
 #define __NTDDI_SP2		0x00000200
 #define __NTDDI_SP3		0x00000300
 #define __NTDDI_SP4		0x00000400
+
+#define __NTDDI_SUBVER		SUBVER
 
 #define NTDDI_WIN2K		__NTDDI_WIN5 + __NTDDI_SP0
 #define NTDDI_WIN2KSP1		__NTDDI_WIN5 + __NTDDI_SP1
@@ -143,6 +147,16 @@
 #define NTDDI_WIN8		__NTDDI_WIN62 + __NTDDI_SP0
 
 #define NTDDI_WINBLUE		__NTDDI_WIN63 + __NTDDI_SP0
+
+#define NTDDI_WIN10		__NTDDI_WIN10 + __NTDDI_SUBVER(0)
+#define NTDDI_WINTHRESHOLD	__NTDDI_WIN10 + __NTDDI_SUBVER(0)
+#define NTDDI_WIN10_TH2 	__NTDDI_WIN10 + __NTDDI_SUBVER(1)
+#define NTDDI_WIN10_RS1 	__NTDDI_WIN10 + __NTDDI_SUBVER(2)
+#define NTDDI_WIN10_RS2 	__NTDDI_WIN10 + __NTDDI_SUBVER(3)
+#define NTDDI_WIN10_RS3 	__NTDDI_WIN10 + __NTDDI_SUBVER(4)
+#define NTDDI_WIN10_RS4 	__NTDDI_WIN10 + __NTDDI_SUBVER(5)
+#define NTDDI_WIN10_RS5 	__NTDDI_WIN10 + __NTDDI_SUBVER(6)
+#define NTDDI_WIN10_19H1	__NTDDI_WIN10 + __NTDDI_SUBVER(7)
 
 /* Although NTDDI_VERSION is now the preferred designator for the
  * level of support required from the operating system, legacy code
