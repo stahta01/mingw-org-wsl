@@ -1,3 +1,27 @@
+2021-02-19  Keith Marshall  <keith@users.osdn.me>
+
+	Make <winnetwk.h> header effectively self-contained.
+
+	* include/winnetwk.h: Tidy layout; assert copyright.
+	(GCC system_header) [__GNUC__ >= 3]: Remove prerequisite condition.
+	(windef.h): Include this, to support stand-alone use.
+	(_BEGIN_C_DECLS, _END_C_DECLS): Use them.
+	[UNICODE vs. ! UNICODE] (__AW_ALIAS__): Use it to declare...
+	(NETRESOURCE, LPNETRESOURCE, CONNECTDLGSTRUCT, LPCONNECTDLGSTRUCT)
+	(DISCDLGSTRUCT, LPDISCDLGSTRUCT, UNIVERSAL_NAME_INFO)
+	(LPUNIVERSAL_NAME_INFO, REMOTE_NAME_INFO)
+	(LPREMOTE_NAME_INFO): ...these.
+	[UNICODE vs. ! UNICODE] (__AW_SUFFIXED__): Use it to declare...
+	(PFNGETPROFILEPATH, PFNRECONCILEPROFILE, PFNPROCESSPOLICIES)
+	(WNetAddConnection, WNetAddConnection2, WNetAddConnection3)
+	(WNetCancelConnection, WNetCancelConnection2, WNetGetConnection)
+	(WNetUseConnection, WNetSetConnection, WNetConnectionDialog1)
+	(WNetDisconnectDialog1, WNetOpenEnum, WNetEnumResource)
+	(WNetGetUniversalName, WNetGetUser, WNetGetProviderName)
+	(WNetGetNetworkInformation, WNetGetResourceInformation)
+	(WNetGetResourceParent, WNetGetLastError)
+	(MultinetGetConnectionPerformance): ...these.
+
 2021-02-13  Keith Marshall  <keith@users.osdn.me>
 
 	Update support for Internet Explorer features selection macros.
