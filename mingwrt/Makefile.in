@@ -1,5 +1,5 @@
 # @configure_input@
-# $Id: Makefile.in,v 5f021e118870 2020/07/20 19:17:27 keith $
+# $Id$
 #
 # Makefile template for MinGW.org Runtime Library Package
 
@@ -420,7 +420,7 @@ libmingwex.a: $(addsuffix .$(OBJEXT), cosf cosl acosf acosl sinf sinl asinf \
   powf powl powi powif powil remainder remainderf remainderl remquo remquof \
   remquol rint rintf rintl round roundf roundl scalbn scalbnf scalbnl signbit \
   signbitf signbitl sqrtf sqrtl tgamma tgammaf tgammal trunc truncf truncl \
-  x87cvt x87cvtf x87log x87log1p x87pow)
+  x87cvt x87cvtf x87log x87log1p x87pow x87remquo)
 
 # Replacement I/O functions in libmingwex.a, providing better POSIX
 # compatibility than their Microsoft equivalents.
@@ -1028,4 +1028,4 @@ maintainer-clean-local: maintainer-clean-warning distclean-local
 
 clean mostlyclean distclean maintainer-clean: %clean: %clean-local
 
-# $RCSfile: Makefile.in,v $: end of file
+# $RCSfile$: end of file

@@ -1,0 +1,167 @@
+/*
+ * remquo_generic.sx
+ *
+ * Generic implementation for each of the ISO-C99 remquo(), remquol(),
+ * and remquof() functions.
+ *
+ * $Id$
+ *
+ * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
+ * Copyright (C) 2021, MinGW.org Project
+ *
+ * Adapted from original code written by J. T. Conklin <jtc@netbsd.org>.
+ *
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ */
+.intel_syntax noprefix
+
+.text
+.align	4
+.def	___x87remquo; .scl 2; .type 32; .endef
+
+#if defined _remquo_source
+/* Preamble to load the FPU registers, and EDX register, from the
+ * arguments passed in any call to the function:
+ *
+ *   double remquo (double, double, int *);
+ */
+.globl	_remquo
+.def	_remquo; .scl 2; .type 32; .endef
+.def	___x87cvt; .scl 2; .type 32; .endef
+
+_remquo:
+	fld	QWORD ptr 4[esp]	/* FPU TOS = x */
+	fld	QWORD ptr 12[esp]	/* FPU TOS = y, x */
+	mov	edx, DWORD ptr 20[esp]	/* EDX = *q */
+
+/* Hand off the preloaded register set, to the shared computational
+ * back-end routine, before ultimately converting its REAL10 result
+ * to the required REAL8.
+ */
+	call	___x87remquo		/* compute REAL10 result */
+	jmp	___x87cvt		/* convert to REAL8 */
+
+#elif defined _remquof_source
+/* Preamble to load the FPU registers, and EDX register, from the
+ * arguments passed in any call to the function:
+ *
+ *   float remquof (float, float, int *);
+ */
+.globl	_remquof
+.def	_remquof; .scl 2; .type 32; .endef
+.def	___x87cvtf; .scl 2; .type 32; .endef
+
+_remquof:
+	fld	DWORD ptr 4[esp]	/* FPU TOS = x */
+	fld	DWORD ptr 8[esp]	/* FPU TOS = y, x */
+	mov	edx, DWORD ptr 12[esp]	/* EDX = *q */
+
+/* Hand off the preloaded register set, to the shared computational
+ * back-end routine, before ultimately converting its REAL10 result
+ * to the required REAL4.
+ */
+	call	___x87remquo		/* compute REAL10 result */
+	jmp	___x87cvtf		/* convert to REAL4 */
+
+#elif defined _remquol_source
+/* Preamble to load the FPU registers, and EDX register, from the
+ * arguments passed in any call to the function:
+ *
+ *   long double remquo (long double, long double, int *);
+ */
+.globl	_remquol
+.def	_remquol; .scl 2; .type 32; .endef
+
+_remquol:
+	fld	TBYTE ptr 4[esp]	/* FPU TOS = x */
+	fld	TBYTE ptr 16[esp]	/* FPU TOS = y, x */
+	mov	edx, DWORD ptr 28[esp]	/* EDX = *q */
+
+/* Hand off the preloaded register set, to the shared computational
+ * back-end routine, to...
+ */
+	jmp	___x87remquo		/* ...compute REAL10 result */
+
+#else
+/* No specific function entry point identified; implement the generic
+ * back-end code, which is shared by all three entry points.
+ */
+.globl	___x87remquo
+
+___x87remquo:
+/* Assuming that the entry point preamble has stored the pointer to the
+ * storage location for the returned integer quotient, in the EDX register,
+ * and has loaded the floating point divisor (y), and dividend (x), values
+ * into the FPU st(0) and st(1) registers, respectively, this computes the
+ * remainder, and floating point quotient, to the full IEEE-754 extended
+ * (80-bit) precision of the FPU, before ultimately reducing the quotient
+ * to an integer, storing as many of itsleast-significant bits as can be
+ * accommodated in an "int", at the address pointed to by EDX, and
+ * returning the remainder in FPU register st(0).
+ */
+	fst	st(2)			/* save a copy of 'y'... */
+	fld	st(1)			/* ...and of 'x' */
+
+/* Computation of the remainder requires an iterative procedure...
+ */
+10:	fprem1				/* compute interim result */
+	fstsw	ax			/* copy resultant FPU status... */
+	sahf				/* ...into CPU flags, for testing... */
+	jp	10b			/* ...until completion */
+
+/* We now have the computed remainder (r), and the original saved x and y,
+ * in FPU registers st(0), st(1), and st(2) respectively; the next step is
+ * to compute the floating point quotient, (leaving the remainder in place
+ * as a fractional part, to ensure that eventual truncation rounds in the
+ * correct direction)...
+ */
+	fstp	st(3)			/* ...after saving 'r' for return... */
+	fdivp	st(1), st		/* ...divide 'x' by 'y' */
+
+/* This now leaves the integer-valued floating point quotient (q) in st(0),
+ * and the saved remainder in st(1); the computed value of the quotient may
+ * exceed the maximum which can be represented as an "int", so we reduce it
+ * modulo "INT_MAX + 1", to retain the least significant bits with absolute
+ * value not exceeding INT_MAX.
+ */
+	fld	DWORD ptr ___int_max_1	/* load equivalent of (INT_MAX + 1) */
+	fxch	st(1)			/* bring 'q' to top of FPU stack */
+20:	fprem				/* compute interim modulus value */
+	fstsw	ax			/* copy resultant FPU status... */
+	sahf				/* ...into CPU flags, for testing... */
+	jp	20b			/* ...until completion */
+
+/* Finally, we are left with the residual quotient in st(0), the remainder
+ * in st(2), and st(1) still retaining the "INT_MAX + 1" value, (which is of
+ * no further use to us).
+ */
+	fstp	st(1)			/* pop FPU stack, discarding st(1) */
+	fistp	DWORD ptr [edx]		/* store reduced quotient, leaving... */
+	ret				/* ...just the remainder, to return */
+
+.section .rdata, "dr"
+.align	4
+___int_max_1:	.long	0x4F000000	/* (1 + INT_MAX) as float */
+#endif
+
+/* vim: set autoindent filetype=asm formatoptions=croqlj: */
+/* $RCSfile$: end of file */

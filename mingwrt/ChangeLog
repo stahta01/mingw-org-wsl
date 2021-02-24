@@ -1,3 +1,13 @@
+2021-02-24  Keith Marshall  <keith@users.osdn.me>
+
+	Correct remquo() quotient computation; cf. MinGW-Bug #41597
+
+	* mingwex/math/remquo_generic.sx: New file; it replaces...
+	* mingwex/math/remquo.s mingwex/math/remquof.s: ...these, and also...
+	* mingwex/math/remquol.s: ...this; delete them.
+
+	* Makefile.in (libmingwex.a): Add "x87remquo.$OBJEXT" requirement.
+
 2021-01-26  Keith Marshall  <keith@users.osdn.me>
 
 	Avoid proliferation of static snprintf() implementations.
