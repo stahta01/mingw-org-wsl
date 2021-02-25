@@ -514,8 +514,21 @@ $(addsuffix .$(OBJEXT), % %f %l): %_generic.sx
 	$(COMPILE.sx) -D_$*f_source -o $*f.$(OBJEXT) $<
 	$(COMPILE.sx) -D_$*l_source -o $*l.$(OBJEXT) $<
 
+# Assembly language sources for all fmod() and remainder() object
+# code variants originate from one fmod_generic.sx.in template.
+#
+vpath fmod_generic.sx.in ${srcdir}/mingwex/math
+fmod_generic.sx remainder_generic.sx: %_generic.sx: fmod_generic.sx.in
+	sed '$($*_generic_subst)' $< > $@
+
+# fmod() variants, and remainder() variants, require differing
+# template substitutions.
+#
+fmod_generic_subst = s:%name%:$*:;s:%fprem%:fprem:
+remainder_generic_subst = s:%name%:$*:;s:%fprem%:fprem1:
+
 # Several generically implemented functions also require separate
-# assembly of their generic back-end support routines.
+# assembly of associated generic back-end support routines.
 #
 x87%.$(OBJEXT): %_generic.sx
 	$(COMPILE.sx) -o $@ $<

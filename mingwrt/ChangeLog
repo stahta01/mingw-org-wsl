@@ -1,3 +1,19 @@
+2021-02-25  Keith Marshall  <keith@users.osdn.me>
+
+	Consolidate fmod() and remainder() source code.
+
+	* mingwex/math/fmod_generic.sx.in: New file; it replaces...
+	* mingwex/math/remainder.s mingwex/math/remainderf.s: ...these...
+	* mingwex/math/remainderl.s mingwex/math/fmodf.c: ...and these...
+	* mingwex/math/fmodl.c: ...and also this; delete them.
+
+	* Makefile.in (fmod_generic.sx, remainder_generic.sx): Add rule to
+	generate them.
+
+2021-02-24  Keith Marshall  <keith@users.osdn.me>
+
+	Correct remquo() quotient computation; cf. MinGW-Bug #41597
+
 2021-02-24  Keith Marshall  <keith@users.osdn.me>
 
 	Correct remquo() quotient computation; cf. MinGW-Bug #41597

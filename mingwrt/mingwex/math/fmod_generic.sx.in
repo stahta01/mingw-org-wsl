@@ -1,0 +1,119 @@
+/*
+ * %name%_generic.sx
+ *
+ * Generic implementation for each of the ISO-C99 fmod(), fmodl(),
+ * fmodf(), remainder(), remainderl(), and remainderf() functions.
+ *
+ * $Id$
+ *
+ * Written by Keith Marshall <keithmarshall@users.sourceforge.net>
+ * Copyright (C) 2021, MinGW.org Project
+ *
+ * Adapted from original code written by J. T. Conklin <jtc@netbsd.org>.
+ *
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice (including the next
+ * paragraph) shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ */
+.intel_syntax noprefix
+
+.text
+.align	4
+
+#if defined _%name%_source
+/* Preamble to load the FPU registers from the arguments passed in
+ * any call to either of the functions:
+ *
+ *   double fmod (double, double);
+ *   double remainder (double, double);
+ */
+.globl	_%name%
+.def	_%name%; .scl 2; .type 32; .endef
+.def	___x87cvt; .scl 2; .type 32; .endef
+
+_%name%:
+	fld	QWORD ptr 12[esp]	/* FPU TOS = y */
+	fld	QWORD ptr 4[esp]	/* FPU TOS = x, y */
+
+#elif defined _%name%f_source
+/* Preamble to load the FPU registers from the arguments passed in
+ * any call to either of the functions:
+ *
+ *   float fmodf (float, float);
+ *   float remainderf (float, float);
+ */
+.globl	_%name%f
+.def	_%name%f; .scl 2; .type 32; .endef
+.def	___x87cvtf; .scl 2; .type 32; .endef
+
+_%name%f:
+	fld	DWORD ptr 8[esp]	/* FPU TOS = y */
+	fld	DWORD ptr 4[esp]	/* FPU TOS = x, y */
+
+#else /* _%name%l_source assumed */
+#ifndef _%name%l_source
+#define _%name%l_source
+#endif
+/* Preamble to load the FPU registers from the arguments passed in
+ * any call to either of the functions:
+ *
+ *   long double fmodl (long double, long double);
+ *   long double remainderl (long double, long double);
+ */
+.globl	_%name%l
+.def	_%name%l; .scl 2; .type 32; .endef
+
+_%name%l:
+	fld	TBYTE ptr 16[esp]	/* FPU TOS = y */
+	fld	TBYTE ptr 4[esp]	/* FPU TOS = x, y */
+
+#endif
+/* Fall through to compute the remainder; this is an iterative procedure...
+ */
+10:	%fprem%				/* compute interim result */
+	fstsw	ax			/* copy resultant FPU status... */
+	sahf				/* ...into CPU flags, for testing... */
+	jp	10b			/* ...until completion */
+
+/* We now have the computed remainder (r), and the original value of y,
+ * in FPU registers st(0), and st(1) respectively; we no longer have any
+ * use for y, so discard it...
+ */
+	fstp	st(1)			/* ...saving just 'r' for return */
+
+#if defined _%name%l_source
+/* For the %name%l() function, there is no more to do...
+ */
+	ret				/* ...but return the REAL10 result... */
+
+#elif defined _%name%f_source
+/* ...whereas for %name%f(), we must...
+ */
+	jmp	___x87cvtf		/* ...convert to REAL4... */
+
+#else /* _%name%_source */
+/* ...while for %name%(), we must...
+ */
+	jmp	___x87cvt		/* ...convert to REAL8 */
+
+#endif
+
+/* vim: set autoindent filetype=asm formatoptions=croqlj: */
+/* $RCSfile$: end of file */
