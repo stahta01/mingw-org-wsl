@@ -1,3 +1,9 @@
+2021-04-11  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.4.2 release.
+
+	* All files (wsl-5.4.2-release): Tag assigned.
+
 2021-02-19  Keith Marshall  <keith@users.osdn.me>
 
 	Make <winnetwk.h> header effectively self-contained.

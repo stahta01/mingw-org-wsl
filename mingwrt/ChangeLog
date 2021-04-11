@@ -1,3 +1,9 @@
+2021-04-11  Keith Marshall  <keith@users.osdn.me>
+
+	Prepare and publish MinGW.org WSL-5.4.2 release.
+
+	* All files (wsl-5.4.2-release): Tag assigned.
+
 2021-02-25  Keith Marshall  <keith@users.osdn.me>
 
 	Consolidate fmod() and remainder() source code.
@@ -9,10 +15,6 @@
 
 	* Makefile.in (fmod_generic.sx, remainder_generic.sx): Add rule to
 	generate them.
-
-2021-02-24  Keith Marshall  <keith@users.osdn.me>
-
-	Correct remquo() quotient computation; cf. MinGW-Bug #41597
 
 2021-02-24  Keith Marshall  <keith@users.osdn.me>
 
