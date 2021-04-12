@@ -1,3 +1,9 @@
+2021-04-12  Keith Marshall  <keith@users.osdn.me>
+
+	Increment version number following WSL-5.4.2 release.
+
+	* VERSION.m4 (__VERSION__): Increment it to 5.4.3
+
 2021-04-11  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.4.2 release.
