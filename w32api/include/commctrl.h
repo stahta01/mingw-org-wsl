@@ -4585,7 +4585,7 @@ WINAPI BOOL _TrackMouseEvent (LPTRACKMOUSEEVENT);
   (BOOL)(SNDMSG ((w), TVM_EXPAND, (c), (LPARAM)((HTREEITEM)(i))))
 
 #define TreeView_GetItemRect( w, i, p, c )				\
-  (*(HTREEITEM *)((p) = (i)),						\
+  ( (*(HTREEITEM *)(p) = (i)),						\
     (BOOL)(SNDMSG ((w), TVM_GETITEMRECT, (c), (LPARAM)((LPRECT)(p))))	\
   )
 #define TreeView_GetCount( w )						\

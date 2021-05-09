@@ -1,3 +1,10 @@
+2021-05-09  Keith Marshall  <keith@users.osdn.me>
+
+	Correct TreeView_GetItemRect() syntax; cf. MinGW-Issue #41041.
+
+	* include/commctrl.h (TreeView_GetItemRect): Correct placement of
+	parentheses around typecast pointer reference assignment.
+
 2021-04-11  Keith Marshall  <keith@users.osdn.me>
 
 	Prepare and publish MinGW.org WSL-5.4.2 release.
